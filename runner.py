@@ -125,7 +125,6 @@ def run():
     # traci.trafficlight.setPhase("0", 2)
     while traci.simulation.getMinExpectedNumber() > 0:
         traci.simulationStep()
-
         step += 1
         #print(traci.vehicle.getSubscriptionResults("left_0"))
         #print(traci.vehicle.getPosition("pkw_my"))
