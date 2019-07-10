@@ -115,15 +115,6 @@ guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="blue"
         print('     	<trip id="pkw_my" type="pkw_special" depart="100" from="gneE0" to="gneE7" departLane="free" departSpeed ="random"/> ',file=routes)
         print("</routes>", file=routes)
 
-# The program looks like this
-#    <tlLogic id="0" type="static" programID="0" offset="0">
-# the locations of the tls are      NESW
-#        <phase duration="31" state="GrGr"/>
-#        <phase duration="6"  state="yryr"/>
-#        <phase duration="31" state="rGrG"/>
-#        <phase duration="6"  state="ryry"/>
-#    </tlLogic>
-
 
 def run():
     """execute the TraCI control loop"""
