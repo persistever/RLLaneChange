@@ -22,7 +22,7 @@ import os
 import sys
 import optparse
 import random
-
+import numpy
 
 
 # we need to import python modules from the $SUMO_HOME/tools directory
