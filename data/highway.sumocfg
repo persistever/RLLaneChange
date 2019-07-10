@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+   <input>
+       <net-file value="motorway.net.xml"/>
+       <route-files value="highway.rou.xml"/>
+   </input>
+
+   <time>
+        <begin value="0"/>
+        <step-length value="0.01"/>
+   </time>
+   
+   <processing>
+	<lateral-resolution value="1." />
+   </processing>
+   <gui_only>
+        <gui-settings-file value="highway.view.xml"/>
+   </gui_only>
+</configuration>
+
