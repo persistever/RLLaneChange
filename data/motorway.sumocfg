@@ -2,11 +2,12 @@
 <configuration>
    <input>
        <net-file value="motorway.net.xml"/>
-       <route-files value="highway.rou.xml"/>
+       <route-files value="motorway.rou.xml"/>
    </input>
 
    <time>
         <begin value="0"/>
+		<end value="1000" />
         <step-length value="0.01"/>
    </time>
    
@@ -14,7 +15,7 @@
 	<lateral-resolution value="1." />
    </processing>
    <gui_only>
-        <gui-settings-file value="highway.view.xml"/>
+        <gui-settings-file value="motorway.view.xml"/>
    </gui_only>
 </configuration>
 

@@ -1,0 +1,4 @@
+<routes>
+        <vType id="pkw_special" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="0.000001" guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="blue"/>
+     	<trip id="ego" type="pkw_special" depart="0" from="gneE0" to="gneE7" departLane="free" departSpeed ="random"/> 
+</routes>
