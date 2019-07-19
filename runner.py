@@ -22,7 +22,6 @@ import os
 import sys
 import optparse
 import random
-
 import math
 import numpy
 
@@ -38,8 +37,6 @@ from sumolib import checkBinary  # noqa
 import traci  # noqa
 import traci.constants as tc
 from egoVehicle import EgoVehicle
-from surrounding import Surrounding
-
 
 def generate_routefile():
     traffic_base = 0.4
@@ -70,6 +67,12 @@ def run():
         ego_vehicle.get_data()
         ego_vehicle.print_data()
         ego_vehicle.drive()
+        if step == 200:
+            ego_vehicle.change_to_lane(2)
+        if step == 500:
+            ego_vehicle.change_to_lane(3)
+        if step == 800:
+            ego_vehicle.change_to_lane(1)
     sys.stdout.flush()
 
 
@@ -87,15 +90,14 @@ if __name__ == "__main__":
 
     # this script has been called from the command line. It will start sumo as a
     # server, then connect and run
-
     if options.nogui:
         sumoBinary = checkBinary('sumo')
     else:
         sumoBinary = checkBinary('sumo-gui')
 
     # first, generate the route file for this simulation
-    surroundings = Surrounding(0.5)
-    surroundings.traffic_init_general()
+    generate_routefile()
+
     # this is the normal way of using traci. sumo is started as a
     # subprocess and then the python script connects and runs
     traci.start([sumoBinary, "-c", "data/motorway.sumocfg",
