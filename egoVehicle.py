@@ -4,8 +4,8 @@ import math
 import traci
 import traci.constants as tc
 
-N_LANE = 4
 LANE_WIDTH = 3.2
+RADAR_LIMIT = 200
 
 
 class EgoVehicle:
@@ -25,6 +25,10 @@ class EgoVehicle:
         self.laneIndex = -1
         self.goalLaneIndex = -1
         self.laneID = ''
+        self.edgeID = ''
+        self.nextEdgeID = ''
+        self.nLane = 0
+        self.nNextLane = 0
         self.laneX = 0
         self.laneY = 0
         self.timeStep = 0.01
@@ -36,24 +40,41 @@ class EgoVehicle:
         self.vxCtl = 10 - self.vx0
         self.angleCtl = 90
         self.lastChangeLaneTime = 0
+        self.missionList = []
+        self.frontVehicleList = []
+        self.rearVehicleList = []
+        self.leftVehicleList = []
+        self.rightVehicleList = []
+        self.otherData = None
 
     def _subscribe_ego_vehicle(self):
-        traci.vehicle.subscribe(self.id, (tc.VAR_POSITION, tc.VAR_SPEED))
+        traci.vehicle.subscribe(self.id, (tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_ROAD_ID))
+        traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 100,
+                                       [tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_LANE_INDEX])
+        traci.vehicle.addSubscriptionFilterLanes([-2, -1, 0, 1, 2], noOpposite=True,
+                                                 downstreamDist=200.0, upstreamDist=200.0)
+        # traci.vehicle.subscribeContext(self.id, tc.CMD_GET_EDGE_VARIABLE, 100, [tc.VAR_NEXT_EDGE])
 
     def get_data(self):
         self.data = traci.vehicle.getSubscriptionResults(self.id)
+        self.otherData = traci.vehicle.getContextSubscriptionResults(self.id)
+
         if self.data is not None:
             self._get_xy()
-            self.vx = (self.x - self.preX) / self.timeStep
-            self.vy = (self.y - self.preY) / self.timeStep
-            self.vx0 = self.data[tc.VAR_SPEED]
+            self._get_speed()
             self._get_lane_index()
             self._get_y_lane_lateral()
             self._get_angle()
+            self._get_road_id()
+            self._get_n_lane()
+            # print('roadid: '+str(traci.vehicle.getRoadID(self.id)))
+
+        # if self.otherData is not None:
+            # self.nextEdgeID = self.otherData[tc.VAR_NEXT_EDGE]
 
     def print_data(self):
         print(self.data)
-        print(self.laneIndex)
+        print(self.otherData)
 
     def _get_xy(self):
         self.preX = self.x
@@ -61,27 +82,35 @@ class EgoVehicle:
         self.x = self.data[tc.VAR_POSITION][0]
         self.y = self.data[tc.VAR_POSITION][1]
 
-    def _get_lane_index(self):
-        # self.laneIndex = traci.vehicle.getLaneIndex(self.id)
+    def _get_speed(self):
+        self.vx = (self.x - self.preX) / self.timeStep
+        self.vy = (self.y - self.preY) / self.timeStep
+        self.vx0 = self.data[tc.VAR_SPEED]
 
-        self.laneIndex = N_LANE - math.ceil(-self.y / LANE_WIDTH)
+    def _get_lane_index(self):
+        self.laneIndex = self.nLane - math.ceil(-self.y / LANE_WIDTH)
 
     def _get_y_lane_lateral(self):
-        self.yLane = self.y - (- N_LANE + self.laneIndex + 0.5) * LANE_WIDTH
-        print('yLane:'+str(self.yLane))
+        self.yLane = self.y - (- self.nLane + self.laneIndex + 0.5) * LANE_WIDTH
+        # print('yLane:'+str(self.yLane))
 
     def _get_angle(self):
         self.angleCtl = 90 - math.atan(self.vy/self.vx)/math.pi*180.0
-        print('angleCtl'+str(self.angleCtl))
+        # print('angleCtl'+str(self.angleCtl))
+
+    def _get_road_id(self):
+        if self.edgeID != self.data[tc.VAR_ROAD_ID]:
+            self.edgeID = self.data[tc.VAR_ROAD_ID]
+
+    def _get_n_lane(self):
+        self.nLane = traci.edge.getLaneNumber(self.edgeID)
 
     def drive(self):
         traci.vehicle.moveToXY(self.id, 'gneE0', 2, self.x + self.timeStep * self.vxCtl,
                                self.y + self.timeStep * self.vyCtl, self.angleCtl, 2)
         self.has_lane_change_complete()
 
-    # def is_need_change_lane(self):
-    #
-    # def decide_change_to_lane(self):
+    # def decide_change_lane_process(self):
 
     def change_to_lane(self, lane_index):
         self.goalLaneIndex = lane_index
@@ -97,6 +126,7 @@ class EgoVehicle:
             return True
         else:
             return False
+
 
 
 
