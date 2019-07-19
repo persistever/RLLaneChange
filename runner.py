@@ -37,25 +37,10 @@ from sumolib import checkBinary  # noqa
 import traci  # noqa
 import traci.constants as tc
 from egoVehicle import EgoVehicle
+from surrounding import Surrounding
+from surrounding import Traffic
 
-def generate_routefile():
-    traffic_base = 0.4
-    f_rate = random.uniform(0.4,0.6)
-    s_rate = random.uniform(0.05,0.1)
-    m_rate = 1-f_rate-s_rate
-    p_s1 = random.uniform(0.9,0.95)
-    p_s2 = 1-p_s1
-    p_e1 = random.uniform(0.05,0.1)
-    p_e2 = random.uniform(0.3,0.4)
-    p_e3 = 1 - p_e1 - p_e2
-
-    with open("data/motorway.rou.xml", "w") as routes:
-        print("""<routes>
-        <vType id="pkw_special" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="0.000001" \
-guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="blue"/>""", file=routes)
-        print('     	<trip id="ego" type="pkw_special" depart="0" from="gneE0" to="gneE7" departLane="free" departSpeed ="random"/> ',file=routes)
-        print("</routes>", file=routes)
-
+surroundings = Surrounding("ego")
 
 def run():
     """execute the TraCI control loop"""
@@ -73,6 +58,7 @@ def run():
             ego_vehicle.change_to_lane(3)
         if step == 800:
             ego_vehicle.change_to_lane(1)
+        print(surroundings.get_neighbor_list())
     sys.stdout.flush()
 
 
@@ -96,10 +82,10 @@ if __name__ == "__main__":
         sumoBinary = checkBinary('sumo-gui')
 
     # first, generate the route file for this simulation
-    generate_routefile()
-
+    traffics = Traffic(trafficBase=0.3,trafficList=[])
     # this is the normal way of using traci. sumo is started as a
     # subprocess and then the python script connects and runs
     traci.start([sumoBinary, "-c", "data/motorway.sumocfg",
                              "--tripinfo-output", "tripinfo.xml"])
+    surroundings.subscribe_ego_vehicle_surrounding()
     run()
