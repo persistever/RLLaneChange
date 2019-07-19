@@ -3,6 +3,7 @@
 import math
 import traci
 import traci.constants as tc
+from surrounding import Surrounding
 
 LANE_WIDTH = 3.2
 RADAR_LIMIT = 200
@@ -11,8 +12,9 @@ RADAR_LIMIT = 200
 class EgoVehicle:
     def __init__(self, vehicle_id):
         self.id = vehicle_id
-        self._subscribe_ego_vehicle()
         self.data = None  # 从subscribe订阅的所有数据
+        self.surroundings = Surrounding("ego")
+        self.neighbourVehicles = None
         self.preX = 0  # 之前的一个位置，用来估算纵向车速
         self.preY = 0  # 之前的一个位置，用来横向车速
         self.x = 0  # 当前的x全局坐标
@@ -45,19 +47,20 @@ class EgoVehicle:
         self.rearVehicleList = []
         self.leftVehicleList = []
         self.rightVehicleList = []
-        self.otherData = None
+        self._subscribe_ego_vehicle()
 
     def _subscribe_ego_vehicle(self):
         traci.vehicle.subscribe(self.id, (tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_ROAD_ID))
-        traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 100,
-                                       [tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_LANE_INDEX])
-        traci.vehicle.addSubscriptionFilterLanes([-2, -1, 0, 1, 2], noOpposite=True,
-                                                 downstreamDist=200.0, upstreamDist=200.0)
+        self.surroundings.subscribe_ego_vehicle_surrounding()
+        # traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 100,
+        #                                [tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_LANE_INDEX])
+        # traci.vehicle.addSubscriptionFilterLanes([-2, -1, 0, 1, 2], noOpposite=True,
+        #                                          downstreamDist=200.0, upstreamDist=200.0)
         # traci.vehicle.subscribeContext(self.id, tc.CMD_GET_EDGE_VARIABLE, 100, [tc.VAR_NEXT_EDGE])
 
     def get_data(self):
         self.data = traci.vehicle.getSubscriptionResults(self.id)
-        self.otherData = traci.vehicle.getContextSubscriptionResults(self.id)
+        self.neighbourVehicles = self.surroundings.get_neighbor_list()
 
         if self.data is not None:
             self._get_xy()
@@ -75,7 +78,7 @@ class EgoVehicle:
 
     def print_data(self):
         print(self.data)
-        print(self.otherData)
+        print(self.neighbourVehicles)
 
     def _get_xy(self):
         self.preX = self.x

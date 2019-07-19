@@ -12,7 +12,7 @@
    </time>
    
    <processing>
-	<lateral-resolution value="1." />
+	<lateral-resolution value="1.6" />
    </processing>
    <gui_only>
         <gui-settings-file value="motorway.view.xml"/>

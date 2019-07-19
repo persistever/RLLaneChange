@@ -40,7 +40,6 @@ from egoVehicle import EgoVehicle
 from surrounding import Surrounding
 from surrounding import Traffic
 
-surroundings = Surrounding("ego")
 
 def run():
     """execute the TraCI control loop"""
@@ -51,20 +50,16 @@ def run():
         step += 1
         if step == 3001:
             ego_vehicle = EgoVehicle('ego')
-            surroundings.subscribe_ego_vehicle_surrounding()
         if ego_vehicle is not None:
             ego_vehicle.get_data()
             ego_vehicle.print_data()
             ego_vehicle.drive()
-            if step == 3200:
-                ego_vehicle.change_to_lane(2)
-            if step == 3500:
-                ego_vehicle.change_to_lane(3)
-            if step == 3800:
-                ego_vehicle.change_to_lane(1)
-            print(surroundings.get_neighbor_list())
-            print(surroundings.get_MaxSpeed_list())
-
+            # if step == 3200:
+            #     ego_vehicle.change_to_lane(2)
+            # if step == 3500:
+            #     ego_vehicle.change_to_lane(3)
+            # if step == 3800:
+            #     ego_vehicle.change_to_lane(1)
     sys.stdout.flush()
 
 
