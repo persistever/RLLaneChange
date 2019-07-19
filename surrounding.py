@@ -15,14 +15,11 @@ import random
 
 
 class Surrounding:
-    def __init__(self, id, trafficBase, trafficList=[], downstreamDist=200.0, upstreamDist=200.0):
+    def __init__(self, id,downstreamDist=200.0, upstreamDist=200.0):
         self.id = id
-        self.trafficBase = trafficBase
-        self.trafficList = trafficList
         self.downstreamDist = downstreamDist
         self.upstreamDist = upstreamDist
         self.neighborList = None
-        self._subscribe_ego_vehicle_surrounding()
         self.edge = "gneE0"
         self.maxSpeedList = []
 
@@ -44,11 +41,20 @@ class Surrounding:
         for i in range(traci.edge.getLaneNumber(self.edge)):
             self.maxSpeedList.append(traci.lane.getMaxSpeed(self.edge + "_"+str(i)))
 
-    def _subscribe_ego_vehicle_surrounding(self):
-        traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 0.0,
-                                       [tc.VAR_LANE_INDEX, tc.VAR_POSITION, tc.VAR_SPEED])
+    def subscribe_ego_vehicle_surrounding(self):
+        traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 0.0, [tc.VAR_LANE_INDEX, tc.VAR_POSITION, tc.VAR_SPEED])
         traci.vehicle.addSubscriptionFilterLanes([-2, -1, 0, 1, 2], noOpposite=True, downstreamDist=self.downstreamDist,
                                                  upstreamDist=self.upstreamDist)
+
+
+class Traffic:
+    def __init__(self, trafficBase=0.5, trafficList=None):
+        self.trafficBase = trafficBase
+        self.trafficList = trafficList
+        if self.trafficList is None:
+            self.traffic_init_general()
+        else:
+            self.traffic_init_custom()
 
     def traffic_init_custom(self):
         with open("data/motorway.rou.xml", "w") as routes:
@@ -61,7 +67,7 @@ class Surrounding:
             guiShape="bus" laneChangeModel="SL2015" latAlignment="center" color="red"/>
                     <vType id="pkw_special" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="30" \
             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="blue"/>""", file=routes)
-            for traffic in self.traffic_list:
+            for traffic in self.trafficList:
                 print(
                     '     <flow id="%s" type="%s" from="%s" to="%s" begin="%d" end="%d" probability="%f" departLane="free" departSpeed ="random"/> '
                         %( traffic['id'], traffic['type'], traffic['from'], traffic['to'], traffic['begin'], traffic['end'], traffic['possbability']), file=routes)
@@ -91,58 +97,58 @@ class Surrounding:
         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="blue"/>""", file=routes)
             print(
                 '     	<flow id="pkw11_f" type="pkw_f" from="gneE0" to="Zadao2" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s1 * p_e1 * f_rate), file=routes)
+                        self.trafficBase * p_s1 * p_e1 * f_rate), file=routes)
             print(
                 '     	<flow id="pkw12_f" type="pkw_f" from="gneE0" to="gneE8" begin="0" end="500" probability="%f" epartLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s1 * p_e2 * f_rate), file=routes)
+                        self.trafficBase * p_s1 * p_e2 * f_rate), file=routes)
             print(
                 '     	<flow id="pkw13_f" type="pkw_f" from="gneE0" to="gneE7" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s1 * p_e3 * f_rate), file=routes)
+                        self.trafficBase * p_s1 * p_e3 * f_rate), file=routes)
             print(
                 '     	<flow id="pkw21_f" type="pkw_f" from="Zadao1" to="Zadao2" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s2 * p_e1 * f_rate), file=routes)
+                        self.trafficBase * p_s2 * p_e1 * f_rate), file=routes)
             print(
                 '     	<flow id="pkw22_f" type="pkw_f" from="Zadao1" to="gneE8" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s2 * p_e2 * f_rate), file=routes)
+                        self.trafficBase * p_s2 * p_e2 * f_rate), file=routes)
             print(
                 '     	<flow id="pkw23_f" type="pkw_f" from="Zadao1" to="gneE7" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s2 * p_e3 * f_rate), file=routes)
+                        self.trafficBase * p_s2 * p_e3 * f_rate), file=routes)
             print(
                 '     	<flow id="pkw11_m" type="pkw_m" from="gneE0" to="Zadao2" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s1 * p_e1 * m_rate), file=routes)
+                        self.trafficBase * p_s1 * p_e1 * m_rate), file=routes)
             print(
                 '     	<flow id="pkw12_m" type="pkw_m" from="gneE0" to="gneE8" begin="0" end="500" probability="%f" epartLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s1 * p_e2 * m_rate), file=routes)
+                        self.trafficBase * p_s1 * p_e2 * m_rate), file=routes)
             print(
                 '     	<flow id="pkw13_m" type="pkw_m" from="gneE0" to="gneE7" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s1 * p_e3 * m_rate), file=routes)
+                        self.trafficBase * p_s1 * p_e3 * m_rate), file=routes)
             print(
                 '     	<flow id="pkw21_m" type="pkw_m" from="Zadao1" to="Zadao2" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s2 * p_e1 * m_rate), file=routes)
+                        self.trafficBase * p_s2 * p_e1 * m_rate), file=routes)
             print(
                 '     	<flow id="pkw22_m" type="pkw_m" from="Zadao1" to="gneE8" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s2 * p_e2 * m_rate), file=routes)
+                        self.trafficBase * p_s2 * p_e2 * m_rate), file=routes)
             print(
                 '     	<flow id="pkw23_m" type="pkw_m" from="Zadao1" to="gneE7" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s2 * p_e3 * m_rate), file=routes)
+                        self.trafficBase * p_s2 * p_e3 * m_rate), file=routes)
             print(
                 '     	<flow id="bus11" type="bus" from="gneE0" to="Zadao2" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s1 * p_e1 * s_rate), file=routes)
+                        self.trafficBase * p_s1 * p_e1 * s_rate), file=routes)
             print(
                 '     	<flow id="bus12" type="bus" from="gneE0" to="gneE8" begin="0" end="500" probability="%f" epartLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s1 * p_e2 * s_rate), file=routes)
+                        self.trafficBase * p_s1 * p_e2 * s_rate), file=routes)
             print(
                 '     	<flow id="bus13" type="bus" from="gneE0" to="gneE7" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s1 * p_e3 * s_rate), file=routes)
+                        self.trafficBase * p_s1 * p_e3 * s_rate), file=routes)
             print(
                 '     	<flow id="bus21" type="bus" from="Zadao1" to="Zadao2" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s2 * p_e1 * s_rate), file=routes)
+                        self.trafficBase * p_s2 * p_e1 * s_rate), file=routes)
             print(
                 '     	<flow id="bus22" type="bus" from="Zadao1" to="gneE8" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s2 * p_e2 * s_rate), file=routes)
+                        self.trafficBase * p_s2 * p_e2 * s_rate), file=routes)
             print(
                 '     	<flow id="bus23" type="bus" from="Zadao1" to="gneE7" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
-                        self.traffic_base * p_s2 * p_e3 * s_rate), file=routes)
+                        self.trafficBase * p_s2 * p_e3 * s_rate), file=routes)
             print(
                 '     	<trip id="ego" type="pkw_special" depart="0" from="gneE0" to="gneE7" departLane="free" departSpeed ="random"/> ',file=routes)
             print("</routes>", file=routes)
