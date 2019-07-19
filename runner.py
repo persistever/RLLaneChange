@@ -22,7 +22,7 @@ import os
 import sys
 import optparse
 import random
-from egoVehicle import EgoVehicle
+
 import math
 import numpy
 
@@ -37,6 +37,9 @@ else:
 from sumolib import checkBinary  # noqa
 import traci  # noqa
 import traci.constants as tc
+from egoVehicle import EgoVehicle
+from surrounding import Surrounding
+
 
 def generate_routefile():
     traffic_base = 0.4
@@ -84,14 +87,15 @@ if __name__ == "__main__":
 
     # this script has been called from the command line. It will start sumo as a
     # server, then connect and run
+
     if options.nogui:
         sumoBinary = checkBinary('sumo')
     else:
         sumoBinary = checkBinary('sumo-gui')
 
     # first, generate the route file for this simulation
-    generate_routefile()
-
+    surroundings = Surrounding(0.5)
+    surroundings.traffic_init_general()
     # this is the normal way of using traci. sumo is started as a
     # subprocess and then the python script connects and runs
     traci.start([sumoBinary, "-c", "data/motorway.sumocfg",
