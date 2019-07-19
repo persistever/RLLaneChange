@@ -1,4 +1,13 @@
 # coding:utf-8
+import os
+import sys
+
+# we need to import python modules from the $SUMO_HOME/tools directory
+if 'SUMO_HOME' in os.environ:
+    tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
+    sys.path.append(tools)
+else:
+    sys.exit("please declare environment variable 'SUMO_HOME'")
 
 import traci
 import traci.constants as tc
@@ -6,9 +15,40 @@ import random
 
 
 class Surrounding:
-    def __init__(self, traffic_base, traffic_list=[]):
-        self.traffic_base = traffic_base
-        self.traffic_list = traffic_list
+    def __init__(self, id, trafficBase, trafficList=[], downstreamDist=200.0, upstreamDist=200.0):
+        self.id = id
+        self.trafficBase = trafficBase
+        self.trafficList = trafficList
+        self.downstreamDist = downstreamDist
+        self.upstreamDist = upstreamDist
+        self.neighborList = None
+        self._subscribe_ego_vehicle_surrounding()
+        self.edge = "gneE0"
+        self.maxSpeedList = []
+
+    def get_neighbor_list(self):
+        dicts = traci.vehicle.getContextSubscriptionResults(self.id)
+        if dicts != None:
+            self.neighborList = []
+            for name, value in dicts.items():
+                self.neighborList.append({'name': name, 'lane': value[tc.VAR_LANE_INDEX],
+                                          'position_x': value[tc.VAR_POSITION][0], 'position_y': value[tc.VAR_POSITION][1], 'speed': value[tc.VAR_SPEED]})
+            return self.neighborList
+        else:
+            self.neighborList = []
+            return self.neighborList
+
+    def get_MaxSpeed_list(self):
+        self.maxSpeedList = []
+        self.edge = traci.vehicle.getRoadID(self.id)
+        for i in range(traci.edge.getLaneNumber(self.edge)):
+            self.maxSpeedList.append(traci.lane.getMaxSpeed(self.edge + "_"+str(i)))
+
+    def _subscribe_ego_vehicle_surrounding(self):
+        traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 0.0,
+                                       [tc.VAR_LANE_INDEX, tc.VAR_POSITION, tc.VAR_SPEED])
+        traci.vehicle.addSubscriptionFilterLanes([-2, -1, 0, 1, 2], noOpposite=True, downstreamDist=self.downstreamDist,
+                                                 upstreamDist=self.upstreamDist)
 
     def traffic_init_custom(self):
         with open("data/motorway.rou.xml", "w") as routes:
