@@ -66,7 +66,7 @@ class Traffic:
             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="yellow"/>
                     <vType id="bus" accel="0.8" decel="4.5" sigma="0.5" length="7" minGap="2.5" maxSpeed="20" \
             guiShape="bus" laneChangeModel="SL2015" latAlignment="center" color="red"/>
-                    <vType id="pkw_special" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="30" \
+                    <vType id="pkw_special" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="0.000001" \
             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="blue"/>""", file=routes)
             for traffic in self.trafficList:
                 print(
@@ -94,7 +94,7 @@ class Traffic:
         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="yellow"/>
                 <vType id="bus" accel="0.8" decel="4.5" sigma="0.5" length="7" minGap="2.5" maxSpeed="20" \
         guiShape="bus" laneChangeModel="SL2015" latAlignment="center" color="red"/>
-                <vType id="pkw_special" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="30" \
+                <vType id="pkw_special" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="0.000001" \
         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="blue"/>""", file=routes)
             print(
                 '     	<flow id="pkw11_f" type="pkw_f" from="gneE0" to="Zadao2" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
