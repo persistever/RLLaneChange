@@ -48,7 +48,7 @@ class Surrounding:
         return self.maxSpeedList
 
     def subscribe_ego_vehicle_surrounding(self):
-        traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 0.0, [tc.VAR_LANE_INDEX, tc.VAR_POSITION, tc.VAR_SPEED])
+        traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 100.0, [tc.VAR_LANE_INDEX, tc.VAR_POSITION, tc.VAR_SPEED])
         traci.vehicle.addSubscriptionFilterLanes([-2, -1, 0, 1, 2], noOpposite=True, downstreamDist=self.downstreamDist,
                                                  upstreamDist=self.upstreamDist)
 
@@ -80,7 +80,7 @@ class Traffic:
                     '     <flow id="%s" type="%s" from="%s" to="%s" begin="%d" end="%d" probability="%f" departLane="free" departSpeed ="random"/> '
                         %( traffic['id'], traffic['type'], traffic['from'], traffic['to'], traffic['begin'], traffic['end'], traffic['possbability']), file=routes)
             print(
-                '     	<trip id="ego" type="pkw_special" depart="10" from="gneE0" to="gneE7" departLane="free" departSpeed ="random"/> ',
+                '     	<trip id="ego" type="pkw_special" depart="30" from="gneE0" to="gneE7" departLane="free" departSpeed ="random"/> ',
                 file=routes)
             # print("""       <vehicle id="ego" type="pkw_special" route="route_ego" depart="30" color="blue"/>""",
             #       file=routes)
@@ -162,8 +162,8 @@ class Traffic:
             print(
                 '     	<flow id="bus23" type="bus" from="Zadao1" to="gneE7" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
                         self.trafficBase * p_s2 * p_e3 * s_rate), file=routes)
-            # print(
-            #     '     	<trip id="ego" type="pkw_special" depart="10" from="gneE0" to="gneE7" departLane="free" departSpeed ="random"/> ',file=routes)
-            print("""       <vehicle id="ego" type="pkw_special" route="route_ego" depart="30" color="blue"/>""", file=routes)
+            print(
+                '     	<trip id="ego" type="pkw_special" depart="30" from="gneE0" to="gneE7" departLane="free" departSpeed ="random"/> ',file=routes)
+            # print("""       <vehicle id="ego" type="pkw_special" route="route_ego" depart="30" color="blue"/>""", file=routes)
             print("</routes>", file=routes)
 
