@@ -1,26 +1,9 @@
 <routes>
-                <vType id="pkw_f" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="35"         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="green"/>
-                <vType id="pkw_m" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="25"         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="yellow"/>
-                <vType id="bus" accel="0.8" decel="4.5" sigma="0.5" length="7" minGap="2.5" maxSpeed="20"         guiShape="bus" laneChangeModel="SL2015" latAlignment="center" color="red"/>
-                <vType id="pkw_special" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="0.000001"         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="blue"/>
-<route id="route_ego" color="1,1,0" edges="gneE0 gneE1 gneE2 gneE3 gneE4 gneE5 gneE6 gneE8"/>
-     	<flow id="pkw11_f" type="pkw_f" from="gneE0" to="Zadao2" begin="0" end="500" probability="0.010789" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw12_f" type="pkw_f" from="gneE0" to="gneE8" begin="0" end="500" probability="0.058495" epartLane="free" departSpeed ="random"/> 
-     	<flow id="pkw13_f" type="pkw_f" from="gneE0" to="gneE7" begin="0" end="500" probability="0.090837" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw21_f" type="pkw_f" from="Zadao1" to="Zadao2" begin="0" end="500" probability="0.000910" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw22_f" type="pkw_f" from="Zadao1" to="gneE8" begin="0" end="500" probability="0.004933" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw23_f" type="pkw_f" from="Zadao1" to="gneE7" begin="0" end="500" probability="0.007661" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw11_m" type="pkw_m" from="gneE0" to="Zadao2" begin="0" end="500" probability="0.006161" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw12_m" type="pkw_m" from="gneE0" to="gneE8" begin="0" end="500" probability="0.033405" epartLane="free" departSpeed ="random"/> 
-     	<flow id="pkw13_m" type="pkw_m" from="gneE0" to="gneE7" begin="0" end="500" probability="0.051875" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw21_m" type="pkw_m" from="Zadao1" to="Zadao2" begin="0" end="500" probability="0.000520" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw22_m" type="pkw_m" from="Zadao1" to="gneE8" begin="0" end="500" probability="0.002817" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw23_m" type="pkw_m" from="Zadao1" to="gneE7" begin="0" end="500" probability="0.004375" departLane="free" departSpeed ="random"/> 
-     	<flow id="bus11" type="bus" from="gneE0" to="Zadao2" begin="0" end="500" probability="0.001692" departLane="free" departSpeed ="random"/> 
-     	<flow id="bus12" type="bus" from="gneE0" to="gneE8" begin="0" end="500" probability="0.009171" epartLane="free" departSpeed ="random"/> 
-     	<flow id="bus13" type="bus" from="gneE0" to="gneE7" begin="0" end="500" probability="0.014242" departLane="free" departSpeed ="random"/> 
-     	<flow id="bus21" type="bus" from="Zadao1" to="Zadao2" begin="0" end="500" probability="0.000143" departLane="free" departSpeed ="random"/> 
-     	<flow id="bus22" type="bus" from="Zadao1" to="gneE8" begin="0" end="500" probability="0.000773" departLane="free" departSpeed ="random"/> 
-     	<flow id="bus23" type="bus" from="Zadao1" to="gneE7" begin="0" end="500" probability="0.001201" departLane="free" departSpeed ="random"/> 
-       <vehicle id="ego" type="pkw_special" route="route_ego" depart="30" color="blue"/>
+                    <vType id="pkw_f" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="35"             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="green"/>
+                    <vType id="pkw_m" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="25"             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="yellow"/>
+                    <vType id="bus" accel="0.8" decel="4.5" sigma="0.5" length="7" minGap="2.5" maxSpeed="20"             guiShape="bus" laneChangeModel="SL2015" latAlignment="center" color="red"/>
+                    <vType id="pkw_special" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="0.000001"             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="blue"/>
+
+                    <route id="route_ego" color="1,1,0" edges="gneE0 gneE1 gneE2 gneE3 gneE4 gneE5 gneE6 gneE8"/>
+     	<trip id="ego" type="pkw_special" depart="10" from="gneE0" to="gneE7" departLane="free" departSpeed ="random"/> 
 </routes>

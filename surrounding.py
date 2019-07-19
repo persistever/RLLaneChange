@@ -79,11 +79,11 @@ class Traffic:
                 print(
                     '     <flow id="%s" type="%s" from="%s" to="%s" begin="%d" end="%d" probability="%f" departLane="free" departSpeed ="random"/> '
                         %( traffic['id'], traffic['type'], traffic['from'], traffic['to'], traffic['begin'], traffic['end'], traffic['possbability']), file=routes)
-            # print(
-            #     '     	<trip id="ego" type="pkw_special" depart="10" from="gneE0" to="gneE7" departLane="free" departSpeed ="random"/> ',
-            #     file=routes)
-            print("""       <vehicle id="ego" type="pkw_special" route="route_ego" depart="30" color="blue"/>""",
-                  file=routes)
+            print(
+                '     	<trip id="ego" type="pkw_special" depart="10" from="gneE0" to="gneE7" departLane="free" departSpeed ="random"/> ',
+                file=routes)
+            # print("""       <vehicle id="ego" type="pkw_special" route="route_ego" depart="30" color="blue"/>""",
+            #       file=routes)
             print("</routes>", file=routes)
 
     def traffic_init_general(self):
