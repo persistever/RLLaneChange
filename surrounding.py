@@ -40,6 +40,7 @@ class Surrounding:
         self.edge = traci.vehicle.getRoadID(self.id)
         for i in range(traci.edge.getLaneNumber(self.edge)):
             self.maxSpeedList.append(traci.lane.getMaxSpeed(self.edge + "_"+str(i)))
+        return self.maxSpeedList
 
     def subscribe_ego_vehicle_surrounding(self):
         traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 0.0, [tc.VAR_LANE_INDEX, tc.VAR_POSITION, tc.VAR_SPEED])

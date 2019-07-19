@@ -59,6 +59,7 @@ def run():
         if step == 800:
             ego_vehicle.change_to_lane(1)
         print(surroundings.get_neighbor_list())
+        print(surroundings.get_MaxSpeed_list())
     sys.stdout.flush()
 
 
