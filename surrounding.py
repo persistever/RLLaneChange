@@ -1,7 +1,7 @@
 # coding:utf-8
 import os
 import sys
-
+import random
 # we need to import python modules from the $SUMO_HOME/tools directory
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
@@ -11,7 +11,6 @@ else:
 
 import traci
 import traci.constants as tc
-import random
 
 
 class Surrounding:
@@ -22,14 +21,20 @@ class Surrounding:
         self.neighborList = None
         self.edge = "gneE0"
         self.maxSpeedList = []
+        self.neighborDict = None
+
 
     def get_neighbor_list(self):
-        dicts = traci.vehicle.getContextSubscriptionResults(self.id)
-        if dicts != None:
+        self.neighborDict = traci.vehicle.getContextSubscriptionResults(self.id)
+        if self.neighborDict != None:
             self.neighborList = []
-            for name, value in dicts.items():
+            for name, value in self.neighborDict.items():
                 self.neighborList.append({'name': name, 'lane': value[tc.VAR_LANE_INDEX],
-                                          'position_x': value[tc.VAR_POSITION][0], 'position_y': value[tc.VAR_POSITION][1], 'speed': value[tc.VAR_SPEED]})
+                                          'position_x': value[tc.VAR_POSITION][0], 'position_y': value[tc.VAR_POSITION][1], 'speed': value[tc.VAR_SPEED],
+                                          'relative_position_x': value[tc.VAR_POSITION][0]-self.neighborDict[self.id][tc.VAR_POSITION][0],
+                                          'relative_position_y': value[tc.VAR_POSITION][1]-self.neighborDict[self.id][tc.VAR_POSITION][1],
+                                          'relative_speed': value[tc.VAR_SPEED] - self.neighborDict[self.id][tc.VAR_SPEED]
+                                          })
             return self.neighborList
         else:
             self.neighborList = []
