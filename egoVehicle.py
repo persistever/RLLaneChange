@@ -14,7 +14,7 @@ class EgoVehicle:
         self.id = vehicle_id
         self.data = None  # 从subscribe订阅的所有数据
         # self.surroundings = Surrounding("ego")
-        self.neighbourVehicles = None
+        # self.neighbourVehicles = None
         self.preX = 0  # 之前的一个位置，用来估算纵向车速
         self.preY = 0  # 之前的一个位置，用来横向车速
         self.x = 0  # 当前的x全局坐标
@@ -77,7 +77,7 @@ class EgoVehicle:
             # self.nextEdgeID = self.otherData[tc.VAR_NEXT_EDGE]
 
     def print_data(self):
-        print(self.data)
+        print("自车信息："+str(self.data))
         # print(self.neighbourVehicles)
 
     def _get_xy(self):
