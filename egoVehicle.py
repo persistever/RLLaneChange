@@ -61,12 +61,13 @@ class EgoVehicle:
 
         if self.data is not None:
             self._get_xy()
-            self._get_speed()
-            self._get_lane_index()
-            self._get_y_lane_lateral()
-            self._get_angle()
-            self._get_road_id()
-            self._get_n_lane()
+            if self.x > 0:
+                self._get_speed()
+                self._get_lane_index()
+                self._get_y_lane_lateral()
+                self._get_angle()
+                self._get_road_id()
+                self._get_n_lane()
             # print('roadid: '+str(traci.vehicle.getRoadID(self.id)))
 
         # if self.otherData is not None:
