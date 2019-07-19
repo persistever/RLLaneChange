@@ -11,7 +11,7 @@ class Surrounding:
         self.traffic_list = traffic_list
 
     def traffic_init_custom(self):
-        with open("data/highway.rou.xml", "w") as routes:
+        with open("data/motorway.rou.xml", "w") as routes:
             print("""<routes>
                     <vType id="pkw_f" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="35" \
             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="green"/>
@@ -39,7 +39,7 @@ class Surrounding:
         p_e1 = random.uniform(0.05, 0.1)
         p_e2 = random.uniform(0.3, 0.4)
         p_e3 = 1 - p_e1 - p_e2
-        with open("data/highway.rou.xml", "w") as routes:
+        with open("data/motorway.rou.xml", "w") as routes:
             print("""<routes>
                 <vType id="pkw_f" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="35" \
         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="green"/>
