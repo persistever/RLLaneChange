@@ -31,9 +31,9 @@ class Surrounding:
             for name, value in self.neighborDict.items():
                 self.neighborList.append({'name': name, 'lane': value[tc.VAR_LANE_INDEX],
                                           'position_x': value[tc.VAR_POSITION][0], 'position_y': value[tc.VAR_POSITION][1], 'speed': value[tc.VAR_SPEED],
-                                          'relative_position_x': value[tc.VAR_POSITION][0]-self.neighborDict[self.id][tc.VAR_POSITION][0],
-                                          'relative_position_y': value[tc.VAR_POSITION][1]-self.neighborDict[self.id][tc.VAR_POSITION][1],
-                                          'relative_speed': value[tc.VAR_SPEED] - self.neighborDict[self.id][tc.VAR_SPEED]
+                                          # 'relative_position_x': value[tc.VAR_POSITION][0]-self.neighborDict[self.id][tc.VAR_POSITION][0],
+                                          # 'relative_position_y': value[tc.VAR_POSITION][1]-self.neighborDict[self.id][tc.VAR_POSITION][1],
+                                          # 'relative_speed': value[tc.VAR_SPEED] - self.neighborDict[self.id][tc.VAR_SPEED]
                                           })
             return self.neighborList
         else:
@@ -48,9 +48,9 @@ class Surrounding:
         return self.maxSpeedList
 
     def subscribe_ego_vehicle_surrounding(self):
-        traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 100.0, [tc.VAR_LANE_INDEX, tc.VAR_POSITION, tc.VAR_SPEED])
-        traci.vehicle.addSubscriptionFilterLanes([-2, -1, 0, 1, 2], noOpposite=True, downstreamDist=self.downstreamDist,
-                                                 upstreamDist=self.upstreamDist)
+        traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 200.0, [tc.VAR_LANE_INDEX, tc.VAR_POSITION, tc.VAR_SPEED])
+        # traci.vehicle.addSubscriptionFilterLanes([-2, -1, 0, 1, 2], noOpposite=True, downstreamDist=self.downstreamDist,
+        #                                          upstreamDist=self.upstreamDist)
 
 
 class Traffic:

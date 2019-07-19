@@ -52,7 +52,6 @@ def run():
         step += 1
         if step == 3001:
             ego_vehicle = EgoVehicle('ego')
-
         if ego_vehicle is not None:
             ego_vehicle.get_data()
             ego_vehicle.print_data()
