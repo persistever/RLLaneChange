@@ -22,7 +22,6 @@ import os
 import sys
 import optparse
 import random
-from egoVehicle import EgoVehicle
 import math
 import numpy
 
@@ -37,6 +36,7 @@ else:
 from sumolib import checkBinary  # noqa
 import traci  # noqa
 import traci.constants as tc
+from egoVehicle import EgoVehicle
 
 def generate_routefile():
     traffic_base = 0.4
@@ -67,6 +67,12 @@ def run():
         ego_vehicle.get_data()
         ego_vehicle.print_data()
         ego_vehicle.drive()
+        if step == 200:
+            ego_vehicle.change_to_lane(2)
+        if step == 500:
+            ego_vehicle.change_to_lane(3)
+        if step == 800:
+            ego_vehicle.change_to_lane(1)
     sys.stdout.flush()
 
 
