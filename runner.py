@@ -46,7 +46,7 @@ def run():
     """execute the TraCI control loop"""
     step = 0
     ego_vehicle = None
-    surroundings.subscribe_ego_vehicle_surrounding()
+    surroundings.surrounding_init()
     while traci.simulation.getMinExpectedNumber() > 0:
         traci.simulationStep()
         step += 1
@@ -65,8 +65,8 @@ def run():
 
             surroundings.get_surroundings()
             print("lane_index:%d" % surroundings.laneIndex)
-        #     print(len(surroundings.leftNeighborList))
-        #     print(surroundings.leftNeighborList)
+            print(len(surroundings.leaderNeighborList))
+            print(surroundings.leaderNeighborList)
         # print(step)
     sys.stdout.flush()
 
@@ -91,7 +91,7 @@ if __name__ == "__main__":
         sumoBinary = checkBinary('sumo-gui')
 
     # first, generate the route file for this simulation
-    traffics = Traffic(trafficBase=0.5, trafficList=None)
+    traffics = Traffic(trafficBase=0.4, trafficList=None)
     # this is the normal way of using traci. sumo is started as a
     # subprocess and then the python script connects and runs
     traci.start([sumoBinary, "-c", "data/motorway.sumocfg",
