@@ -4,23 +4,23 @@
                 <vType id="bus" accel="0.8" decel="4.5" sigma="0.5" length="7" minGap="2.5" maxSpeed="20"         guiShape="bus" laneChangeModel="SL2015" latAlignment="center" color="red"/>
                 <vType id="pkw_special" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="0.000001"         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="blue"/>
 <route id="route_ego" color="1,1,0" edges="gneE0 gneE1 gneE2 gneE3 gneE4 gneE5 gneE6 gneE8"/>
-     	<flow id="pkw11_f" type="pkw_f" from="gneE0" to="Zadao2" begin="0" end="500" probability="0.014248" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw12_f" type="pkw_f" from="gneE0" to="gneE8" begin="0" end="500" probability="0.051246" epartLane="free" departSpeed ="random"/> 
-     	<flow id="pkw13_f" type="pkw_f" from="gneE0" to="gneE7" begin="0" end="500" probability="0.093757" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw21_f" type="pkw_f" from="Zadao1" to="Zadao2" begin="0" end="500" probability="0.001244" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw22_f" type="pkw_f" from="Zadao1" to="gneE8" begin="0" end="500" probability="0.004473" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw23_f" type="pkw_f" from="Zadao1" to="gneE7" begin="0" end="500" probability="0.008183" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw11_m" type="pkw_m" from="gneE0" to="Zadao2" begin="0" end="500" probability="0.015725" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw12_m" type="pkw_m" from="gneE0" to="gneE8" begin="0" end="500" probability="0.056558" epartLane="free" departSpeed ="random"/> 
-     	<flow id="pkw13_m" type="pkw_m" from="gneE0" to="gneE7" begin="0" end="500" probability="0.103477" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw21_m" type="pkw_m" from="Zadao1" to="Zadao2" begin="0" end="500" probability="0.001373" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw22_m" type="pkw_m" from="Zadao1" to="gneE8" begin="0" end="500" probability="0.004937" departLane="free" departSpeed ="random"/> 
-     	<flow id="pkw23_m" type="pkw_m" from="Zadao1" to="gneE7" begin="0" end="500" probability="0.009032" departLane="free" departSpeed ="random"/> 
-     	<flow id="bus11" type="bus" from="gneE0" to="Zadao2" begin="0" end="500" probability="0.002942" departLane="free" departSpeed ="random"/> 
-     	<flow id="bus12" type="bus" from="gneE0" to="gneE8" begin="0" end="500" probability="0.010580" epartLane="free" departSpeed ="random"/> 
-     	<flow id="bus13" type="bus" from="gneE0" to="gneE7" begin="0" end="500" probability="0.019356" departLane="free" departSpeed ="random"/> 
-     	<flow id="bus21" type="bus" from="Zadao1" to="Zadao2" begin="0" end="500" probability="0.000257" departLane="free" departSpeed ="random"/> 
-     	<flow id="bus22" type="bus" from="Zadao1" to="gneE8" begin="0" end="500" probability="0.000923" departLane="free" departSpeed ="random"/> 
-     	<flow id="bus23" type="bus" from="Zadao1" to="gneE7" begin="0" end="500" probability="0.001689" departLane="free" departSpeed ="random"/> 
+     	<flow id="pkw11_f" type="pkw_f" from="gneE0" to="Zadao2" begin="0" end="500" probability="0.016905" departLane="free" departSpeed ="random"/> 
+     	<flow id="pkw12_f" type="pkw_f" from="gneE0" to="gneE8" begin="0" end="500" probability="0.063226" epartLane="free" departSpeed ="random"/> 
+     	<flow id="pkw13_f" type="pkw_f" from="gneE0" to="gneE7" begin="0" end="500" probability="0.092225" departLane="free" departSpeed ="random"/> 
+     	<flow id="pkw21_f" type="pkw_f" from="Zadao1" to="Zadao2" begin="0" end="500" probability="0.001135" departLane="free" departSpeed ="random"/> 
+     	<flow id="pkw22_f" type="pkw_f" from="Zadao1" to="gneE8" begin="0" end="500" probability="0.004246" departLane="free" departSpeed ="random"/> 
+     	<flow id="pkw23_f" type="pkw_f" from="Zadao1" to="gneE7" begin="0" end="500" probability="0.006193" departLane="free" departSpeed ="random"/> 
+     	<flow id="pkw11_m" type="pkw_m" from="gneE0" to="Zadao2" begin="0" end="500" probability="0.016915" departLane="free" departSpeed ="random"/> 
+     	<flow id="pkw12_m" type="pkw_m" from="gneE0" to="gneE8" begin="0" end="500" probability="0.063262" epartLane="free" departSpeed ="random"/> 
+     	<flow id="pkw13_m" type="pkw_m" from="gneE0" to="gneE7" begin="0" end="500" probability="0.092278" departLane="free" departSpeed ="random"/> 
+     	<flow id="pkw21_m" type="pkw_m" from="Zadao1" to="Zadao2" begin="0" end="500" probability="0.001136" departLane="free" departSpeed ="random"/> 
+     	<flow id="pkw22_m" type="pkw_m" from="Zadao1" to="gneE8" begin="0" end="500" probability="0.004248" departLane="free" departSpeed ="random"/> 
+     	<flow id="pkw23_m" type="pkw_m" from="Zadao1" to="gneE7" begin="0" end="500" probability="0.006196" departLane="free" departSpeed ="random"/> 
+     	<flow id="bus11" type="bus" from="gneE0" to="Zadao2" begin="0" end="500" probability="0.002944" departLane="free" departSpeed ="random"/> 
+     	<flow id="bus12" type="bus" from="gneE0" to="gneE8" begin="0" end="500" probability="0.011012" epartLane="free" departSpeed ="random"/> 
+     	<flow id="bus13" type="bus" from="gneE0" to="gneE7" begin="0" end="500" probability="0.016063" departLane="free" departSpeed ="random"/> 
+     	<flow id="bus21" type="bus" from="Zadao1" to="Zadao2" begin="0" end="500" probability="0.000198" departLane="free" departSpeed ="random"/> 
+     	<flow id="bus22" type="bus" from="Zadao1" to="gneE8" begin="0" end="500" probability="0.000739" departLane="free" departSpeed ="random"/> 
+     	<flow id="bus23" type="bus" from="Zadao1" to="gneE7" begin="0" end="500" probability="0.001079" departLane="free" departSpeed ="random"/> 
      	<trip id="ego" type="pkw_special" depart="30" from="gneE0" to="gneE7" departLane="free" departSpeed ="random"/> 
 </routes>
