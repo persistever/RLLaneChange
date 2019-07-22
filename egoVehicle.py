@@ -47,6 +47,8 @@ class EgoVehicle:
         self.rearVehicleList = []
         self.leftVehicleList = []
         self.rightVehicleList = []
+        self.targetGapFront = None
+        self.targetGapRear = None
         self._subscribe_ego_vehicle()
 
     def _subscribe_ego_vehicle(self):
@@ -130,6 +132,20 @@ class EgoVehicle:
             return True
         else:
             return False
+
+    # def pre_change_to_lane(self):
+    #
+    #
+    # def has_pre_change_to_lane_complete(self):
+    #
+    #
+    # def post_change_to_lane(self):
+    #
+    #
+    # def has_post_change_to_lane(self):
+
+
+
 
 
 
