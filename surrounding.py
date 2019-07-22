@@ -33,12 +33,12 @@ class Surrounding:
         self.rightNeighborList = []
         self.leaderNeighborList = []
         self.followerNeighborList = []
-        self.edgeList = []
-        self.edgeDict = None
-        self.edgeLengthList = []
-        self.edgeLengthDict = None
-        self.laneNumberDict = None
-        self.edgeIdList = []
+        self.edgeList = []  # for route
+        self.edgeDict = None  # for route
+        self.edgeLengthList = []  # for route
+        self.edgeLengthDict = None  # for route
+        self.laneNumberDict = None  # for all edge
+        self.edgeIdList = []  # for for all edge
 
     def get_neighbor_list(self):
         self.neighborDict = traci.vehicle.getContextSubscriptionResults(self.id)
