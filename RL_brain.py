@@ -31,7 +31,7 @@ class DataProcess:
             return sored_vehicle
 
     def _vehicle_data_process(self, leader, follower, speed):
-        vehicle_data = np.array([200.0,10.0,200.0,10.0,200.0,10.0,-200.0,10.0,-200.0,10.0,-200.0,10.0])
+        vehicle_data = np.array([200.0,speed,200.0,speed,200.0,speed,-200.0,speed,-200.0,speed,-200.0,speed])
         for i in range(3):
             if i < len(leader):
                 vehicle_data[4 - 2 * i] = leader[i]['relative_lane_position']
