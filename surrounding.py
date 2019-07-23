@@ -29,10 +29,12 @@ class Surrounding:
         self.laneNumber = 4
         self.laneWidth = 3.2
         self.laneIndex = 0
-        self.leftNeighborList = []
-        self.rightNeighborList = []
-        self.leaderNeighborList = []
-        self.followerNeighborList = []
+        self.leftLeaderNeighborList = []
+        self.leftFollowerNeighborList = []
+        self.rightLeaderNeighborList = []
+        self.rightFollowerNeighborList = []
+        self.MidLeaderNeighborList = []
+        self.MidFollowerNeighborList = []
         self.edgeList = []  # for route
         self.edgeDict = None  # for route
         self.edgeLengthList = []  # for route
@@ -43,17 +45,23 @@ class Surrounding:
     def get_neighbor_list(self):
         return self.neighborList
 
-    def get_left_neighbor_list(self):
-        return self.leftNeighborList
+    def get_left_leader_neighbor_list(self):
+        return self.leftLeaderNeighborList
 
-    def get_right_neighbor_list(self):
-        return self.rightNeighborList
+    def get_left_follower_neighbor_list(self):
+        return self.leftFollowerNeighborList
 
-    def get_leader_neighbor_list(self):
-        return self.leftNeighborList
+    def get_right_leader_neighbor_list(self):
+        return self.rightLeaderNeighborList
 
-    def get_follower_neighbor_list(self):
-        return self.followerNeighborList
+    def get_right_follower_neighbor_list(self):
+        return self.rightFollowerNeighborList
+
+    def get_mid_leader_neighbor_list(self):
+        return self.MidLeaderNeighborList
+
+    def get_mid_follower_neighbor_list(self):
+        return self.MidFollowerNeighborList
 
     def get_max_speed_list(self):
         return self.maxSpeedList
@@ -89,7 +97,8 @@ class Surrounding:
                                           'lane_number': self.laneNumberDict[value[tc.VAR_ROAD_ID]],
                                           'lane_position': value[tc.VAR_LANEPOSITION],
                                           'lane_position_lat': value[tc.VAR_LANEPOSITION_LAT],
-                                          'relative_lane_position': value[tc.VAR_POSITION][0] - self.x
+                                          'relative_lane_position': value[tc.VAR_POSITION][0] - self.x,
+                                          'relative_lane_position_abs': math.fabs(value[tc.VAR_POSITION][0] - self.x)
                                           # 'relative_speed': value[tc.VAR_SPEED] - self.neighborDict[self.id][tc.VAR_SPEED]
                                           })
         else:
@@ -132,20 +141,28 @@ class Surrounding:
             self.maxSpeedList.append(traci.lane.getMaxSpeed(self.edge + "_"+str(i)))
 
     def _classify(self):  # can not use alone
-        self.leftNeighborList = []
-        self.rightNeighborList = []
-        self.leaderNeighborList = []
-        self.followerNeighborList = []
+        self.leftLeaderNeighborList = []
+        self.leftFollowerNeighborList = []
+        self.rightLeaderNeighborList = []
+        self.rightFollowerNeighborList = []
+        self.MidLeaderNeighborList = []
+        self.MidFollowerNeighborList = []
         for vehicle in self.neighborList:
             if vehicle['lane_number'] - vehicle['lane_index'] == self.laneNumber - self.laneIndex:
                 if vehicle['relative_lane_position'] > 0:
-                    self.leaderNeighborList.append(vehicle)
+                    self.MidLeaderNeighborList.append(vehicle)
                 if vehicle['relative_lane_position'] < 0:
-                    self.followerNeighborList.append(vehicle)
+                    self.MidFollowerNeighborList.append(vehicle)
             if vehicle['lane_number'] - vehicle['lane_index'] == self.laneNumber - self.laneIndex + 1:
-                self.rightNeighborList.append(vehicle)
+                if vehicle['relative_lane_position'] > 0:
+                    self.rightLeaderNeighborList.append(vehicle)
+                if vehicle['relative_lane_position'] < 0:
+                    self.rightFollowerNeighborList.append(vehicle)
             if vehicle['lane_number'] - vehicle['lane_index'] == self.laneNumber - self.laneIndex - 1:
-                self.leftNeighborList.append(vehicle)
+                if vehicle['relative_lane_position'] > 0:
+                    self.leftLeaderNeighborList.append(vehicle)
+                if vehicle['relative_lane_position'] < 0:
+                    self.leftFollowerNeighborList.append(vehicle)
 
     def get_surroundings(self):
         self._get_edge()

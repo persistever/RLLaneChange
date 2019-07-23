@@ -39,8 +39,10 @@ import traci.constants as tc
 from egoVehicle import EgoVehicle
 from surrounding import Surrounding
 from surrounding import Traffic
+from  RL_brain import DataProcess
 
 surroundings = Surrounding("ego")
+data_process = DataProcess()
 def run():
     """execute the TraCI control loop"""
     step = 0
@@ -60,12 +62,12 @@ def run():
             if step == 3500:
                 ego_vehicle.change_to_lane(3)
             if step == 3800:
-                ego_vehicle.change_to_lane(1)
+                ego_vehicle.change_to_lane(2)
 
             surroundings.get_surroundings()
             print("lane_index:%d" % surroundings.get_lane_index())
-            print(len(surroundings.leaderNeighborList))
-            print(surroundings.leaderNeighborList)
+            print(data_process._chosen_vehicle(3, vehicle=surroundings.get_left_leader_neighbor_list()))
+            print(surroundings.get_left_leader_neighbor_list())
             print(step)
     sys.stdout.flush()
 
