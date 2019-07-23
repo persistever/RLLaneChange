@@ -94,6 +94,9 @@ class EgoVehicle:
         self.x = self.data[tc.VAR_POSITION][0]
         self.y = self.data[tc.VAR_POSITION][1]
 
+    def get_speed(self):
+        return self.vx
+
     def _set_speed(self):
         self.vx = (self.x - self.preX) / self.timeStep
         self.vy = (self.y - self.preY) / self.timeStep
@@ -151,6 +154,11 @@ class EgoVehicle:
     # def has_post_change_to_lane(self):
 
 
+class Mission:
+    def __init__(self):
+        self.type = 0
+        self.axCtl = 0
+        self.ayCtl = 0
 
 
 
