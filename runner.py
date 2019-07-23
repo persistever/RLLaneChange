@@ -41,11 +41,11 @@ from surrounding import Surrounding
 from surrounding import Traffic
 
 surroundings = Surrounding("ego")
-surroundings.surrounding_init()
 def run():
     """execute the TraCI control loop"""
     step = 0
     ego_vehicle = None
+    surroundings.surrounding_init()
     while traci.simulation.getMinExpectedNumber() > 0:
         traci.simulationStep()
         step += 1
