@@ -64,7 +64,7 @@ def run():
                 ego_vehicle.change_to_lane(1)
 
             surroundings.get_surroundings()
-            print("lane_index:%d" % surroundings.laneIndex)
+            print("lane_index:%d" % surroundings.get_lan)
             print(len(surroundings.leaderNeighborList))
             print(surroundings.leaderNeighborList)
         # print(step)
