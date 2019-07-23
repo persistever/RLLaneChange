@@ -1,6 +1,5 @@
 # coding:utf-8
 import numpy as np
-import pandas as pd
 import tensorflow as tf
 import random
 import math
@@ -12,7 +11,6 @@ class DataProcess:
         self.rightVehicleData = []
         self.MidVehicleData = []
         self.laneData = []
-        self.leftVehicleList = []
 
     def _chosen_vehicle(self, number, vehicle=None):
         vehicle_list = []
@@ -21,6 +19,12 @@ class DataProcess:
             return sored_vehicle[0:number]
         else:
             return sored_vehicle
+
+    def vehicle_data_process(self, leader, follower):
+
+        return 
+
+
 
 
 
