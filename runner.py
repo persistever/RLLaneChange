@@ -65,10 +65,14 @@ def run():
                 ego_vehicle.change_to_lane(2)
 
             surroundings.get_surroundings()
+            data_process.set_surrounding_data(surroundings)
+            data_process.vehicle_surrounding_data_process(10)
             print("lane_index:%d" % surroundings.get_lane_index())
-            print(surroundings.get_left_leader_neighbor_list())
-            print(surroundings.get_left_follower_neighbor_list())
-            print(data_process._vehicle_data_process(data_process._chosen_vehicle(surroundings.get_left_leader_neighbor_list()),data_process._chosen_vehicle(surroundings.get_left_follower_neighbor_list()),10))
+            print(surroundings.get_mid_leader_neighbor_list())
+            print(surroundings.get_mid_follower_neighbor_list())
+            # print(data_process.get_left_vehicle_data())
+            print(data_process.get_mid_vehicle_data())
+            # print(data_process.get_right_vehicle_data())
             print(step)
     sys.stdout.flush()
 
