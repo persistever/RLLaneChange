@@ -47,6 +47,7 @@ class EgoVehicle:
         self.rearVehicleList = []
         self.leftVehicleList = []
         self.rightVehicleList = []
+        self.leadingVehicle = None
         self.targetGapFront = None
         self.targetGapRear = None
         self._subscribe_ego_vehicle()
@@ -55,28 +56,20 @@ class EgoVehicle:
         traci.vehicle.subscribe(self.id, (tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_ROAD_ID))
         self.surroundings.surrounding_init()
 
-        # self.surroundings.subscribe_ego_vehicle_surrounding()
-        # traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 100,
-        #                                [tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_LANE_INDEX])
-        # traci.vehicle.addSubscriptionFilterLanes([-2, -1, 0, 1, 2], noOpposite=True,
-        #                                          downstreamDist=200.0, upstreamDist=200.0)
-        # traci.vehicle.subscribeContext(self.id, tc.CMD_GET_EDGE_VARIABLE, 100, [tc.VAR_NEXT_EDGE])
-
     def get_data(self):
         self.data = traci.vehicle.getSubscriptionResults(self.id)
         self.surroundings.get_surroundings()
         self.neighbourVehicles = self.surroundings.get_neighbor_list()
 
         if self.data is not None:
-            self._get_xy()
+            self._set_xy()
             if self.x > 0:
-                self._get_speed()
-                self._get_lane_index()
-                self._get_y_lane_lateral()
-                self._get_angle()
-                self._get_road_id()
-                self._get_n_lane()
-            # print('roadid: '+str(traci.vehicle.getRoadID(self.id)))
+                self._set_speed()
+                self._set_lane_index()
+                self._set_y_lane_lateral()
+                self._set_angle()
+                self._set_road_id()
+                self._set_n_lane()
 
         if self.neighbourVehicles is not None:
             self.neighbourVehicles = self.surroundings.get_neighbor_list()
@@ -84,46 +77,55 @@ class EgoVehicle:
             self.rearVehicleList = self.surroundings.get_follower_neighbor_list()
             self.leftVehicleList = self.surroundings.get_left_neighbor_list()
             self.rightVehicleList = self.surroundings.get_right_neighbor_list()
+            self._set_leading_vehicle()
 
     def print_data(self):
         print("自车信息："+str(self.data))
         print("他车信息"+str(self.neighbourVehicles))
+        print("前一车信息"+str(self.leadingVehicle))
 
-    def _get_xy(self):
+    def _set_xy(self):
         self.preX = self.x
         self.preY = self.y
         self.x = self.data[tc.VAR_POSITION][0]
         self.y = self.data[tc.VAR_POSITION][1]
 
-    def _get_speed(self):
+    def _set_speed(self):
         self.vx = (self.x - self.preX) / self.timeStep
         self.vy = (self.y - self.preY) / self.timeStep
         self.vx0 = self.data[tc.VAR_SPEED]
 
-    def _get_lane_index(self):
+    def _set_lane_index(self):
         self.laneIndex = self.nLane - math.ceil(-self.y / LANE_WIDTH)
 
-    def _get_y_lane_lateral(self):
+    def _set_y_lane_lateral(self):
         self.yLane = self.y - (- self.nLane + self.laneIndex + 0.5) * LANE_WIDTH
-        # print('yLane:'+str(self.yLane))
 
-    def _get_angle(self):
+    def _set_angle(self):
         self.angleCtl = 90 - math.atan(self.vy/self.vx)/math.pi*180.0
-        # print('angleCtl'+str(self.angleCtl))
 
-    def _get_road_id(self):
+    def _set_road_id(self):
         if self.edgeID != self.data[tc.VAR_ROAD_ID]:
             self.edgeID = self.data[tc.VAR_ROAD_ID]
 
-    def _get_n_lane(self):
+    def _set_n_lane(self):
         self.nLane = traci.edge.getLaneNumber(self.edgeID)
 
+    def _set_leading_vehicle(self):
+        self.frontVehicleList.sort(key=lambda x: x['relative_position_x'])
+        if len(self.frontVehicleList) != 0:
+            self.leadingVehicle = self.frontVehicleList[0]
+
     def drive(self):
-        traci.vehicle.moveToXY(self.id, 'gneE0', 2, self.x + self.timeStep * self.vxCtl,
+        traci.vehicle.moveToXY(self.id, '', 2, self.x + self.timeStep * self.vxCtl,
                                self.y + self.timeStep * self.vyCtl, self.angleCtl, 2)
         self.has_lane_change_complete()
 
-    # def decide_change_lane_process(self):
+    # def plan(self, gap_front_vehicle, gap_rear_vehicle):
+    #
+    # def pre_change_to_lane(self):
+    #
+    # def has_pre_change_to_lane_complete(self):
 
     def change_to_lane(self, lane_index):
         self.goalLaneIndex = lane_index
@@ -140,16 +142,13 @@ class EgoVehicle:
         else:
             return False
 
-    # def pre_change_to_lane(self):
-    #
-    #
-    # def has_pre_change_to_lane_complete(self):
-    #
-    #
     # def post_change_to_lane(self):
     #
-    #
     # def has_post_change_to_lane(self):
+
+
+
+
 
 
 
