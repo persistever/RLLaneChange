@@ -43,10 +43,12 @@ class EgoVehicle:
         self.angleCtl = 90
         self.lastChangeLaneTime = 0
         self.missionList = []
-        self.frontVehicleList = []
-        self.rearVehicleList = []
-        self.leftVehicleList = []
-        self.rightVehicleList = []
+        self.leftFrontVehicleList = []
+        self.leftRearVehicleList = []
+        self.rightFrontVehicleList = []
+        self.rightRearVehicleList = []
+        self.midFrontVehicleList = []
+        self.midRearVehicleList = []
         self.leadingVehicle = None
         self.targetGapFront = None
         self.targetGapRear = None
@@ -73,10 +75,12 @@ class EgoVehicle:
 
         if self.neighbourVehicles is not None:
             self.neighbourVehicles = self.surroundings.get_neighbor_list()
-            self.frontVehicleList = self.surroundings.get_leader_neighbor_list()
-            self.rearVehicleList = self.surroundings.get_follower_neighbor_list()
-            self.leftVehicleList = self.surroundings.get_left_neighbor_list()
-            self.rightVehicleList = self.surroundings.get_right_neighbor_list()
+            self.leftFrontVehicleList = self.surroundings.get_left_leader_neighbor_list()
+            self.leftRearVehicleList = self.surroundings.get_left_follower_neighbor_list()
+            self.rightFrontVehicleList = self.surroundings.get_right_leader_neighbor_list()
+            self.rightRearVehicleList = self.surroundings.get_right_follower_neighbor_list()
+            self.midFrontVehicleList = self.surroundings.get_mid_leader_neighbor_list()
+            self.midRearVehicleList = self.surroundings.get_mid_follower_neighbor_list()
             self._set_leading_vehicle()
 
     def print_data(self):
@@ -112,9 +116,9 @@ class EgoVehicle:
         self.nLane = traci.edge.getLaneNumber(self.edgeID)
 
     def _set_leading_vehicle(self):
-        self.frontVehicleList.sort(key=lambda x: x['relative_position_x'])
-        if len(self.frontVehicleList) != 0:
-            self.leadingVehicle = self.frontVehicleList[0]
+        self.midFrontVehicleList.sort(key=lambda x: x['relative_position_x'])
+        if len(self.midFrontVehicleList) != 0:
+            self.leadingVehicle = self.midFrontVehicleList[0]
 
     def drive(self):
         traci.vehicle.moveToXY(self.id, '', 2, self.x + self.timeStep * self.vxCtl,
