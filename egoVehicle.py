@@ -128,10 +128,18 @@ class EgoVehicle:
                                self.y + self.timeStep * self.vyCtl, self.angleCtl, 2)
         self.has_lane_change_complete()
 
-    # def plan(self, gap_front_vehicle, gap_rear_vehicle):
-    #
-    # def pre_change_to_lane(self):
-    #
+    def plan(self, gap_front_vehicle, gap_rear_vehicle):
+        if 0 <= gap_rear_vehicle['relative_position_x'] < 50:
+
+        elif 50 <= gap_rear_vehicle['relative_position_x'] < 100:
+
+
+
+        self.pre_change_to_lane()
+
+
+    def pre_change_to_lane(self):
+
     # def has_pre_change_to_lane_complete(self):
 
     def change_to_lane(self, lane_index):
@@ -152,13 +160,6 @@ class EgoVehicle:
     # def post_change_to_lane(self):
     #
     # def has_post_change_to_lane(self):
-
-
-class Mission:
-    def __init__(self):
-        self.type = 0
-        self.axCtl = 0
-        self.ayCtl = 0
 
 
 
