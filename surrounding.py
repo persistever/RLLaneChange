@@ -177,7 +177,7 @@ class Surrounding:
         self._classify()
 
     def _subscribe_ego_vehicle_surrounding(self):
-        traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 100.0,
+        traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 200.0,
                                        [tc.VAR_LANE_INDEX, tc.VAR_POSITION,
                                         tc.VAR_SPEED, tc.VAR_ROAD_ID, tc.VAR_LANEPOSITION,
                                         tc.VAR_LANEPOSITION_LAT, tc.VAR_EDGES])

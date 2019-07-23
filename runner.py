@@ -66,8 +66,9 @@ def run():
 
             surroundings.get_surroundings()
             print("lane_index:%d" % surroundings.get_lane_index())
-            print(data_process._chosen_vehicle(3, vehicle=surroundings.get_left_leader_neighbor_list()))
             print(surroundings.get_left_leader_neighbor_list())
+            print(surroundings.get_left_follower_neighbor_list())
+            print(data_process._vehicle_data_process(data_process._chosen_vehicle(surroundings.get_left_leader_neighbor_list()),data_process._chosen_vehicle(surroundings.get_left_follower_neighbor_list()),10))
             print(step)
     sys.stdout.flush()
 
