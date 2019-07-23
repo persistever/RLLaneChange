@@ -67,6 +67,9 @@ class Surrounding:
     def get_all_edge_lane_number_dict(self):
         return self.laneNumberDict
 
+    def get_lane_index(self):
+        return self.laneIndex
+
     def _get_neighbor_list(self):
         self.neighborDict = traci.vehicle.getContextSubscriptionResults(self.id)
         self.x = traci.vehicle.getPosition("ego")[0]
