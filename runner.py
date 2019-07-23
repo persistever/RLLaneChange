@@ -65,7 +65,7 @@ def run():
                 ego_vehicle.change_to_lane(2)
 
             surroundings.get_surroundings()
-            data_process.set_surrounding_data(surroundings)
+            data_process.set_surrounding_data(surroundings,10)
             data_process.vehicle_surrounding_data_process(10)
             print("lane_index:%d" % surroundings.get_lane_index())
             print(surroundings.get_mid_leader_neighbor_list())

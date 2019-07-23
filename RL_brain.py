@@ -18,7 +18,7 @@ class DataProcess:
         self.rightVehicleData = []
         self.midVehicleData = []
         self.laneData = []
-
+        self.speed = 10
 
     def _chosen_vehicle(self, vehicle, number=3):
         if vehicle!=None:
@@ -41,18 +41,19 @@ class DataProcess:
                 vehicle_data[7 + 2 * i] = follower[i]['speed']-speed
         return vehicle_data
 
-    def set_surrounding_data(self, surrounding):
+    def set_surrounding_data(self, surrounding, speed):
         self.leftLeaderNeighborList = self._chosen_vehicle(surrounding.get_left_leader_neighbor_list())
         self.leftFollowerNeighborList = self._chosen_vehicle(surrounding.get_left_follower_neighbor_list())
         self.midLeaderNeighborList = self._chosen_vehicle(surrounding.get_mid_leader_neighbor_list())
         self.midFollowerNeighborList = self._chosen_vehicle(surrounding.get_mid_follower_neighbor_list())
         self.rightLeaderNeighborList = self._chosen_vehicle(surrounding.get_right_leader_neighbor_list())
         self.rightFollowerNeighborList = self._chosen_vehicle(surrounding.get_right_follower_neighbor_list())
+        self.speed = speed
 
-    def vehicle_surrounding_data_process(self, speed):
-        self.leftVehicleData = self._vehicle_data_process(self.leftLeaderNeighborList, self.leftFollowerNeighborList, speed)
-        self.rightVehicleData = self._vehicle_data_process(self.rightLeaderNeighborList, self.rightFollowerNeighborList, speed)
-        self.midVehicleData = self._vehicle_data_process(self.midLeaderNeighborList, self.midFollowerNeighborList, speed)
+    def vehicle_surrounding_data_process(self):
+        self.leftVehicleData = self._vehicle_data_process(self.leftLeaderNeighborList, self.leftFollowerNeighborList, self.speed)
+        self.rightVehicleData = self._vehicle_data_process(self.rightLeaderNeighborList, self.rightFollowerNeighborList, self.speed)
+        self.midVehicleData = self._vehicle_data_process(self.midLeaderNeighborList, self.midFollowerNeighborList, self.speed)
 
     def get_left_vehicle_data(self):
         return self.leftVehicleData
