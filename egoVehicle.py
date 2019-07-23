@@ -53,6 +53,7 @@ class EgoVehicle:
 
     def _subscribe_ego_vehicle(self):
         traci.vehicle.subscribe(self.id, (tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_ROAD_ID))
+        # self.surroundings.surrounding_init()
         # self.surroundings.subscribe_ego_vehicle_surrounding()
         # traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 100,
         #                                [tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_LANE_INDEX])
@@ -62,6 +63,7 @@ class EgoVehicle:
 
     def get_data(self):
         self.data = traci.vehicle.getSubscriptionResults(self.id)
+        # self.surroundings.get_surroundings()
         # self.neighbourVehicles = self.surroundings.get_neighbor_list()
 
         if self.data is not None:
@@ -77,10 +79,16 @@ class EgoVehicle:
 
         # if self.otherData is not None:
             # self.nextEdgeID = self.otherData[tc.VAR_NEXT_EDGE]
+        # if self.surroundings.get_neighbor_list() is not None:
+        #     self.neighbourVehicles = self.surroundings.get_neighbor_list()
+        #     self.frontVehicleList = self.surroundings.get_leader_neighbor_list()
+        #     self.rearVehicleList = self.surroundings.get_follower_neighbor_list()
+        #     self.leftVehicleList = self.surroundings.get_left_neighbor_list()
+        #     self.rightVehicleList = self.surroundings.get_right_neighbor_list()
 
     def print_data(self):
         print("自车信息："+str(self.data))
-        # print(self.neighbourVehicles)
+        # print("他车信息"+str(self.neighbourVehicles))
 
     def _get_xy(self):
         self.preX = self.x

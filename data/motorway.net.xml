@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2019年07月23日 星期二 10时00分40秒 by Eclipse SUMO netedit Version 1.2.0
+<!-- generated on 07/23/19 09:44:35 by Eclipse SUMO netedit Version 1.2.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
-        <sumo-net-file value="/home/idriver/Sumo/RLLaneChange/data/motorway.net.xml"/>
+        <sumo-net-file value="D:\SUMO\RLLaneChange\data\motorway.net.xml"/>
     </input>
 
     <output>
-        <output-file value="/home/idriver/Sumo/RLLaneChange/data/motorway.net.xml"/>
+        <output-file value="D:\SUMO\RLLaneChange\data\motorway.net.xml"/>
     </output>
 
     <processing>
@@ -52,17 +52,15 @@
         <lane id=":Fenli_5_0" index="0" speed="33.33" length="3.00" shape="1298.62,-1.60 1299.51,-1.60 1300.12,-1.58 1300.73,-1.53 1301.62,-1.45"/>
     </edge>
     <edge id=":HuiheJ1_0" function="internal">
-        <lane id=":HuiheJ1_0_0" index="0" speed="25.00" length="40.78" shape="133.02,-18.29 140.53,-16.36 149.00,-14.01 159.39,-12.03 172.63,-11.20"/>
-        <lane id=":HuiheJ1_0_1" index="1" speed="25.00" length="40.78" shape="133.02,-18.29 140.53,-15.86 149.00,-12.41 159.39,-9.33 172.63,-8.00"/>
-        <lane id=":HuiheJ1_0_2" index="2" speed="25.00" length="40.78" shape="132.39,-15.15 140.00,-13.71 148.69,-12.44 159.29,-11.54 172.63,-11.20"/>
-        <lane id=":HuiheJ1_0_3" index="3" speed="25.00" length="40.78" shape="132.39,-15.15 140.00,-13.21 148.69,-10.84 159.29,-8.84 172.63,-8.00"/>
+        <lane id=":HuiheJ1_0_0" index="0" speed="25.00" length="40.64" shape="133.02,-18.29 140.53,-16.36 149.00,-14.01 159.39,-12.03 172.63,-11.20"/>
+        <lane id=":HuiheJ1_0_1" index="1" speed="25.00" length="40.64" shape="132.39,-15.15 140.00,-13.71 148.69,-12.44 159.29,-11.54 172.63,-11.20"/>
+        <lane id=":HuiheJ1_0_2" index="2" speed="25.00" length="40.64" shape="132.39,-15.15 140.00,-13.21 148.69,-10.84 159.29,-8.84 172.63,-8.00"/>
     </edge>
-    <edge id=":HuiheJ1_4" function="internal">
-        <lane id=":HuiheJ1_4_0" index="0" speed="25.00" length="40.66" shape="132.00,-11.20 172.63,-11.20"/>
-        <lane id=":HuiheJ1_4_1" index="1" speed="25.00" length="40.66" shape="132.00,-8.00 172.63,-8.00"/>
-        <lane id=":HuiheJ1_4_2" index="2" speed="29.16" length="40.66" shape="132.00,-8.00 172.63,-4.80"/>
-        <lane id=":HuiheJ1_4_3" index="3" speed="33.33" length="40.66" shape="132.00,-4.80 172.63,-4.80"/>
-        <lane id=":HuiheJ1_4_4" index="4" speed="33.33" length="40.66" shape="132.00,-1.60 172.63,-1.60"/>
+    <edge id=":HuiheJ1_3" function="internal">
+        <lane id=":HuiheJ1_3_0" index="0" speed="25.00" length="40.63" shape="132.00,-11.20 172.63,-11.20"/>
+        <lane id=":HuiheJ1_3_1" index="1" speed="25.00" length="40.63" shape="132.00,-8.00 172.63,-8.00"/>
+        <lane id=":HuiheJ1_3_2" index="2" speed="33.33" length="40.63" shape="132.00,-4.80 172.63,-4.80"/>
+        <lane id=":HuiheJ1_3_3" index="3" speed="33.33" length="40.63" shape="132.00,-1.60 172.63,-1.60"/>
     </edge>
     <edge id=":HuiheJ2_0" function="internal">
         <lane id=":HuiheJ2_0_0" index="0" allow="emergency" speed="20.84" length="28.24" shape="1014.16,-11.20 1042.40,-11.20"/>
@@ -167,27 +165,36 @@
     <junction id="End1" type="dead_end" x="1500.00" y="20.00" incLanes="gneE8_0 gneE8_1 gneE8_2 gneE8_3" intLanes="" shape="1501.27,7.26 1500.00,20.00"/>
     <junction id="End2" type="dead_end" x="1500.00" y="0.00" incLanes="gneE7_0 gneE7_1 gneE7_2 gneE7_3" intLanes="" shape="1500.00,-12.80 1500.00,0.00"/>
     <junction id="Fenli" type="district" x="1300.00" y="0.00" incLanes="gneE6_0 gneE6_1 gneE6_2 gneE6_3" intLanes=":Fenli_0_0 :Fenli_0_1 :Fenli_2_0 :Fenli_3_0 :Fenli_4_0 :Fenli_5_0" shape="1301.62,0.16 1301.62,-12.80 1298.62,-12.80 1298.62,0.00 1299.73,0.01 1300.12,0.02 1300.51,0.05 1300.98,0.10" rightOfWay="edgePriority" fringe="inner"/>
-    <junction id="HuiheJ1" type="district" x="200.00" y="0.00" incLanes="Zadao1_0 Zadao1_1 gneE0_0 gneE0_1 gneE0_2 gneE0_3" intLanes=":HuiheJ1_0_0 :HuiheJ1_0_1 :HuiheJ1_0_2 :HuiheJ1_0_3 :HuiheJ1_4_0 :HuiheJ1_4_1 :HuiheJ1_4_2 :HuiheJ1_4_3 :HuiheJ1_4_4" shape="172.63,0.00 172.63,-12.80 164.15,-13.05 157.92,-13.76 152.84,-14.86 147.79,-16.29 141.66,-17.98 133.33,-19.86 132.08,-13.58 132.00,-12.80 132.00,0.00" rightOfWay="edgePriority" fringe="outer"/>
+    <junction id="HuiheJ1" type="district" x="200.00" y="0.00" incLanes="Zadao1_0 Zadao1_1 gneE0_0 gneE0_1 gneE0_2 gneE0_3" intLanes=":HuiheJ1_0_0 :HuiheJ1_0_1 :HuiheJ1_0_2 :HuiheJ1_3_0 :HuiheJ1_3_1 :HuiheJ1_3_2 :HuiheJ1_3_3" shape="172.63,0.00 172.63,-12.80 164.15,-13.05 157.92,-13.76 152.84,-14.86 147.79,-16.29 141.66,-17.98 133.33,-19.86 132.08,-13.58 132.00,-12.80 132.00,0.00" rightOfWay="edgePriority" fringe="outer"/>
     <junction id="HuiheJ2" type="district" x="1000.00" y="0.00" incLanes="gneE5_0 gneE5_1 gneE5_2 gneE5_3" intLanes=":HuiheJ2_0_0 :HuiheJ2_1_0 :HuiheJ2_2_0 :HuiheJ2_3_0 :HuiheJ2_3_1 :HuiheJ2_3_2" shape="1042.40,0.00 1042.40,-12.80 1042.19,-14.06 1040.17,-20.14 1034.73,-18.11 1030.73,-16.34 1027.43,-14.87 1024.06,-13.75 1019.89,-13.05 1014.16,-12.80 1014.16,0.00" rightOfWay="edgePriority" fringe="inner"/>
-    <junction id="MiddleJ1" type="district" x="950.00" y="0.00" incLanes="gneE4_0 gneE4_1 gneE4_2 gneE4_3" intLanes=":MiddleJ1_0_0 :MiddleJ1_0_1 :MiddleJ1_0_2 :MiddleJ1_0_3" shape="950.00,0.00 950.00,-12.80 950.00,0.00"/>
+    <junction id="MiddleJ1" type="priority" x="950.00" y="0.00" incLanes="gneE4_0 gneE4_1 gneE4_2 gneE4_3" intLanes=":MiddleJ1_0_0 :MiddleJ1_0_1 :MiddleJ1_0_2 :MiddleJ1_0_3" shape="950.00,0.00 950.00,-12.80 950.00,0.00">
+        <request index="0" response="0000" foes="0000" cont="0"/>
+        <request index="1" response="0000" foes="0000" cont="0"/>
+        <request index="2" response="0000" foes="0000" cont="0"/>
+        <request index="3" response="0000" foes="0000" cont="0"/>
+    </junction>
     <junction id="StartJ" type="dead_end" x="0.00" y="0.00" incLanes="" intLanes="" shape="0.00,0.00 0.00,-12.80"/>
     <junction id="ZadaoInJ" type="dead_end" x="50.00" y="-30.00" incLanes="" intLanes="" shape="50.00,-30.00 51.26,-36.28"/>
     <junction id="ZadaoOutJ" type="dead_end" x="1150.00" y="-50.00" incLanes="Zadao2_0 Zadao2_1" intLanes="" shape="1147.98,-56.07 1150.00,-50.00"/>
     <junction id="gneJ0" type="district" x="700.00" y="0.00" incLanes="gneE2_0 gneE2_1 gneE2_2 gneE2_3" intLanes=":gneJ0_0_0 :gneJ0_0_1 :gneJ0_0_2" shape="704.00,0.00 704.00,-6.40 701.98,-6.87 700.79,-8.06 699.21,-11.14 698.02,-12.33 696.00,-12.80 696.00,0.00"/>
     <junction id="gneJ1" type="district" x="800.00" y="0.00" incLanes="gneE3_0 gneE3_1" intLanes=":gneJ1_0_0 :gneJ1_0_1 :gneJ1_0_2 :gneJ1_0_3" shape="804.00,0.00 804.00,-12.80 801.98,-12.33 800.79,-11.14 799.21,-8.06 798.02,-6.87 796.00,-6.40 796.00,0.00"/>
-    <junction id="gneJ2" type="district" x="250.00" y="0.00" incLanes="gneE1_0 gneE1_1 gneE1_2 gneE1_3" intLanes=":gneJ2_0_0 :gneJ2_0_1 :gneJ2_0_2 :gneJ2_0_3 :gneJ2_0_4" shape="250.00,0.00 250.00,-12.80 250.00,0.00"/>
+    <junction id="gneJ2" type="priority" x="250.00" y="0.00" incLanes="gneE1_0 gneE1_1 gneE1_2 gneE1_3" intLanes=":gneJ2_0_0 :gneJ2_0_1 :gneJ2_0_2 :gneJ2_0_3 :gneJ2_0_4" shape="250.00,0.00 250.00,-12.80 250.00,0.00">
+        <request index="0" response="00000" foes="00000" cont="0"/>
+        <request index="1" response="00100" foes="00100" cont="0"/>
+        <request index="2" response="00000" foes="00010" cont="0"/>
+        <request index="3" response="00000" foes="00000" cont="0"/>
+        <request index="4" response="00000" foes="00000" cont="0"/>
+    </junction>
 
     <connection from="Zadao1" to="gneE1" fromLane="0" toLane="0" keepClear="0" via=":HuiheJ1_0_0" dir="s" state="M"/>
-    <connection from="Zadao1" to="gneE1" fromLane="0" toLane="1" keepClear="0" via=":HuiheJ1_0_1" dir="s" state="M"/>
-    <connection from="Zadao1" to="gneE1" fromLane="1" toLane="0" via=":HuiheJ1_0_2" dir="s" state="M"/>
-    <connection from="Zadao1" to="gneE1" fromLane="1" toLane="1" via=":HuiheJ1_0_3" dir="s" state="M"/>
-    <connection from="gneE0" to="gneE1" fromLane="0" toLane="0" keepClear="0" via=":HuiheJ1_4_0" dir="s" state="M"/>
-    <connection from="gneE0" to="gneE1" fromLane="1" toLane="1" via=":HuiheJ1_4_1" dir="s" state="M"/>
-    <connection from="gneE0" to="gneE1" fromLane="1" toLane="2" keepClear="0" via=":HuiheJ1_4_2" dir="s" state="M"/>
-    <connection from="gneE0" to="gneE1" fromLane="2" toLane="2" keepClear="0" via=":HuiheJ1_4_3" dir="s" state="M"/>
-    <connection from="gneE0" to="gneE1" fromLane="3" toLane="3" keepClear="0" via=":HuiheJ1_4_4" dir="s" state="M"/>
+    <connection from="Zadao1" to="gneE1" fromLane="1" toLane="0" via=":HuiheJ1_0_1" dir="s" state="M"/>
+    <connection from="Zadao1" to="gneE1" fromLane="1" toLane="1" via=":HuiheJ1_0_2" dir="s" state="M"/>
+    <connection from="gneE0" to="gneE1" fromLane="0" toLane="0" keepClear="0" via=":HuiheJ1_3_0" dir="s" state="M"/>
+    <connection from="gneE0" to="gneE1" fromLane="1" toLane="1" via=":HuiheJ1_3_1" dir="s" state="M"/>
+    <connection from="gneE0" to="gneE1" fromLane="2" toLane="2" keepClear="0" via=":HuiheJ1_3_2" dir="s" state="M"/>
+    <connection from="gneE0" to="gneE1" fromLane="3" toLane="3" keepClear="0" via=":HuiheJ1_3_3" dir="s" state="M"/>
     <connection from="gneE1" to="gneE2" fromLane="0" toLane="0" via=":gneJ2_0_0" dir="s" state="M"/>
-    <connection from="gneE1" to="gneE2" fromLane="0" toLane="1" via=":gneJ2_0_1" dir="s" state="M"/>
+    <connection from="gneE1" to="gneE2" fromLane="0" toLane="1" via=":gneJ2_0_1" dir="s" state="m"/>
     <connection from="gneE1" to="gneE2" fromLane="1" toLane="1" via=":gneJ2_0_2" dir="s" state="M"/>
     <connection from="gneE1" to="gneE2" fromLane="2" toLane="2" via=":gneJ2_0_3" dir="s" state="M"/>
     <connection from="gneE1" to="gneE2" fromLane="3" toLane="3" via=":gneJ2_0_4" dir="s" state="M"/>
@@ -222,14 +229,12 @@
     <connection from=":Fenli_4" to="gneE8" fromLane="0" toLane="2" dir="L" state="M"/>
     <connection from=":Fenli_5" to="gneE8" fromLane="0" toLane="3" dir="L" state="M"/>
     <connection from=":HuiheJ1_0" to="gneE1" fromLane="0" toLane="0" dir="s" state="M"/>
-    <connection from=":HuiheJ1_0" to="gneE1" fromLane="1" toLane="1" dir="s" state="M"/>
-    <connection from=":HuiheJ1_0" to="gneE1" fromLane="2" toLane="0" dir="s" state="M"/>
-    <connection from=":HuiheJ1_0" to="gneE1" fromLane="3" toLane="1" dir="s" state="M"/>
-    <connection from=":HuiheJ1_4" to="gneE1" fromLane="0" toLane="0" dir="s" state="M"/>
-    <connection from=":HuiheJ1_4" to="gneE1" fromLane="1" toLane="1" dir="s" state="M"/>
-    <connection from=":HuiheJ1_4" to="gneE1" fromLane="2" toLane="2" dir="s" state="M"/>
-    <connection from=":HuiheJ1_4" to="gneE1" fromLane="3" toLane="2" dir="s" state="M"/>
-    <connection from=":HuiheJ1_4" to="gneE1" fromLane="4" toLane="3" dir="s" state="M"/>
+    <connection from=":HuiheJ1_0" to="gneE1" fromLane="1" toLane="0" dir="s" state="M"/>
+    <connection from=":HuiheJ1_0" to="gneE1" fromLane="2" toLane="1" dir="s" state="M"/>
+    <connection from=":HuiheJ1_3" to="gneE1" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":HuiheJ1_3" to="gneE1" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from=":HuiheJ1_3" to="gneE1" fromLane="2" toLane="2" dir="s" state="M"/>
+    <connection from=":HuiheJ1_3" to="gneE1" fromLane="3" toLane="3" dir="s" state="M"/>
     <connection from=":HuiheJ2_0" to="gneE6" fromLane="0" toLane="0" dir="s" state="M"/>
     <connection from=":HuiheJ2_1" to="Zadao2" fromLane="0" toLane="0" dir="R" state="M"/>
     <connection from=":HuiheJ2_2" to="Zadao2" fromLane="0" toLane="1" dir="R" state="M"/>

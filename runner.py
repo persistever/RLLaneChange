@@ -41,7 +41,6 @@ from surrounding import Surrounding
 from surrounding import Traffic
 
 surroundings = Surrounding("ego")
-
 def run():
     """execute the TraCI control loop"""
     step = 0
@@ -67,7 +66,7 @@ def run():
             print("lane_index:%d" % surroundings.get_lan)
             print(len(surroundings.leaderNeighborList))
             print(surroundings.leaderNeighborList)
-        # print(step)
+            print(step)
     sys.stdout.flush()
 
 
