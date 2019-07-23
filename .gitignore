@@ -1,4 +1,4 @@
 .idea/
 __pycache__/
 /tripinfo.xml
-!*.rou.xml
+/data/motorway.rou.xml
