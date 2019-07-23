@@ -55,12 +55,12 @@ def run():
             ego_vehicle.get_data()
             # ego_vehicle.print_data()
             ego_vehicle.drive()
-            # if step == 3200:
-            #     ego_vehicle.change_to_lane(2)
-            # if step == 3500:
-            #     ego_vehicle.change_to_lane(3)
-            # if step == 3800:
-            #     ego_vehicle.change_to_lane(1)
+            if step == 3200:
+                ego_vehicle.change_to_lane(2)
+            if step == 3500:
+                ego_vehicle.change_to_lane(3)
+            if step == 3800:
+                ego_vehicle.change_to_lane(1)
 
             surroundings.get_surroundings()
             print("lane_index:%d" % surroundings.get_lane_index())
