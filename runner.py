@@ -24,7 +24,7 @@ import optparse
 import random
 import math
 import numpy
-
+import time
 
 # we need to import python modules from the $SUMO_HOME/tools directory
 if 'SUMO_HOME' in os.environ:
@@ -77,22 +77,28 @@ def run():
             # plan and control
 
             # print list
-            print(surroundings.get_left_leader_neighbor_list())
-            print(surroundings.get_left_follower_neighbor_list())
-            print(data_process.get_gap_vehicle_list())
+
+            # print(surroundings.get_left_leader_neighbor_list())
+            # print(surroundings.get_left_follower_neighbor_list())
+            # print(data_process.get_gap_vehicle_list())
+
             # print(surroundings.get_mid_leader_neighbor_list())
             # print(surroundings.get_mid_follower_neighbor_list())
             # # print(data_process.get_left_vehicle_data())
             # print(data_process.get_mid_vehicle_data())
             # # print(data_process.get_right_vehicle_data())
-            print(step)
+            # print(step)
+        if step == 10000:
+            traci.close()
+            break
     sys.stdout.flush()
+    print("   ")
 
 
 def get_options():
     optParser = optparse.OptionParser()
     optParser.add_option("--nogui", action="store_true",
-                         default=False, help="run the commandline version of sumo")
+                         default=True, help="run the commandline version of sumo")
     options, args = optParser.parse_args()
     return options
 
@@ -107,12 +113,15 @@ if __name__ == "__main__":
         sumoBinary = checkBinary('sumo')
     else:
         sumoBinary = checkBinary('sumo-gui')
-
     # first, generate the route file for this simulation
     traffics = Traffic(trafficBase=0.4, trafficList=None)
     # this is the normal way of using traci. sumo is started as a
     # subprocess and then the python script connects and runs
-    traci.start([sumoBinary, "-c", "data/motorway.sumocfg",
-                             "--tripinfo-output", "tripinfo.xml"])
-
-    run()
+    for i in range(10):
+        traci.start([sumoBinary, "-c", "data/motorway.sumocfg",
+                                "--no-warnings", "--no-step-log"])
+        print("start  cycle %d " % i)
+        time_s = time.time()
+        run()
+        time_e = time.time()
+        print("cycle stop, using time %f" % (time_e - time_s))
