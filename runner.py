@@ -57,17 +57,26 @@ def run():
             ego_vehicle.get_data()
             # ego_vehicle.print_data()
             ego_vehicle.drive()
-            if step == 3200:
-                ego_vehicle.change_to_lane(2)
-            if step == 3500:
-                ego_vehicle.change_to_lane(3)
-            if step == 3800:
-                ego_vehicle.change_to_lane(2)
+            # if step == 3200:
+            #     ego_vehicle.change_to_lane(2)
+            # if step == 3500:
+            #     ego_vehicle.change_to_lane(3)
+            # if step == 3800:
+            #     ego_vehicle.change_to_lane(2)
 
+            # for each decision
             surroundings.get_surroundings()
             data_process.set_surrounding_data(surroundings, 15)
             data_process.vehicle_surrounding_data_process()
-            data_process.set_rl_result_data(0, 1)
+            # for train here
+
+            # end train
+            data_process.set_rl_result_data(2, 2)
+            data_process.rl_result_process()
+
+            # plan and control
+
+            # print list
             print(surroundings.get_left_leader_neighbor_list())
             print(surroundings.get_left_follower_neighbor_list())
             print(data_process.get_gap_vehicle_list())
