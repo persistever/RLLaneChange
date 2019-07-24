@@ -19,6 +19,10 @@ class DataProcess:
         self.midVehicleData = []
         self.laneData = []
         self.speed = 10
+        self.laneIndex = 0
+        self.targetLane = 0
+        self.targetGap = 0
+        self.gapVehicleList = []
 
     def _chosen_vehicle(self, vehicle, number=3):
         if vehicle!=None:
@@ -63,6 +67,109 @@ class DataProcess:
 
     def get_right_vehicle_data(self):
         return self.rightVehicleData
+
+    def set_rl_result_data(self, lane, gap):
+        self.targetLane = lane
+        self.targetGap = gap
+
+    def _create_virtual_vehicle(self,name,place,lane):
+        vehicle_dict = {'name': name,
+                        'relative_position_x': place,
+                        'relative_position_y': place,
+                        'speed': self.speed,
+                        'lane_index_relative': lane,
+                        'relative_lane_position': place,
+                        'relative_lane_position_abs': math.fabs(place),
+                        'virtual': True
+        }
+        return vehicle_dict
+
+    def _create_real_vehicle(self,vehicle,lane):
+        vehicle_dict = {'name': vehicle['name'],
+                        'relative_position_x': vehicle['relative_position_x'],
+                        'relative_position_y': vehicle['relative_position_y'],
+                        'speed': vehicle['speed'],
+                        'lane_index_relative': lane,
+                        'relative_lane_position': vehicle['relative_lane_position'],
+                        'relative_lane_position_abs': vehicle['relative_lane_position_abs'],
+                        'virtual': True
+        }
+        return vehicle_dict
+
+    def _gap_data_process(self):
+        self.gapVehicleList=[]
+        if self.targetLane == 0:
+            targetLeaderNeighborList = self.leftLeaderNeighborList
+            targetFollowerNeighborList = self.leftFollowerNeighborList
+            lane = 0
+        elif self.targetLane == 1:
+            targetLeaderNeighborList = self.midLeaderNeighborList
+            targetFollowerNeighborList = self.midFollowerNeighborList
+            lane = 1
+        elif self.targetLane == 2:
+            targetLeaderNeighborList = self.rightLeaderNeighborList
+            targetFollowerNeighborList = self.rightFollowerNeighborList
+            lane = 2
+        else:
+            return
+        if self.targetGap == 0:
+            if len(targetLeaderNeighborList) == 3:
+                self.gapVehicleList.append(self._create_real_vehicle(targetLeaderNeighborList[2], lane))
+                self.gapVehicleList.append(self._create_real_vehicle(targetLeaderNeighborList[1], lane))
+            elif len(targetLeaderNeighborList) == 2:
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", 200, lane))
+                self.gapVehicleList.append(self._create_real_vehicle(targetLeaderNeighborList[1], lane))
+            else:
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", 200, lane))
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_f", 200, lane))
+        if self.targetGap == 1:
+            if len(targetLeaderNeighborList) >= 2:
+                self.gapVehicleList.append(self._create_real_vehicle(targetLeaderNeighborList[1], lane))
+                self.gapVehicleList.append(self._create_real_vehicle(targetLeaderNeighborList[0], lane))
+            elif len(targetLeaderNeighborList) == 1:
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", 200, lane))
+                self.gapVehicleList.append(self._create_real_vehicle(targetLeaderNeighborList[0], lane))
+            elif len(targetLeaderNeighborList) == 0:
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", 200, lane))
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_f", 200, lane))
+        if self.targetGap == 2:
+            if len(targetLeaderNeighborList) >= 1:
+                self.gapVehicleList.append(self._create_real_vehicle(targetLeaderNeighborList[0], lane))
+            else:
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", 200, lane))
+            if len(targetFollowerNeighborList) >= 1:
+                self.gapVehicleList.append(self._create_real_vehicle(targetFollowerNeighborList[0], lane))
+            else:
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", -200, lane))
+        if self.targetGap == 3:
+            if len(targetFollowerNeighborList) >= 2:
+                self.gapVehicleList.append(self._create_real_vehicle(targetFollowerNeighborList[0], lane))
+                self.gapVehicleList.append(self._create_real_vehicle(targetFollowerNeighborList[1], lane))
+            elif len(targetFollowerNeighborList) == 1:
+                self.gapVehicleList.append(self._create_real_vehicle(targetFollowerNeighborList[0], lane))
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_f", 200, lane))
+            elif len(targetFollowerNeighborList) == 0:
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", 200, lane))
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_f", 200, lane))
+        if self.targetGap == 4:
+            if len(targetFollowerNeighborList) == 3:
+                self.gapVehicleList.append(self._create_real_vehicle(targetFollowerNeighborList[1], lane))
+                self.gapVehicleList.append(self._create_real_vehicle(targetFollowerNeighborList[2], lane))
+            elif len(targetFollowerNeighborList) == 2:
+                self.gapVehicleList.append(self._create_real_vehicle(targetFollowerNeighborList[1], lane))
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_f", 200, lane))
+            else:
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", 200, lane))
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_f", 200, lane))
+
+    def rl_result_process(self):
+        self._gap_data_process()
+
+    def get_gap_vehicle_list(self):
+        return self.gapVehicleList
+
+
+
 
 
 
