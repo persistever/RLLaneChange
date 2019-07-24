@@ -50,8 +50,8 @@ class EgoVehicle:
         self.midFrontVehicleList = []
         self.midRearVehicleList = []
         self.leadingVehicle = None
-        self.targetGapFront = None
-        self.targetGapRear = None
+        self.gapFrontVehicle = None
+        self.gapRearVehicle = None
         self._subscribe_ego_vehicle()
 
     def _subscribe_ego_vehicle(self):
@@ -123,13 +123,16 @@ class EgoVehicle:
         if len(self.midFrontVehicleList) != 0:
             self.leadingVehicle = self.midFrontVehicleList[0]
 
-    def drive(self):
-        traci.vehicle.moveToXY(self.id, '', 2, self.x + self.timeStep * self.vxCtl,
-                               self.y + self.timeStep * self.vyCtl, self.angleCtl, 2)
-        self.has_lane_change_complete()
+    def _set_mission(self, m_type, c_type, ax, ay, vx, vy):
+        return {'m_type': m_type, 'c_type': c_type, 'ax': ax, 'ay': ay, 'vx': vx, 'vy': vy}
 
-    # def plan(self, gap_front_vehicle, gap_rear_vehicle):
-    #
+    def lane_change_plan(self, gap_front_vehicle, gap_rear_vehicle):
+        self.missionList.append(self._set_mission(1, 1, 0, 0, 0, 0))
+        self.missionList.append(self._set_mission(2, 2, 0, 0, 0, 0))
+        self.missionList.append(self._set_mission(3, 3, 0, 0, 0, 0))
+        self.gapFrontVehicle = gap_front_vehicle
+        self.gapRearVehicle = gap_rear_vehicle
+
     # def pre_change_to_lane(self):
     #
     # def has_pre_change_to_lane_complete(self):
@@ -152,14 +155,10 @@ class EgoVehicle:
     # def post_change_to_lane(self):
     #
     # def has_post_change_to_lane(self):
-
-
-class Mission:
-    def __init__(self):
-        self.type = 0
-        self.axCtl = 0
-        self.ayCtl = 0
-
+    def drive(self):
+        traci.vehicle.moveToXY(self.id, '', 2, self.x + self.timeStep * self.vxCtl,
+                               self.y + self.timeStep * self.vyCtl, self.angleCtl, 2)
+        self.has_lane_change_complete()
 
 
 
