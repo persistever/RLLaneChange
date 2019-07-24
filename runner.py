@@ -43,6 +43,10 @@ from  RL_brain import DataProcess
 
 surroundings = Surrounding("ego")
 data_process = DataProcess()
+stepLength = 0.05
+egoStartTime = 30
+endEpisode = 100
+
 def run():
     """execute the TraCI control loop"""
     step = 0
@@ -51,12 +55,13 @@ def run():
     while traci.simulation.getMinExpectedNumber() > 0:
         traci.simulationStep()
         step += 1
-        if step == 3001:
+        if step == egoStartTime/stepLength + 1:
             ego_vehicle = EgoVehicle('ego')
         if ego_vehicle is not None:
             ego_vehicle.get_data()
-            # ego_vehicle.print_data()
             ego_vehicle.drive()
+
+            # ego_vehicle.print_data()
             # if step == 3200:
             #     ego_vehicle.change_to_lane(2)
             # if step == 3500:
@@ -88,11 +93,10 @@ def run():
             # print(data_process.get_mid_vehicle_data())
             # # print(data_process.get_right_vehicle_data())
             # print(step)
-        if step == 10000:
+        if step == endEpisode / stepLength:
             traci.close()
             break
     sys.stdout.flush()
-    print("   ")
 
 
 def get_options():
@@ -117,11 +121,14 @@ if __name__ == "__main__":
     traffics = Traffic(trafficBase=0.4, trafficList=None)
     # this is the normal way of using traci. sumo is started as a
     # subprocess and then the python script connects and runs
-    for i in range(10):
-        traci.start([sumoBinary, "-c", "data/motorway.sumocfg",
-                                "--no-warnings", "--no-step-log"])
+    time_s_all = time.time()
+    for i in range(20):
         print("start  cycle %d " % i)
         time_s = time.time()
+        traci.start([sumoBinary, "-c", "data/motorway.sumocfg",
+                                "--no-warnings", "--no-step-log"])
         run()
         time_e = time.time()
         print("cycle stop, using time %f" % (time_e - time_s))
+    time_e_all = time.time()
+    print("all step use  %f second" % (time_e_all - time_s_all))
