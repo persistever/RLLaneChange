@@ -61,14 +61,6 @@ def run():
             ego_vehicle.fresh_data()
             ego_vehicle.drive()
 
-            # ego_vehicle.print_data()
-            if step == 32/stepLength:
-                ego_vehicle.change_to_lane(2)
-            if step == 35/stepLength:
-                ego_vehicle.change_to_lane(3)
-            if step == 38/stepLength:
-                ego_vehicle.change_to_lane(2)
-
             # for each decision
             surroundings.get_surroundings()
             data_process.set_surrounding_data(surroundings, 15)
