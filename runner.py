@@ -58,7 +58,7 @@ def run():
         if step == egoStartTime/stepLength + 1:
             ego_vehicle = EgoVehicle('ego')
         if ego_vehicle is not None:
-            ego_vehicle.get_data()
+            ego_vehicle.fresh_data()
             ego_vehicle.drive()
 
             # ego_vehicle.print_data()
