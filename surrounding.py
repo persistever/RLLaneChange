@@ -98,7 +98,7 @@ class Surrounding:
                                           'lane_position': value[tc.VAR_LANEPOSITION],
                                           'lane_position_lat': value[tc.VAR_LANEPOSITION_LAT],
                                           'relative_lane_position': value[tc.VAR_POSITION][0] - self.x,
-                                          'relative_lane_position_abs': math.fabs(value[tc.VAR_POSITION][0] - self.x)
+                                          'relative_lane_position_abs': math.fabs(value[tc.VAR_POSITION][0] - self.x),
                                           # 'relative_speed': value[tc.VAR_SPEED] - self.neighborDict[self.id][tc.VAR_SPEED]
                                           })
         else:

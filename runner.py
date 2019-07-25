@@ -24,7 +24,7 @@ import optparse
 import random
 import math
 import numpy
-
+import time
 
 # we need to import python modules from the $SUMO_HOME/tools directory
 if 'SUMO_HOME' in os.environ:
@@ -43,6 +43,10 @@ from  RL_brain import DataProcess
 
 surroundings = Surrounding("ego")
 data_process = DataProcess()
+stepLength = 0.05
+egoStartTime = 30
+endEpisode = 100
+
 def run():
     """execute the TraCI control loop"""
     step = 0
@@ -51,36 +55,54 @@ def run():
     while traci.simulation.getMinExpectedNumber() > 0:
         traci.simulationStep()
         step += 1
-        if step == 3001:
+        if step == egoStartTime/stepLength + 1:
             ego_vehicle = EgoVehicle('ego')
         if ego_vehicle is not None:
             ego_vehicle.get_data()
-            # ego_vehicle.print_data()
             ego_vehicle.drive()
-            if step == 3200:
-                ego_vehicle.change_to_lane(2)
-            if step == 3500:
-                ego_vehicle.change_to_lane(3)
-            if step == 3800:
-                ego_vehicle.change_to_lane(2)
 
+            # ego_vehicle.print_data()
+            # if step == 3200:
+            #     ego_vehicle.change_to_lane(2)
+            # if step == 3500:
+            #     ego_vehicle.change_to_lane(3)
+            # if step == 3800:
+            #     ego_vehicle.change_to_lane(2)
+
+            # for each decision
             surroundings.get_surroundings()
             data_process.set_surrounding_data(surroundings, 15)
             data_process.vehicle_surrounding_data_process()
-            print("lane_index:%d" % surroundings.get_lane_index())
-            print(surroundings.get_mid_leader_neighbor_list())
-            print(surroundings.get_mid_follower_neighbor_list())
-            # print(data_process.get_left_vehicle_data())
-            print(data_process.get_mid_vehicle_data())
-            # print(data_process.get_right_vehicle_data())
-            print(step)
+            # for train here
+
+            # end train
+            data_process.set_rl_result_data(2, 2)
+            data_process.rl_result_process()
+
+            # plan and control
+
+            # print list
+
+            # print(surroundings.get_left_leader_neighbor_list())
+            # print(surroundings.get_left_follower_neighbor_list())
+            # print(data_process.get_gap_vehicle_list())
+
+            # print(surroundings.get_mid_leader_neighbor_list())
+            # print(surroundings.get_mid_follower_neighbor_list())
+            # # print(data_process.get_left_vehicle_data())
+            # print(data_process.get_mid_vehicle_data())
+            # # print(data_process.get_right_vehicle_data())
+            # print(step)
+        if step == endEpisode / stepLength:
+            traci.close()
+            break
     sys.stdout.flush()
 
 
 def get_options():
     optParser = optparse.OptionParser()
     optParser.add_option("--nogui", action="store_true",
-                         default=False, help="run the commandline version of sumo")
+                         default=True, help="run the commandline version of sumo")
     options, args = optParser.parse_args()
     return options
 
@@ -95,12 +117,18 @@ if __name__ == "__main__":
         sumoBinary = checkBinary('sumo')
     else:
         sumoBinary = checkBinary('sumo-gui')
-
     # first, generate the route file for this simulation
     traffics = Traffic(trafficBase=0.4, trafficList=None)
     # this is the normal way of using traci. sumo is started as a
     # subprocess and then the python script connects and runs
-    traci.start([sumoBinary, "-c", "data/motorway.sumocfg",
-                             "--tripinfo-output", "tripinfo.xml"])
-
-    run()
+    time_s_all = time.time()
+    for i in range(20):
+        print("start  cycle %d " % i)
+        time_s = time.time()
+        traci.start([sumoBinary, "-c", "data/motorway.sumocfg",
+                                "--no-warnings", "--no-step-log"])
+        run()
+        time_e = time.time()
+        print("cycle stop, using time %f" % (time_e - time_s))
+    time_e_all = time.time()
+    print("all step use  %f second" % (time_e_all - time_s_all))
