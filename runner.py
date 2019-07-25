@@ -62,12 +62,12 @@ def run():
             ego_vehicle.drive()
 
             # ego_vehicle.print_data()
-            if step == 32/stepLength:
-                ego_vehicle.change_to_lane(2)
-            if step == 35/stepLength:
-                ego_vehicle.change_to_lane(3)
-            if step == 38/stepLength:
-                ego_vehicle.change_to_lane(2)
+            # if step == 32/stepLength:
+            #     ego_vehicle.change_to_lane(2)
+            # if step == 35/stepLength:
+            #     ego_vehicle.change_to_lane(3)
+            # if step == 38/stepLength:
+            #     ego_vehicle.change_to_lane(2)
 
             # for each decision
             surroundings.get_surroundings()
@@ -90,7 +90,7 @@ def run():
             # print(surroundings.get_mid_leader_neighbor_list())
             # print(surroundings.get_mid_follower_neighbor_list())
             # # print(data_process.get_left_vehicle_data())
-            # print(data_process.get_mid_vehicle_data())
+            print(data_process.get_left_vehicle_data())
             # # print(data_process.get_right_vehicle_data())
             print(step)
         if step == endEpisode / stepLength:

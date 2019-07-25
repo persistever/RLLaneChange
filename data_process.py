@@ -34,15 +34,18 @@ class DataProcess:
         else:
             return sored_vehicle
 
-    def _vehicle_data_process(self, leader, follower, speed):
-        vehicle_data = np.array([200.0,speed,200.0,speed,200.0,speed,-200.0,speed,-200.0,speed,-200.0,speed])
+    def _vehicle_data_process(self, leader, follower, speed,lane):
+        lat = (lane-1)*3.2
+        vehicle_data = np.array([200.0,lat,speed,200.0,lat,speed,200.0,lat,speed,-200.0,lat,speed,-200.0,lat,speed,-200.0,lat,speed])
         for i in range(3):
             if i < len(leader):
-                vehicle_data[4 - 2 * i] = leader[i]['relative_lane_position']
-                vehicle_data[5 - 2 * i] = leader[i]['speed']-speed
+                vehicle_data[6 - 3 * i] = leader[i]['relative_lane_position']
+                vehicle_data[7 - 3 * i] = leader[i]['relative_position_y']
+                vehicle_data[8 - 3 * i] = leader[i]['speed']-speed
             if i < len(follower):
-                vehicle_data[6 + 2 * i] = follower[i]['relative_lane_position']
-                vehicle_data[7 + 2 * i] = follower[i]['speed']-speed
+                vehicle_data[9 + 3 * i] = follower[i]['relative_lane_position']
+                vehicle_data[10 - 3 * i] = follower[i]['relative_position_y']
+                vehicle_data[11 + 3 * i] = follower[i]['speed']-speed
         return vehicle_data
 
     def set_surrounding_data(self, surrounding, speed):
@@ -55,9 +58,10 @@ class DataProcess:
         self.speed = speed
 
     def vehicle_surrounding_data_process(self):
-        self.leftVehicleData = self._vehicle_data_process(self.leftLeaderNeighborList, self.leftFollowerNeighborList, self.speed)
-        self.rightVehicleData = self._vehicle_data_process(self.rightLeaderNeighborList, self.rightFollowerNeighborList, self.speed)
-        self.midVehicleData = self._vehicle_data_process(self.midLeaderNeighborList, self.midFollowerNeighborList, self.speed)
+        self.leftVehicleData = self._vehicle_data_process(self.leftLeaderNeighborList, self.leftFollowerNeighborList, self.speed,0)
+        self.midVehicleData = self._vehicle_data_process(self.midLeaderNeighborList, self.midFollowerNeighborList, self.speed,1)
+        self.rightVehicleData = self._vehicle_data_process(self.rightLeaderNeighborList, self.rightFollowerNeighborList,
+                                                           self.speed, 2)
 
     def get_left_vehicle_data(self):
         return self.leftVehicleData
@@ -72,10 +76,10 @@ class DataProcess:
         self.targetLane = lane
         self.targetGap = gap
 
-    def _create_virtual_vehicle(self,name,place,lane):
+    def _create_virtual_vehicle(self, name, place, lane):
         vehicle_dict = {'name': name,
                         'relative_position_x': place,
-                        'relative_position_y': place,
+                        'relative_position_y': (lane-1)*3.2,
                         'speed': self.speed,
                         'lane_index_relative': lane,
                         'relative_lane_position': place,
@@ -84,7 +88,7 @@ class DataProcess:
         }
         return vehicle_dict
 
-    def _create_real_vehicle(self,vehicle,lane):
+    def _create_real_vehicle(self, vehicle, lane):
         vehicle_dict = {'name': vehicle['name'],
                         'relative_position_x': vehicle['relative_position_x'],
                         'relative_position_y': vehicle['relative_position_y'],
@@ -97,7 +101,7 @@ class DataProcess:
         return vehicle_dict
 
     def _gap_data_process(self):
-        self.gapVehicleList=[]
+        self.gapVehicleList = []
         if self.targetLane == 0:
             targetLeaderNeighborList = self.leftLeaderNeighborList
             targetFollowerNeighborList = self.leftFollowerNeighborList
