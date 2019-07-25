@@ -2,6 +2,19 @@
 
 from egoVehicle import EgoVehicle
 from surrounding import Surrounding
+import traci
+from traci
 
-if __name__ == "__main__":
-    maxStep = 1000
+class Env:
+    def __init__(self):
+
+    def start(self):
+
+    def step(self):
+        observation = []
+        reward = 0
+        done = False
+        info = {}
+        return observation, reward, done, info
+
+    def render(self):
