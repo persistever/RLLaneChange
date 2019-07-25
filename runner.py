@@ -39,7 +39,7 @@ import traci.constants as tc
 from egoVehicle import EgoVehicle
 from surrounding import Surrounding
 from surrounding import Traffic
-from  RL_brain import DataProcess
+from  data_process import DataProcess
 
 surroundings = Surrounding("ego")
 data_process = DataProcess()
