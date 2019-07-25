@@ -45,7 +45,7 @@ surroundings = Surrounding("ego")
 data_process = DataProcess()
 stepLength = 0.05
 egoStartTime = 30
-endEpisode = 100
+endEpisode = 500
 
 def run():
     """execute the TraCI control loop"""
@@ -62,12 +62,12 @@ def run():
             ego_vehicle.drive()
 
             # ego_vehicle.print_data()
-            # if step == 3200:
-            #     ego_vehicle.change_to_lane(2)
-            # if step == 3500:
-            #     ego_vehicle.change_to_lane(3)
-            # if step == 3800:
-            #     ego_vehicle.change_to_lane(2)
+            if step == 32/stepLength:
+                ego_vehicle.change_to_lane(2)
+            if step == 35/stepLength:
+                ego_vehicle.change_to_lane(3)
+            if step == 38/stepLength:
+                ego_vehicle.change_to_lane(2)
 
             # for each decision
             surroundings.get_surroundings()
@@ -83,16 +83,16 @@ def run():
 
             # print list
 
-            # print(surroundings.get_left_leader_neighbor_list())
-            # print(surroundings.get_left_follower_neighbor_list())
-            # print(data_process.get_gap_vehicle_list())
+            print(surroundings.get_right_leader_neighbor_list())
+            print(surroundings.get_right_follower_neighbor_list())
+            print(data_process.get_gap_vehicle_list())
 
             # print(surroundings.get_mid_leader_neighbor_list())
             # print(surroundings.get_mid_follower_neighbor_list())
             # # print(data_process.get_left_vehicle_data())
             # print(data_process.get_mid_vehicle_data())
             # # print(data_process.get_right_vehicle_data())
-            # print(step)
+            print(step)
         if step == endEpisode / stepLength:
             traci.close()
             break
@@ -102,7 +102,7 @@ def run():
 def get_options():
     optParser = optparse.OptionParser()
     optParser.add_option("--nogui", action="store_true",
-                         default=True, help="run the commandline version of sumo")
+                         default=False, help="run the commandline version of sumo")
     options, args = optParser.parse_args()
     return options
 
@@ -121,14 +121,8 @@ if __name__ == "__main__":
     traffics = Traffic(trafficBase=0.4, trafficList=None)
     # this is the normal way of using traci. sumo is started as a
     # subprocess and then the python script connects and runs
-    time_s_all = time.time()
-    for i in range(20):
-        print("start  cycle %d " % i)
-        time_s = time.time()
-        traci.start([sumoBinary, "-c", "data/motorway.sumocfg",
-                                "--no-warnings", "--no-step-log"])
-        run()
-        time_e = time.time()
-        print("cycle stop, using time %f" % (time_e - time_s))
-    time_e_all = time.time()
-    print("all step use  %f second" % (time_e_all - time_s_all))
+
+    traci.start([sumoBinary, "-c", "data/motorway.sumocfg",
+                            "--no-warnings", "--no-step-log"])
+    run()
+
