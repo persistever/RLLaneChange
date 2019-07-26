@@ -43,7 +43,7 @@ from  data_process import DataProcess
 
 surroundings = Surrounding("ego")
 data_process = DataProcess()
-stepLength = 0.05
+stepLength = 0.01
 egoStartTime = 30
 endEpisode = 500
 

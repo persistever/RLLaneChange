@@ -30,8 +30,8 @@ TIME_STEP = 0.01
 class Env:
     def __init__(self, ego_start_time=0):
         self.ego_vehicle = None
-        self.n_action = [3, 5]
-        self.n_feature = [18, 18, 18, 3]
+        # self.n_action = [3, 5]
+        # self.n_feature = [18, 18, 18, 3]
         self.ego_start_time = ego_start_time
         self.sumo_step = 0
         self.nogui = False
@@ -72,15 +72,24 @@ class Env:
         self.data_process.set_surrounding_data(self.ego_vehicle.surroundings, self.ego_vehicle.get_speed())
         self.data_process.vehicle_surrounding_data_process()
         observation = [self.data_process.get_left_vehicle_data(), self.data_process.get_mid_vehicle_data(),
-                       self.data_process.get_right_vehicle_data()]
-        return 0
+                       self.data_process.get_right_vehicle_data(),
+                       [self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()]]
+        return observation
 
-    def step(self, action, gap_front_vehicle=None, gap_rear_vehicle=None):
+    def step(self, action_high, action_low):
         done = False
-        if action[0] == 1:
+        self.data_process.set_surrounding_data(self.ego_vehicle.surroundings, self.ego_vehicle.get_speed())
+        print("step中的车速："+str(self.ego_vehicle.get_speed()))
+        if action_high == 1:
             self.ego_vehicle.lane_keep_plan()
         else:
-            self.ego_vehicle.lane_change_plan(gsap_front_vehicle, gap_rear_vehicle)
+            self.data_process.set_rl_result_data(action_high, action_low)
+            self.data_process.rl_result_process()
+            gap_front_vehicle, gap_rear_vehicle = self.data_process.get_gap_vehicle_list()
+
+            print("gap前车："+str(gap_front_vehicle))
+            print("gap后车："+str(gap_rear_vehicle))
+            self.ego_vehicle.lane_change_plan(gap_front_vehicle, gap_rear_vehicle)
         while self.ego_vehicle.get_state():
             self.ego_vehicle.fresh_data()
             self.ego_vehicle.print_data()
@@ -91,12 +100,10 @@ class Env:
         if self.sumo_step > 1e5 or traci.simulation.getMinExpectedNumber() <= 0 or self.ego_vehicle.is_outof_map():
             done = True
             traci.close(wait=False)
-        return done
+        observation = [self.data_process.get_left_vehicle_data(), self.data_process.get_mid_vehicle_data(),
+                       self.data_process.get_right_vehicle_data(),
+                       [self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()]]
 
-        # observation = 0
-        # reward = 0
-        # done = False
-        # info = {}
-        # return observation, reward, done, info
+        return observation, done
 
 

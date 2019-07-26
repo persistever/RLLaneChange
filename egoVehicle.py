@@ -133,10 +133,13 @@ class EgoVehicle:
                 self.gapRearVehicle['position_x'] = gap_rear_vehicle_x
                 self.gapRearVehicle['position_y'] = gap_rear_vehicle_y
                 self.gapRearVehicle['speed'] = gap_rear_vehicle_vx
-            elif is_need_front_virtual == 1:
-                self.gapRearVehicle['position_x'] = self.gapRearVehicle['speed'] * self.timeStep
-            self.gapRearVehicle['relative_position_x'] = self.gapRearVehicle['position_x'] - self.x
-            self.gapRearVehicle['relative_position_y'] = self.gapRearVehicle['position_y'] - self.x
+                self.gapRearVehicle['relative_position_x'] = self.gapRearVehicle['position_x'] - self.x
+            elif is_need_rear_virtual == 1:
+                # self.gapRearVehicle['position_x'] = self.gapRearVehicle['speed'] * self.timeStep
+                self.gapRearVehicle['relative_position_x'] = (self.gapRearVehicle['speed'] - self.vx) * self.timeStep
+                self.gapRearVehicle['position_x'] = self.x + self.gapRearVehicle['relative_position_x']
+                self.gapRearVehicle['position_y'] = self.y + self.gapRearVehicle['relative_position_y']
+            # self.gapRearVehicle['relative_position_y'] = self.gapRearVehicle['position_y'] - self.x
 
             if self.gapFrontVehicle['virtual'] == 0:
                 gap_front_vehicle = traci.vehicle.getSubscriptionResults(self.gapFrontVehicle['name'])
@@ -166,21 +169,24 @@ class EgoVehicle:
                 self.gapFrontVehicle['position_x'] = gap_front_vehicle_x
                 self.gapFrontVehicle['position_y'] = gap_front_vehicle_y
                 self.gapFrontVehicle['speed'] = gap_front_vehicle_vx
+                self.gapFrontVehicle['relative_position_x'] = self.gapRearVehicle['position_x'] - self.x
             elif is_need_front_virtual == 1:
-                self.gapFrontVehicle['position_x'] += self.gapFrontVehicle['speed'] * self.timeStep
-            self.gapFrontVehicle['relative_position_x'] = self.gapRearVehicle['position_x'] - self.x
-            self.gapFrontVehicle['relative_position_y'] = self.gapRearVehicle['position_y'] - self.x
+                # self.gapFrontVehicle['position_x'] += self.gapFrontVehicle['speed'] * self.timeStep
+                self.gapFrontVehicle['relative_position_x'] += (self.gapFrontVehicle['speed'] - self.vx) * self.timeStep
+                self.gapFrontVehicle['position_x'] = self.x + self.gapFrontVehicle['relative_position_x']
+                self.gapFrontVehicle['position_y'] = self.y + self.gapFrontVehicle['relative_position_y']
+            # self.gapFrontVehicle['relative_position_y'] = self.gapRearVehicle['position_y'] - self.x
 
     def print_data(self):
         print("自车信息："+str(self.data)+'车速：'+str(self.vx))
         # print("他车信息"+str(self.neighbourVehicles))
-        print("车道index: "+str(self.laneIndex))
-        # print("Gap前车信息"+str(self.gapFrontVehicle))
-        # print("Gap后车信息"+str(self.gapRearVehicle))
-        print("前车信息: "+str(self.leadingVehicle))
+        # print("车道index: "+str(self.laneIndex))
+        print("Gap前车信息"+str(self.gapFrontVehicle))
+        print("Gap后车信息"+str(self.gapRearVehicle))
+        # print("前车信息: "+str(self.leadingVehicle))
         if len(self.missionList) != 0:
             print("当前任务"+str(self.missionList[0]))
-        print("下一个edge的车道数："+str(self.nNextLane))
+        # print("下一个edge的车道数："+str(self.nNextLane))
 
     def _set_xy(self):
         self.preX = self.x
@@ -359,7 +365,7 @@ class EgoVehicle:
         self.gapFrontVehicle = gap_front_vehicle
         self.gapRearVehicle = gap_rear_vehicle
         self.pre_change_to_lane()
-        temp_goal_index = gap_front_vehicle['lane_index']
+        temp_goal_index = gap_front_vehicle['lane_index_relative']
         if temp_goal_index == 0:
             self.goalLaneIndex = self.laneIndex + 1
         elif temp_goal_index == 1:

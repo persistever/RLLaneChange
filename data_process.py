@@ -34,7 +34,7 @@ class DataProcess:
         else:
             return sored_vehicle
 
-    def _vehicle_data_process(self, leader, follower, speed,lane):
+    def _vehicle_data_process(self, leader, follower,speed,lane):
         lat = (lane-1)*3.2
         vehicle_data = np.array([200.0,lat,speed,200.0,lat,speed,200.0,lat,speed,-200.0,lat,speed,-200.0,lat,speed,-200.0,lat,speed])
         for i in range(3):
