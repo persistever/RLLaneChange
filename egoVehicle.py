@@ -57,12 +57,16 @@ class EgoVehicle:
         self.followingVehicle = None
         self.gapFrontVehicle = None
         self.gapRearVehicle = None
-        self._subscribe_ego_vehicle()
         self.state = 0
+        self.edgeList = ['gneE0', ':HuiheJ1_3', 'gneE1', 'gneE2', ':gneJ0_0', 'gneE3',
+                         ':gneJ1_0', 'gneE4', 'gneE5', ':HuiheJ2_3', 'gneE6', 'Fenli', 'gneE7']
+        self.laneNumberDict = {}
 
-    def _subscribe_ego_vehicle(self):
+    def subscribe_ego_vehicle(self):
         traci.vehicle.subscribe(self.id, (tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_ROAD_ID))
         self.surroundings.surrounding_init()
+        self.laneNumberDict = self.surroundings.get_all_edge_lane_number_dict()
+        print("车道字典："+str(self.laneNumberDict))
 
     def fresh_data(self):
         self.data = traci.vehicle.getSubscriptionResults(self.id)
@@ -78,6 +82,7 @@ class EgoVehicle:
                 self._set_angle()
                 self._set_road_id()
                 self._set_n_lane()
+                self._set_next_n_lane()
 
         if self.neighbourVehicles is not None:
             self.neighbourVehicles = self.surroundings.get_neighbor_list()
@@ -175,15 +180,13 @@ class EgoVehicle:
         print("前车信息: "+str(self.leadingVehicle))
         if len(self.missionList) != 0:
             print("当前任务"+str(self.missionList[0]))
+        print("下一个edge的车道数："+str(self.nNextLane))
 
     def _set_xy(self):
         self.preX = self.x
         self.preY = self.y
         self.x = self.data[tc.VAR_POSITION][0]
         self.y = self.data[tc.VAR_POSITION][1]
-
-    def get_speed(self):
-        return self.vx
 
     def _set_speed(self):
         self.vx = (self.x - self.preX) / self.timeStep
@@ -207,7 +210,23 @@ class EgoVehicle:
             self.edgeID = self.data[tc.VAR_ROAD_ID]
 
     def _set_n_lane(self):
-        self.nLane = traci.edge.getLaneNumber(self.edgeID)
+        if self.edgeID.find('Fenli') == -1:
+            self.nLane = self.laneNumberDict[self.edgeID]
+        else:
+            self.nLane = 4
+
+    def _set_next_n_lane(self):
+        if self.edgeID.find('Fenli') == -1:
+            edge_index = self.edgeList.index(self.edgeID)
+        else:
+            edge_index = 11
+        next_edge_index = edge_index + 1
+        while next_edge_index < len(self.edgeList) and self.edgeList[next_edge_index] not in self.laneNumberDict.keys():
+            next_edge_index += 1
+        if next_edge_index < len(self.edgeList):
+            self.nNextLane = self.laneNumberDict[self.edgeList[next_edge_index]]
+        else:
+            self.nNextLane = self.nLane
 
     def _set_leading_vehicle(self):
         self.midFrontVehicleList.sort(key=lambda x: x['relative_position_x'])
@@ -238,6 +257,27 @@ class EgoVehicle:
             self.followingVehicle['speed'] = 120/3.6
         self.followingVehicle['relative_position_x'] = self.followingVehicle['position_x'] - self.x
         self.followingVehicle['relative_position_y'] = self.followingVehicle['position_y'] - self.y
+
+    def set_busy(self):
+        self.state = 1
+
+    def get_n_lane(self):
+        return self.nLane
+
+    def get_next_n_lane(self):
+        return self.nNextLane
+
+    def get_state(self):
+        return self.state
+
+    def get_speed(self):
+        return self.vx
+
+    def is_outof_map(self):
+        if self.x >= 2800.0:
+            return True
+        else:
+            return False
 
     def drive(self):
         if len(self.missionList) == 0:
@@ -277,6 +317,8 @@ class EgoVehicle:
                 self.ayCtl = self.missionList[0]['ayCtl']
                 if self.missionList[0]['m_type'] == 4:
                     self.lane_keep_step1()
+                elif self.missionList[0]['m_type'] == 5:
+                    self.lane_keep_step2()
                 if self.missionList[0]['vxCtl'] is None:
                     if self.missionList[0]['m_type'] == 1 and self.gapFrontVehicle['relative_position_x'] < 10 and self.vx < self.gapFrontVehicle['speed']*0.7:
                         self.vxCtl = self.vxCtl
@@ -295,7 +337,7 @@ class EgoVehicle:
                 self.vyCtl = 0
                 self.axCtl = 0
                 self.ayCtl = 0
-            traci.vehicle.moveToXY(self.id, '', 2, self.x + self.timeStep * self.vxCtl,
+            traci.vehicle.moveToXY(self.id, ' ', 2, self.x + self.timeStep * self.vxCtl,
                                    self.y + self.timeStep * self.vyCtl, self.angleCtl, 2)
 
     def lane_change_plan(self, gap_front_vehicle, gap_rear_vehicle):
@@ -409,7 +451,7 @@ class EgoVehicle:
         temp_ax = 0.0
         safe_distance = self.leadingVehicle['speed']*2.0
         if temp_relative_speed > 0:
-            if temp_distance > safe_distance + 100:
+            if temp_distance >= safe_distance + 100:
                 temp_ax = 8.0
             elif 50 + safe_distance <= temp_distance < safe_distance + 100:
                 temp_ax = 4.0
@@ -418,7 +460,7 @@ class EgoVehicle:
             else:
                 temp_ax = 0.0
         elif temp_relative_speed < 0:
-            if temp_distance > safe_distance + 100:
+            if temp_distance >= safe_distance + 100:
                 temp_ax = 3.0
             elif 50 + safe_distance <= temp_distance < safe_distance + 100:
                 temp_ax = 1.0
@@ -432,10 +474,16 @@ class EgoVehicle:
     def has_lane_keep_step1(self):
         temp_distance = self.leadingVehicle['position_x'] - self.x
         safe_distance = self.leadingVehicle['speed'] * 2.0
-        if safe_distance - 10.0 < temp_distance < safe_distance + 10.0:
-            return True
+        if self.leadingVehicle['virtual'] == 0:
+            if safe_distance - 10.0 < temp_distance < safe_distance + 10.0:
+                return True
+            else:
+                return False
         else:
-            return False
+            if temp_distance > safe_distance - 10.0:
+                return True
+            else:
+                return False
         # if self.missionList[0]['axCtl'] > 0:
         #     if temp_distance < safe_distance + 10.0:
         #         return True
