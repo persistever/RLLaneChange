@@ -178,7 +178,7 @@ class EgoVehicle:
             # self.gapFrontVehicle['relative_position_y'] = self.gapRearVehicle['position_y'] - self.x
 
     def print_data(self):
-        print("自车信息："+str(self.data)+'车速：'+str(self.vx))
+        print("自车信息："+str(self.data)+'车速：'+str(self.vx)+'pre_x:'+str(self.preX))
         # print("他车信息"+str(self.neighbourVehicles))
         # print("车道index: "+str(self.laneIndex))
         print("Gap前车信息"+str(self.gapFrontVehicle))

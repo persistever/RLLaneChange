@@ -47,6 +47,7 @@ class Env:
     def reset(self, nogui=False):
         self.nogui = nogui
         self.sumo_step = 0
+        self.ego_vehicle = None
         options = self._get_options()
         # this script has been called from the command line. It will start sumo as a
         # server, then connect and run
@@ -65,10 +66,15 @@ class Env:
             self.sumo_step += 1
         self.ego_vehicle = EgoVehicle('ego')
         self.ego_vehicle.subscribe_ego_vehicle()
-        self.ego_vehicle.fresh_data()
-        self.ego_vehicle.drive()
-        traci.simulationStep()
-        self.sumo_step += 1
+        while self.sumo_step < ego_start_step + 5:
+            self.ego_vehicle.fresh_data()
+            self.ego_vehicle.drive()
+            traci.simulationStep()
+            self.sumo_step += 1
+
+        self.ego_vehicle.print_data()
+        print('车速：'+str(self.ego_vehicle.get_speed()))
+        print('ego speed'+str(self.ego_vehicle.vx))
         self.data_process.set_surrounding_data(self.ego_vehicle.surroundings, self.ego_vehicle.get_speed())
         self.data_process.vehicle_surrounding_data_process()
         observation = [self.data_process.get_left_vehicle_data(), self.data_process.get_mid_vehicle_data(),

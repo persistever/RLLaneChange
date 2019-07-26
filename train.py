@@ -9,10 +9,17 @@ def run_task(env, max_episode):
     for episode in range(max_episode):
         done = False
         observation = env.reset(nogui=False)
+        flag = 0
         while done is False:
+
             # action_high, action_low = DQN.choose_action(obsevation[0], observation[1], observation[2], observation[3])
             # ovservation_, reward, done = env.step(action=[action_high, action_low])
-            observation, done = env.step(action_high=0, action_low=1)
+            if flag == 0:
+                observation, done = env.step(action_high=0, action_low=1)
+                flag = 1
+            else:
+                observation, done = env.step(action_high=2, action_low=1)
+                flag = 0
             step += 1
 
 
