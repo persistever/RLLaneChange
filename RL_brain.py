@@ -142,8 +142,8 @@ class DQN:
             sample_index = np.random.choice(self.memory_counter, size=self.batch_size)
         batch_memory = self.memory[sample_index, :]
 
-        q_next_low, q_eval_low = self.sess.run(
-            [self.q_next_low, self.q_eval_low],
+        q_next_high, q_next_low, q_eval_low = self.sess.run(
+            [self.q_next_high, self.q_next_low, self.q_eval_low],
             feed_dict={
                 self.s_left_: batch_memory[:, -(self.n_features+self.n_right+self.n_mid+self.n_left):-(self.n_features+self.n_right+self.n_mid)],
                 self.s_mid_: batch_memory[:, -(self.n_features+self.n_right+self.n_mid):-(self.n_features+self.n_right)],
@@ -156,11 +156,17 @@ class DQN:
             })
 
         q_target = q_eval_low.copy()
-        batch_index = np.arange(self.batch_size, dtype=np.int32)
+        # batch_index = np.arange(self.batch_size, dtype=np.int32)
         eval_act_index = batch_memory[:, self.n_state].astype(int)
         reward = batch_memory[:, self.n_state + 1]
-        q_target[batch_index, eval_act_index] = reward + self.gamma * np.max(q_next_low, axis=1)
-
+        for batch_index in range(self.batch_size):
+            if np.argmax(q_next_high) == 0:
+                q_next = np.max(q_next_low[:self.n_actions_l])
+            elif np.argmax(q_next_high) ==1:
+                q_next = q_next_low[self.n_actions_l]
+            else:
+                q_next = np.max(q_next_low[-self.n_actions_r:])
+            q_target[batch_index, eval_act_index] = reward + self.gamma * q_next
         _, self.cost = self.sess.run([self._train_op, self.loss],
                                      feed_dict={self.s_left_: batch_memory[:, -(self.n_features+self.n_right+self.n_mid+self.n_left):-(self.n_features+self.n_right+self.n_mid)],
                                                 self.s_mid_: batch_memory[:, -(self.n_features+self.n_right+self.n_mid):-(self.n_features+self.n_right)],
