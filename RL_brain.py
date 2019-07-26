@@ -120,7 +120,7 @@ class DQN:
             elif action_high == 1:
                 action_low = 0
             else:
-                action_low = np.argmax(actions_value_low[self.n_actions_r+1:])
+                action_low = np.argmax(actions_value_low[-self.n_actions_r:])
         else:
             action_high = np.random.randint(0, 3)
             if action_high == 0:
