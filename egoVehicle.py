@@ -136,7 +136,7 @@ class EgoVehicle:
                 self.gapRearVehicle['relative_position_x'] = self.gapRearVehicle['position_x'] - self.x
             elif is_need_rear_virtual == 1:
                 # self.gapRearVehicle['position_x'] = self.gapRearVehicle['speed'] * self.timeStep
-                self.gapRearVehicle['relative_position_x'] = (self.gapRearVehicle['speed'] - self.vx) * self.timeStep
+                self.gapRearVehicle['relative_position_x'] += (self.gapRearVehicle['speed'] - self.vx) * self.timeStep
                 self.gapRearVehicle['position_x'] = self.x + self.gapRearVehicle['relative_position_x']
                 self.gapRearVehicle['position_y'] = self.y + self.gapRearVehicle['relative_position_y']
             # self.gapRearVehicle['relative_position_y'] = self.gapRearVehicle['position_y'] - self.x
@@ -516,6 +516,9 @@ class EgoVehicle:
             return True
         else:
             return False
+
+    def clear_mission(self):
+        self.missionList = []
 
 
 
