@@ -99,15 +99,15 @@ class EgoVehicle:
             self._set_following_vehicle()
 
         if self.state == 2 and len(self.missionList) != 0:  # 如果是准备换道的任务
-            is_need_rear_virtual = 0  # 表示是否需要虚拟数据去预测gap后车
-            is_need_front_virtual = 0  # 表示是否需要虚拟数据去预测gap前车
+            is_need_rear_virtual = False  # 表示是否需要虚拟数据去预测gap后车
+            is_need_front_virtual = False  # 表示是否需要虚拟数据去预测gap前车
             gap_rear_vehicle_x = 0
             gap_rear_vehicle_y = 0
             gap_rear_vehicle_vx = 0
             gap_front_vehicle_x = 0
             gap_front_vehicle_y = 0
             gap_front_vehicle_vx = 0
-            if self.gapRearVehicle['virtual'] == 0:  # 如果不是虚拟车
+            if self.gapRearVehicle['virtual'] is False:  # 如果不是虚拟车
                 gap_rear_vehicle = traci.vehicle.getSubscriptionResults(self.gapRearVehicle['name'])
                 if gap_rear_vehicle is not None:
                     gap_rear_vehicle_x = gap_rear_vehicle[tc.VAR_POSITION][0]
@@ -117,37 +117,37 @@ class EgoVehicle:
                     # self.gapRearVehicle['relative_position_y'] = gap_rear_vehicle_y - self.y
                     if self.gapRearVehicle['lane_index_relative'] == 0:
                         if 1.0 <= gap_rear_vehicle_y-self.y <= 4.3:
-                            is_need_rear_virtual = 0
+                            is_need_rear_virtual = False
                         else:
-                            is_need_rear_virtual = 1
+                            is_need_rear_virtual = True
                     elif self.gapRearVehicle['lane_index_relative'] == 2:
                         if 1.0 <= self.y - gap_rear_vehicle_y <= 4.3:
-                            is_need_rear_virtual = 0
+                            is_need_rear_virtual = False
                         else:
-                            is_need_rear_virtual = 1
+                            is_need_rear_virtual = True
                     # elif self.gapRearVehicle['lane_index_relative'] == 1:
                     #     is_need_rear_virtual = 2
                     #     self.gapRearVehicle = self.followingVehicle
 
                 else:  # gap后车已经不在仿真道路中
-                    is_need_rear_virtual = 1
+                    is_need_rear_virtual = True
             else:
-                is_need_rear_virtual = 1
+                is_need_rear_virtual = True
 
-            if is_need_rear_virtual == 0:
+            if is_need_rear_virtual is False:
                 self.gapRearVehicle['position_x'] = gap_rear_vehicle_x
                 self.gapRearVehicle['position_y'] = gap_rear_vehicle_y
                 self.gapRearVehicle['speed'] = gap_rear_vehicle_vx
                 self.gapRearVehicle['relative_position_x'] = self.gapRearVehicle['position_x'] - self.x
                 self.gapRearVehicle['relative_position_y'] = self.gapRearVehicle['position_y'] - self.y
-            elif is_need_rear_virtual == 1:
+            elif is_need_rear_virtual is True:
                 # self.gapRearVehicle['position_x'] = self.gapRearVehicle['speed'] * self.timeStep
                 self.gapRearVehicle['relative_position_x'] += (self.gapRearVehicle['speed'] - self.vx) * self.timeStep
                 self.gapRearVehicle['position_x'] = self.x + self.gapRearVehicle['relative_position_x']
                 self.gapRearVehicle['position_y'] = self.y + self.gapRearVehicle['relative_position_y']
             # self.gapRearVehicle['relative_position_y'] = self.gapRearVehicle['position_y'] - self.x
 
-            if self.gapFrontVehicle['virtual'] == 0:
+            if self.gapFrontVehicle['virtual'] is False:
                 gap_front_vehicle = traci.vehicle.getSubscriptionResults(self.gapFrontVehicle['name'])
                 if gap_front_vehicle is not None:
                     gap_front_vehicle_x = gap_front_vehicle[tc.VAR_POSITION][0]
@@ -157,29 +157,29 @@ class EgoVehicle:
                     # self.gapFrontVehicle['relative_position_y'] = gap_front_vehicle_y - self.y
                     if self.gapFrontVehicle['lane_index_relative'] == 0:
                         if 1.0 <= gap_front_vehicle_y - self.y <= 4.3:
-                            is_need_front_virtual = 0
+                            is_need_front_virtual = False
                         else:
-                            is_need_front_virtual = 1
+                            is_need_front_virtual = True
                     elif self.gapFrontVehicle['lane_index_relative'] == 2:
                         if 1.0 <= self.y - gap_front_vehicle_y <= 4.3:
-                            is_need_front_virtual = 0
+                            is_need_front_virtual = False
                         else:
-                            is_need_front_virtual = 1
+                            is_need_front_virtual = True
                     elif self.gapFrontVehicle['lane_index_relative'] == 1:
                         is_need_front_virtual = 2
                         self.gapFrontVehicle = self.leadingVehicle
                 else:  # gap前车已经不在仿真道路中
-                    is_need_front_virtual = 1
+                    is_need_front_virtual = True
             else:
-                is_need_front_virtual = 1
+                is_need_front_virtual = True
 
-            if is_need_front_virtual == 0:
+            if is_need_front_virtual is False:
                 self.gapFrontVehicle['position_x'] = gap_front_vehicle_x
                 self.gapFrontVehicle['position_y'] = gap_front_vehicle_y
                 self.gapFrontVehicle['speed'] = gap_front_vehicle_vx
                 self.gapFrontVehicle['relative_position_x'] = self.gapFrontVehicle['position_x'] - self.x
                 self.gapFrontVehicle['relative_position_y'] = self.gapFrontVehicle['position_y'] - self.y
-            elif is_need_front_virtual == 1:
+            elif is_need_front_virtual is True:
                 # self.gapFrontVehicle['position_x'] += self.gapFrontVehicle['speed'] * self.timeStep
                 self.gapFrontVehicle['relative_position_x'] += (self.gapFrontVehicle['speed'] - self.vx) * self.timeStep
                 self.gapFrontVehicle['position_x'] = self.x + self.gapFrontVehicle['relative_position_x']
@@ -247,10 +247,10 @@ class EgoVehicle:
         self.midFrontVehicleList.sort(key=lambda x: x['relative_position_x'])
         if len(self.midFrontVehicleList) != 0:
             self.leadingVehicle = self.midFrontVehicleList[0]
-            self.leadingVehicle['virtual'] = 0
+            self.leadingVehicle['virtual'] = False
         else:
             self.leadingVehicle = {}
-            self.leadingVehicle['virtual'] = 1
+            self.leadingVehicle['virtual'] = True
             self.leadingVehicle['name'] = 'virtual_l'
             self.leadingVehicle['position_x'] = self.x + RADAR_LIMIT
             self.leadingVehicle['position_y'] = self.y
@@ -262,10 +262,10 @@ class EgoVehicle:
         self.midRearVehicleList.sort(key=lambda x: x['relative_position_x'],reverse=True)
         if len(self.midRearVehicleList) != 0:
             self.followingVehicle = self.midRearVehicleList[0]
-            self.followingVehicle['virtual'] = 0
+            self.followingVehicle['virtual'] = False
         else:
             self.followingVehicle = {}
-            self.followingVehicle['virtual'] = 1
+            self.followingVehicle['virtual'] = True
             self.followingVehicle['name'] = 'virtual_f'
             self.followingVehicle['position_x'] = self.x - RADAR_LIMIT
             self.followingVehicle['position_y'] = self.y
@@ -368,8 +368,11 @@ class EgoVehicle:
         # 加入虚拟车标志位之后需要改这个地方，目前的算法是针对真实车的
         # virtual_l
         # virtual_f
-        if gap_front_vehicle['virtual'] == 0:
+        print('gap_front_vehicle: '+str(gap_front_vehicle))
+        print('gap_rear_vehicle: '+str(gap_rear_vehicle))
+        if gap_front_vehicle['virtual'] is False:
             traci.vehicle.subscribe(gap_front_vehicle['name'], (tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_LANE_INDEX))
+        if gap_rear_vehicle['virtual'] is False:
             traci.vehicle.subscribe(gap_rear_vehicle['name'], (tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_LANE_INDEX))
             # >>>临时计算相对位置的函数，后期去掉
             # gap_front_vehicle['relative_position_x'] = traci.vehicle.getPosition(gap_front_vehicle['name'])[0] - self.x
@@ -391,7 +394,7 @@ class EgoVehicle:
     def pre_change_to_lane(self):
         mean_x = 0.5 * (self.gapRearVehicle['relative_position_x'] + self.gapFrontVehicle['relative_position_x'])
         temp_ax = 0.0
-        if -200 <= mean_x < -120:
+        if mean_x < -120:
             temp_ax = -8.0
         elif -120 <= mean_x < -50:
             temp_ax = -4.0
@@ -494,7 +497,7 @@ class EgoVehicle:
     def has_lane_keep_step1(self):
         temp_distance = self.leadingVehicle['position_x'] - self.x
         safe_distance = self.leadingVehicle['speed'] * 2.0
-        if self.leadingVehicle['virtual'] == 0:
+        if self.leadingVehicle['virtual'] is False:
             if safe_distance - 10.0 < temp_distance < safe_distance + 10.0:
                 return True
             else:
