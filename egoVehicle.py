@@ -7,6 +7,7 @@ from surrounding import Surrounding
 
 LANE_WIDTH = 3.2
 RADAR_LIMIT = 200
+SPEED_LIMIT = 34
 
 
 class EgoVehicle:
@@ -47,6 +48,7 @@ class EgoVehicle:
         self.angleCtl = 90
         self.lastChangeLaneTime = 0
         self.missionList = []
+        self.neighbourVehicleList = []
         self.leftFrontVehicleList = []
         self.leftRearVehicleList = []
         self.rightFrontVehicleList = []
@@ -57,6 +59,7 @@ class EgoVehicle:
         self.followingVehicle = None
         self.gapFrontVehicle = None
         self.gapRearVehicle = None
+        self.yBeforeLaneChange = 0
         self.state = 0
         self.edgeList = ['gneE0', ':HuiheJ1_3', 'gneE1', 'gneE2', ':gneJ0_0', 'gneE3',
                          ':gneJ1_0', 'gneE4', 'gneE5', ':HuiheJ2_3', 'gneE6', 'Fenli', 'gneE7']
@@ -66,7 +69,7 @@ class EgoVehicle:
         traci.vehicle.subscribe(self.id, (tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_ROAD_ID))
         self.surroundings.surrounding_init()
         self.laneNumberDict = self.surroundings.get_all_edge_lane_number_dict()
-        print("车道字典："+str(self.laneNumberDict))
+        # print("车道字典："+str(self.laneNumberDict))
 
     def fresh_data(self):
         self.data = traci.vehicle.getSubscriptionResults(self.id)
@@ -85,7 +88,7 @@ class EgoVehicle:
                 self._set_next_n_lane()
 
         if self.neighbourVehicles is not None:
-            self.neighbourVehicles = self.surroundings.get_neighbor_list()
+            self.neighbourVehicleList = self.surroundings.get_neighbor_list()
             self.leftFrontVehicleList = self.surroundings.get_left_leader_neighbor_list()
             self.leftRearVehicleList = self.surroundings.get_left_follower_neighbor_list()
             self.rightFrontVehicleList = self.surroundings.get_right_leader_neighbor_list()
@@ -110,19 +113,21 @@ class EgoVehicle:
                     gap_rear_vehicle_x = gap_rear_vehicle[tc.VAR_POSITION][0]
                     gap_rear_vehicle_y = gap_rear_vehicle[tc.VAR_POSITION][1]
                     gap_rear_vehicle_vx = gap_rear_vehicle[tc.VAR_SPEED]
-                    if self.gapRearVehicle['lane_index'] == 0:
+                    # self.gapRearVehicle['relative_position_x'] = gap_rear_vehicle_x - self.x
+                    # self.gapRearVehicle['relative_position_y'] = gap_rear_vehicle_y - self.y
+                    if self.gapRearVehicle['lane_index_relative'] == 0:
                         if 1.0 <= gap_rear_vehicle_y-self.y <= 4.3:
                             is_need_rear_virtual = 0
                         else:
                             is_need_rear_virtual = 1
-                    elif self.gapRearVehicle['lane_index'] == 2:
+                    elif self.gapRearVehicle['lane_index_relative'] == 2:
                         if 1.0 <= self.y - gap_rear_vehicle_y <= 4.3:
                             is_need_rear_virtual = 0
                         else:
                             is_need_rear_virtual = 1
-                    elif self.gapRearVehicle['lane_index'] == 1:
-                        is_need_rear_virtual = 2
-                        self.gapRearVehicle = self.followingVehicle
+                    # elif self.gapRearVehicle['lane_index_relative'] == 1:
+                    #     is_need_rear_virtual = 2
+                    #     self.gapRearVehicle = self.followingVehicle
 
                 else:  # gap后车已经不在仿真道路中
                     is_need_rear_virtual = 1
@@ -134,6 +139,7 @@ class EgoVehicle:
                 self.gapRearVehicle['position_y'] = gap_rear_vehicle_y
                 self.gapRearVehicle['speed'] = gap_rear_vehicle_vx
                 self.gapRearVehicle['relative_position_x'] = self.gapRearVehicle['position_x'] - self.x
+                self.gapRearVehicle['relative_position_y'] = self.gapRearVehicle['position_y'] - self.y
             elif is_need_rear_virtual == 1:
                 # self.gapRearVehicle['position_x'] = self.gapRearVehicle['speed'] * self.timeStep
                 self.gapRearVehicle['relative_position_x'] += (self.gapRearVehicle['speed'] - self.vx) * self.timeStep
@@ -147,17 +153,19 @@ class EgoVehicle:
                     gap_front_vehicle_x = gap_front_vehicle[tc.VAR_POSITION][0]
                     gap_front_vehicle_y = gap_front_vehicle[tc.VAR_POSITION][1]
                     gap_front_vehicle_vx = gap_front_vehicle[tc.VAR_SPEED]
-                    if self.gapFrontVehicle['lane_index'] == 0:
+                    # self.gapFrontVehicle['relative_position_x'] = gap_front_vehicle_x - self.x
+                    # self.gapFrontVehicle['relative_position_y'] = gap_front_vehicle_y - self.y
+                    if self.gapFrontVehicle['lane_index_relative'] == 0:
                         if 1.0 <= gap_front_vehicle_y - self.y <= 4.3:
                             is_need_front_virtual = 0
                         else:
                             is_need_front_virtual = 1
-                    elif self.gapFrontVehicle['lane_index'] == 2:
+                    elif self.gapFrontVehicle['lane_index_relative'] == 2:
                         if 1.0 <= self.y - gap_front_vehicle_y <= 4.3:
                             is_need_front_virtual = 0
                         else:
                             is_need_front_virtual = 1
-                    elif self.gapFrontVehicle['lane_index'] == 1:
+                    elif self.gapFrontVehicle['lane_index_relative'] == 1:
                         is_need_front_virtual = 2
                         self.gapFrontVehicle = self.leadingVehicle
                 else:  # gap前车已经不在仿真道路中
@@ -169,7 +177,8 @@ class EgoVehicle:
                 self.gapFrontVehicle['position_x'] = gap_front_vehicle_x
                 self.gapFrontVehicle['position_y'] = gap_front_vehicle_y
                 self.gapFrontVehicle['speed'] = gap_front_vehicle_vx
-                self.gapFrontVehicle['relative_position_x'] = self.gapRearVehicle['position_x'] - self.x
+                self.gapFrontVehicle['relative_position_x'] = self.gapFrontVehicle['position_x'] - self.x
+                self.gapFrontVehicle['relative_position_y'] = self.gapFrontVehicle['position_y'] - self.y
             elif is_need_front_virtual == 1:
                 # self.gapFrontVehicle['position_x'] += self.gapFrontVehicle['speed'] * self.timeStep
                 self.gapFrontVehicle['relative_position_x'] += (self.gapFrontVehicle['speed'] - self.vx) * self.timeStep
@@ -184,8 +193,8 @@ class EgoVehicle:
         print("Gap前车信息"+str(self.gapFrontVehicle))
         print("Gap后车信息"+str(self.gapRearVehicle))
         # print("前车信息: "+str(self.leadingVehicle))
-        if len(self.missionList) != 0:
-            print("当前任务"+str(self.missionList[0]))
+        # if len(self.missionList) != 0:
+        #     print("当前任务"+str(self.missionList[0]))
         # print("下一个edge的车道数："+str(self.nNextLane))
 
     def _set_xy(self):
@@ -287,6 +296,8 @@ class EgoVehicle:
 
     def drive(self):
         if len(self.missionList) == 0:
+            if self.vxCtl > SPEED_LIMIT:
+                self.vxCtl = SPEED_LIMIT
             traci.vehicle.moveToXY(self.id, '', 2, self.x + self.timeStep * self.vxCtl,
                                    self.y, 90, 2)
         else:
@@ -294,12 +305,12 @@ class EgoVehicle:
             complete_flag = 0
             if temp_check_type == 1:
                 if self.has_pre_change_to_lane_complete():
-                    complete_flag = 1
+                    # complete_flag = 1
                     del self.missionList[0]
                     self.change_to_lane(self.goalLaneIndex)
             elif temp_check_type == 2:
                 if self.has_lane_change_complete():
-                    complete_flag = 1
+                    # complete_flag = 1
                     del self.missionList[0]
                     self.post_change_to_lane()
             elif temp_check_type == 3:
@@ -309,7 +320,7 @@ class EgoVehicle:
                     del self.missionList[0]
             elif temp_check_type == 4:
                 if self.has_lane_keep_step1():
-                    complete_flag = 1
+                    # complete_flag = 1
                     del self.missionList[0]
                     self.lane_keep_step2()
             elif temp_check_type == 5:
@@ -343,6 +354,8 @@ class EgoVehicle:
                 self.vyCtl = 0
                 self.axCtl = 0
                 self.ayCtl = 0
+            if self.vxCtl > SPEED_LIMIT:
+                self.vxCtl = SPEED_LIMIT
             traci.vehicle.moveToXY(self.id, ' ', 2, self.x + self.timeStep * self.vxCtl,
                                    self.y + self.timeStep * self.vyCtl, self.angleCtl, 2)
 
@@ -359,9 +372,9 @@ class EgoVehicle:
             traci.vehicle.subscribe(gap_front_vehicle['name'], (tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_LANE_INDEX))
             traci.vehicle.subscribe(gap_rear_vehicle['name'], (tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_LANE_INDEX))
             # >>>临时计算相对位置的函数，后期去掉
-            gap_front_vehicle['relative_position_x'] = traci.vehicle.getPosition(gap_front_vehicle['name'])[0] - self.x
-            gap_rear_vehicle['relative_position_x'] = traci.vehicle.getPosition(gap_rear_vehicle['name'])[0] - self.x
-            # <<<<<<<<<<<<<<<<<<<<<<<<<<
+            # gap_front_vehicle['relative_position_x'] = traci.vehicle.getPosition(gap_front_vehicle['name'])[0] - self.x
+            # gap_rear_vehicle['relative_position_x'] = traci.vehicle.getPosition(gap_rear_vehicle['name'])[0] - self.x
+            # # <<<<<<<<<<<<<<<<<<<<<<<<<<
         self.gapFrontVehicle = gap_front_vehicle
         self.gapRearVehicle = gap_rear_vehicle
         self.pre_change_to_lane()
@@ -373,6 +386,7 @@ class EgoVehicle:
         elif temp_goal_index == 2:
             self.goalLaneIndex = self.laneIndex - 1
         self.state = 2
+        self.yBeforeLaneChange = self.y
 
     def pre_change_to_lane(self):
         mean_x = 0.5 * (self.gapRearVehicle['relative_position_x'] + self.gapFrontVehicle['relative_position_x'])
@@ -490,16 +504,6 @@ class EgoVehicle:
                 return True
             else:
                 return False
-        # if self.missionList[0]['axCtl'] > 0:
-        #     if temp_distance < safe_distance + 10.0:
-        #         return True
-        #     else:
-        #         return False
-        # elif self.missionList[0]['axCtl'] < 0:
-        #     if temp_distance > safe_distance - 10.0:
-        #         return True
-        #     else:
-        #         return False
 
     def lane_keep_step2(self):
         temp_relative_speed = self.leadingVehicle['speed'] - self.vx
@@ -520,16 +524,44 @@ class EgoVehicle:
     def clear_mission(self):
         self.missionList = []
 
+    def check_collision(self):
+        flag = 0
+        if len(self.neighbourVehicleList) > 0:
+            # print(self.neighbourVehicleList)
+            for item in self.neighbourVehicleList:
+                if item['name'] != "ego":
+                    temp_distance = math.pow(item['relative_position_x'], 2)+math.pow(item['relative_position_y'], 2)
+                    if temp_distance < 9.0:
+                        flag += 1
+        if flag == 0:
+            return False
+        else:
+            return True
 
+    def check_can_change_lane(self, action_high):
+        if action_high == 0:
+            if self.laneIndex >= self.nLane - 1:
+                return False
+            else:
+                return True
+        elif action_high == 2:
+            if self.laneIndex <= 0:
+                return False
+            else:
+                return True
 
+    def check_can_insert_into_gap(self):
+        if abs(self.gapFrontVehicle['relative_position_x'] - self.gapRearVehicle['relative_position_x']) < 10:
+            return False
+        else:
+            return True
 
-
-
-
-
-
-
-
-
-
+    def check_change_lane_successful(self):
+        if abs(self.yBeforeLaneChange - self.y) >= 2.0:
+            if self.gapRearVehicle['relative_position_x'] < 0 < self.gapFrontVehicle['relative_position_x']:
+                return True
+            else:
+                return False
+        else:
+            return False
 
