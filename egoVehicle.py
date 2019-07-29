@@ -65,6 +65,7 @@ class EgoVehicle:
         self.edgeList = ['gneE0', ':HuiheJ1_3', 'gneE1', 'gneE2', ':gneJ0_0', 'gneE3',
                          ':gneJ1_0', 'gneE4', 'gneE5', ':HuiheJ2_3', 'gneE6', 'Fenli', 'gneE7', 'gneE8']
         self.laneNumberDict = {}
+        self.specialCase = 0
 
     def subscribe_ego_vehicle(self):
         traci.vehicle.subscribe(self.id, (tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_ROAD_ID))
@@ -188,17 +189,17 @@ class EgoVehicle:
             # self.gapFrontVehicle['relative_position_y'] = self.gapRearVehicle['position_y'] - self.x
 
     def print_data(self):
-        print("自车信息："+str(self.data)+'车速：'+str(self.vx)+'pre_x:'+str(self.preX))
+        print("自车信息："+str(self.data)+' 车速： '+str(self.vx))
         # print("他车信息"+str(self.neighbourVehicles))
-        # print("车道index: "+str(self.laneIndex))
-        print("道路ID: "+str(self.edgeID))
-        # print("目标车道index: "+str(self.goalLaneIndex))
-        # print("Gap前车信息"+str(self.gapFrontVehicle))
-        # print("Gap后车信息"+str(self.gapRearVehicle))
+        print("车道index: "+str(self.laneIndex))
+        # print("道路ID: "+str(self.edgeID))
+        print("目标车道index: "+str(self.goalLaneIndex))
+        print("Gap前车信息"+str(self.gapFrontVehicle))
+        print("Gap后车信息"+str(self.gapRearVehicle))
         # print("前车信息: "+str(self.leadingVehicle))
         # if len(self.missionList) != 0:
         #     print("当前任务"+str(self.missionList[0]))
-        print("下一个edge的车道数："+str(self.nNextLane))
+        # print("下一个edge的车道数："+str(self.nNextLane))
 
     def _set_xy(self):
         self.preX = self.x
@@ -228,6 +229,12 @@ class EgoVehicle:
             self.edgeID = self.data[tc.VAR_ROAD_ID]
             if self.nNextLane < self.nLane:
                 self.goalLaneIndex -= 1
+                if self.goalLaneIndex < 0:
+                    self.goalLaneIndex = 0
+                    self.specialCase = 1  # 在道路变窄的时候想要换道
+                if self.goalLaneIndex > self.nLane - 1:
+                    self.goalLaneIndex = self.nLane - 1
+                    self.specialCase = 1  # 在道路变窄的时候想要换道
             elif self.nNextLane > self.nLane:
                 self.goalLaneIndex += 1
             if self.y < -LANE_WIDTH * self.nNextLane:
@@ -297,8 +304,11 @@ class EgoVehicle:
     def get_speed(self):
         return self.vx
 
+    def get_lane_index(self):
+        return self.laneIndex
+
     def is_outof_map(self):
-        if self.x >= 2800.0:
+        if self.x >= 2600.0:
             return True
         else:
             return False
@@ -318,12 +328,15 @@ class EgoVehicle:
                 if self.has_pre_change_to_lane_complete():
                     # complete_flag = 1
                     del self.missionList[0]
-                    self.change_to_lane(self.goalLaneIndex)
+                    self.change_to_lane()
             elif temp_check_type == 2:
                 if self.has_lane_change_complete():
                     # complete_flag = 1
                     del self.missionList[0]
-                    self.post_change_to_lane()
+                    if self.specialCase == 1:
+                        del self.missionList[0]
+                        complete_flag = 1
+                        self.state = 0
             elif temp_check_type == 3:
                 if self.has_post_change_to_lane():
                     complete_flag = 1
@@ -403,6 +416,7 @@ class EgoVehicle:
             self.goalLaneIndex = self.laneIndex - 1
         self.state = 2
         self.yBeforeLaneChange = self.y
+        self.specialCase = 0
 
     def pre_change_to_lane(self):
         mean_x = 0.5 * (self.gapRearVehicle['relative_position_x'] + self.gapFrontVehicle['relative_position_x'])
@@ -427,17 +441,19 @@ class EgoVehicle:
         else:
             return False
 
-    def change_to_lane(self, lane_index):
-        if lane_index > self.laneIndex:
+    def change_to_lane(self):
+        if self.goalLaneIndex > self.laneIndex:
             # self.missionList[0]['vyCtl'] = 21.0 / abs(self.vx)
 
             self.missionList[0]['vyCtl'] = LANE_WIDTH / (1.0/60.0*abs(self.vx)+3)
-        elif lane_index < self.laneIndex:
+        elif self.goalLaneIndex < self.laneIndex:
             # self.missionList[0]['vyCtl'] = - 21.0 / abs(self.vx)
             self.missionList[0]['vyCtl'] = - LANE_WIDTH / (1.0/60.0*abs(self.vx)+3)
+        else:
+            self.missionList[0]['vyCtl'] = 0
 
     def has_lane_change_complete(self):
-        if self.laneIndex == self.goalLaneIndex and abs(self.yLane) < 0.1:
+        if self.laneIndex == self.goalLaneIndex and abs(self.yLane) < 0.1 or self.specialCase == 1:
             self.preLaneIndex = self.laneIndex
             self.vyCtl = 0
             return True
@@ -547,7 +563,7 @@ class EgoVehicle:
             for item in self.neighbourVehicleList:
                 if item['name'] != "ego":
                     temp_distance = math.pow(item['relative_position_x'], 2)+math.pow(item['relative_position_y'], 2)
-                    if temp_distance < 9.0:
+                    if temp_distance < 2.0:
                         flag += 1
         if flag == 0:
             return False
