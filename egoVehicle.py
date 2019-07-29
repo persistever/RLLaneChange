@@ -190,8 +190,8 @@ class EgoVehicle:
         print("自车信息："+str(self.data)+'车速：'+str(self.vx)+'pre_x:'+str(self.preX))
         # print("他车信息"+str(self.neighbourVehicles))
         # print("车道index: "+str(self.laneIndex))
-        print("Gap前车信息"+str(self.gapFrontVehicle))
-        print("Gap后车信息"+str(self.gapRearVehicle))
+        # print("Gap前车信息"+str(self.gapFrontVehicle))
+        # print("Gap后车信息"+str(self.gapRearVehicle))
         # print("前车信息: "+str(self.leadingVehicle))
         # if len(self.missionList) != 0:
         #     print("当前任务"+str(self.missionList[0]))

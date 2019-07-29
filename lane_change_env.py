@@ -101,6 +101,7 @@ class Env:
                 self.sumo_step += 1
             reward += 20
         else:
+            self.ego_vehicle.print_data()
             self.data_process.set_rl_result_data(action_high, action_low)
             self.data_process.rl_result_process()
             gap_front_vehicle, gap_rear_vehicle = self.data_process.get_gap_vehicle_list()
