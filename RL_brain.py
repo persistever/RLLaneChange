@@ -74,7 +74,7 @@ class DQN:
         self.s_left = tf.placeholder(tf.float32, [None, 18, 1], name='s_left')
         self.s_mid = tf.placeholder(tf.float32, [None, 18, 1], name='s_mid')
         self.s_right = tf.placeholder(tf.float32, [None, 18, 1], name='s_right')
-        self.s_feature = tf.placeholder(tf.float32, [None, self.n_features], name='s_state')
+        self.s_feature = tf.placeholder(tf.float32, [None, self.n_features], name='s_feature')
 
         # self.q_eval_high (dim = 3) self. q_eval_low (dim = 11)
         with tf.variable_scope('eval_net'):
@@ -130,13 +130,14 @@ class DQN:
                 b_high_l2 = tf.get_variable('b_high_l2', [1, self.n_actions_high], initializer=b_initializer, collections=c_names)
                 self.q_eval_high = tf.matmul(high_l1, w_high_l2) + b_high_l2
             # merge low left data
-            low_left = tf.concat([self.s_feature, l_conv_output, m_conv_output, [tf.argmax(self.q_eval_high,1)]], 1)
+
+            low_left = tf.concat([self.s_feature, l_conv_output, m_conv_output, tf.transpose([tf.cast(tf.argmax(self.q_eval_high, 1),dtype=tf.float32)])], 1)
 
             # merge low mid data
-            low_mid = tf.concat([fully_connected_input, [tf.argmax(self.q_eval_high,1)]], 1)
+            low_mid = tf.concat([fully_connected_input, tf.transpose([tf.cast(tf.argmax(self.q_eval_high, 1),dtype=tf.float32)])], 1)
 
             # merge low right data
-            low_right = tf.concat([self.s_feature, r_conv_output, m_conv_output, [tf.argmax(self.q_eval_high, 1)]], 1)
+            low_right = tf.concat([self.s_feature, r_conv_output, m_conv_output, tf.transpose([tf.cast(tf.argmax(self.q_eval_high, 1),dtype=tf.float32)])], 1)
 
             # build low left fully connected layer
             n_low_l1 = 50
@@ -179,7 +180,7 @@ class DQN:
         self.s_left_ = tf.placeholder(tf.float32, [None, 18, 1], name='s_left_')
         self.s_mid_ = tf.placeholder(tf.float32, [None, 18, 1], name='s_mid_')
         self.s_right_ = tf.placeholder(tf.float32, [None, 18, 1], name='s_right_')
-        self.s_feature_ = tf.placeholder(tf.float32, [None, self.n_features], name='s_state_')
+        self.s_feature_ = tf.placeholder(tf.float32, [None, self.n_features], name='s_feature_')
 
         with tf.variable_scope('target_net'):
             # c_names(collections_names) are the collections to store variables
@@ -247,13 +248,13 @@ class DQN:
                                             collections=c_names)
                 self.q_next_high = tf.matmul(high_l1, w_high_l2) + b_high_l2
             # merge low left data
-            low_left_ = tf.concat([self.s_feature_, l_conv_output_, m_conv_output_, [tf.argmax(self.q_next_high, 1)]], 1)
+            low_left_ = tf.concat([self.s_feature_, l_conv_output_, m_conv_output_, tf.transpose([tf.cast(tf.argmax(self.q_next_high, 1),dtype=tf.float32)])], 1)
 
             # merge low mid data
-            low_mid_ = tf.concat([fully_connected_input_, [tf.argmax(self.q_next_high, 1)]], 1)
+            low_mid_ = tf.concat([fully_connected_input_, tf.transpose([tf.cast(tf.argmax(self.q_next_high, 1),dtype=tf.float32)])], 1)
 
             # merge low right data
-            low_right_ = tf.concat([self.s_feature_, r_conv_output_, m_conv_output_, [tf.argmax(self.q_next_high, 1)]], 1)
+            low_right_ = tf.concat([self.s_feature_, r_conv_output_, m_conv_output_, tf.transpose([tf.cast(tf.argmax(self.q_next_high, 1),dtype=tf.float32)])], 1)
 
             # build low left fully connected layer
             n_low_l1 = 50
@@ -360,33 +361,32 @@ class DQN:
         q_next_high, q_next_low, q_eval_low = self.sess.run(
             [self.q_next_high, self.q_next_low, self.q_eval_low],
             feed_dict={
-                self.s_left_: batch_memory[:, -(self.n_features+self.n_right+self.n_mid+self.n_left):-(self.n_features+self.n_right+self.n_mid)],
-                self.s_mid_: batch_memory[:, -(self.n_features+self.n_right+self.n_mid):-(self.n_features+self.n_right)],
-                self.s_right_: batch_memory[:, -(self.n_features+self.n_right):-self.n_features],
+                self.s_left_: batch_memory[:, -(self.n_features+self.n_right+self.n_mid+self.n_left):-(self.n_features+self.n_right+self.n_mid)].reshape(-1, 18, 1),
+                self.s_mid_: batch_memory[:, -(self.n_features+self.n_right+self.n_mid):-(self.n_features+self.n_right)].reshape(-1, 18, 1),
+                self.s_right_: batch_memory[:, -(self.n_features+self.n_right):-self.n_features].reshape(-1, 18, 1),
                 self.s_feature_: batch_memory[:, -self.n_features:],  # fixed params
-                self.s_left: batch_memory[:, :self.n_left],  # newest params
-                self.s_mid: batch_memory[:, self.n_left:self.n_left+self.n_mid],
-                self.s_right: batch_memory[:, self.n_left+self.n_mid:self.n_left+self.n_mid+self.n_right],
+                self.s_left: batch_memory[:, :self.n_left].reshape(-1, 18, 1),  # newest params
+                self.s_mid: batch_memory[:, self.n_left:self.n_left+self.n_mid].reshape(-1, 18, 1),
+                self.s_right: batch_memory[:, self.n_left+self.n_mid:self.n_left+self.n_mid+self.n_right].reshape(-1, 18, 1),
                 self.s_feature: batch_memory[:, self.n_left+self.n_mid+self.n_right:self.n_left+self.n_mid+self.n_right+self.n_features]
             })
-
         q_target = q_eval_low.copy()
         # batch_index = np.arange(self.batch_size, dtype=np.int32)
         eval_act_index = batch_memory[:, self.n_state].astype(int)
         reward = batch_memory[:, self.n_state + 1]
         for batch_index in range(self.batch_size):
-            if np.argmax(q_next_high) == 0:
-                q_next = np.max(q_next_low[:self.n_actions_l])
-            elif np.argmax(q_next_high) == 1:
-                q_next = q_next_low[self.n_actions_l]
+            if np.argmax(q_next_high[batch_index, :]) == 0:
+                q_next = np.max(q_next_low[batch_index,:self.n_actions_l])
+            elif np.argmax(q_next_high[batch_index, :]) == 1:
+                q_next = q_next_low[batch_index,self.n_actions_l]
             else:
-                q_next = np.max(q_next_low[-self.n_actions_r:])
+                q_next = np.max(q_next_low[batch_index,-self.n_actions_r:])
             q_target[batch_index, eval_act_index] = reward + self.gamma * q_next
         _, self.cost = self.sess.run([self._train_op, self.loss],
-                                     feed_dict={self.s_left_: batch_memory[:, -(self.n_features+self.n_right+self.n_mid+self.n_left):-(self.n_features+self.n_right+self.n_mid)],
-                                                self.s_mid_: batch_memory[:, -(self.n_features+self.n_right+self.n_mid):-(self.n_features+self.n_right)],
-                                                self.s_right_: batch_memory[:, -(self.n_features+self.n_right):-self.n_features],
-                                                self.s_feature_: batch_memory[:, -self.n_features:],  # fixed params
+                                     feed_dict={self.s_left: batch_memory[:, :self.n_left].reshape(-1, 18, 1),  # newest params
+                                                self.s_mid: batch_memory[:, self.n_left:self.n_left+self.n_mid].reshape(-1, 18, 1),
+                                                self.s_right: batch_memory[:, self.n_left+self.n_mid:self.n_left+self.n_mid+self.n_right].reshape(-1, 18, 1),
+                                                self.s_feature: batch_memory[:, self.n_left+self.n_mid+self.n_right:self.n_left+self.n_mid+self.n_right+self.n_features],
                                                 self.q_target: q_target})
         self.cost_his.append(self.cost)
 

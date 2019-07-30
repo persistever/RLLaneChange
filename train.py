@@ -9,7 +9,7 @@ def run_task(env, max_episode, net=None):
     step = 0
     for episode in range(max_episode):
         done = False
-        observation = env.reset(nogui=False)
+        observation = env.reset(nogui=True)
         observation = np.array(observation)
         flag = 0
         while done is False:
@@ -33,10 +33,10 @@ def run_task(env, max_episode, net=None):
             if step > 50:
                 net.learn()
             observation = observation_
-            print("info: "+str(info))
-            print("reward: " + str(reward))
-            print("observation: "+str(observation))
-            print("-------------------------")
+            # print("info: "+str(info))
+            # print("reward: " + str(reward))
+            # print("observation: "+str(observation))
+            # print("-------------------------")
 
 
 if __name__ == "__main__":
