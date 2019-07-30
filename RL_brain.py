@@ -323,7 +323,7 @@ class DQN:
         observation_s_right = observation[self.n_left+self.n_mid:self.n_left+self.n_mid+self.n_right]
         observation_s_right = observation_s_right[np.newaxis, :]
         observation_s_state = observation[self.n_left+self.n_mid+self.n_right:]
-        observation_s_state = observation_s_state[np.newaxis,:]
+        observation_s_state = observation_s_state[np.newaxis, :]
         if np.random.uniform() < self.epsilon:
             # forward feed the observation and get q value for every actions
             actions_value_high, actions_value_low = self.sess.run([self.q_eval_high, self.q_eval_low],
