@@ -26,7 +26,7 @@ def run_task(env, max_episode, net=None):
                 observation_, done, reward, info = env.step(action_high=action_high, action_low=action_low)
                 flag = 0
             # observation, done, reward = env.step(action_high=1, action_low=1)
-            # net.store_transition(observation, action_high, action_low, observation_)
+            net.store_transition(observation, action_high, action_low, reward, observation_)
             step += 1
             observation = observation_
             print("info: "+str(info))
@@ -37,7 +37,7 @@ def run_task(env, max_episode, net=None):
 
 if __name__ == "__main__":
     LC_env = Env(ego_start_time=30)
-    # dqn = DQN(n_features=3)
-    run_task(LC_env, 1)
+    dqn = DQN(n_features=3)
+    run_task(LC_env, 1, dqn)
 
 
