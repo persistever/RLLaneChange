@@ -62,8 +62,10 @@ class EgoVehicle:
         self.yBeforeLaneChange = 0
         self.state = 0
         self.outOfRoad = False
-        self.edgeList = ['gneE0', ':HuiheJ1_3', 'gneE1', 'gneE2', ':gneJ0_0', 'gneE3',
-                         ':gneJ1_0', 'gneE4', 'gneE5', ':HuiheJ2_3', 'gneE6', 'Fenli', 'gneE7', 'gneE8']
+        # self.edgeList = ['gneE0', ':HuiheJ1_3', 'gneE1', 'gneE2', ':gneJ0_0', 'gneE3',
+        #                  ':gneJ1_0', 'gneE4', 'gneE5', ':HuiheJ2_3', 'gneE6', 'Fenli', 'gneE7', 'gneE8']
+        self.edgeList = ['gneE0', 'HuiheJ1', 'gneE1', 'gneE2', 'gneE3',
+                         'gneE4', 'gneE5', 'HuiheJ2', 'gneE6', 'gneE7']
         self.laneNumberDict = {}
         self.specialCase = 0
 
@@ -191,15 +193,21 @@ class EgoVehicle:
     def print_data(self):
         print("自车信息："+str(self.data)+' 车速： '+str(self.vx))
         # print("他车信息"+str(self.neighbourVehicles))
-        print("车道index: "+str(self.laneIndex))
+        # print("车道index: "+str(self.laneIndex))
         # print("道路ID: "+str(self.edgeID))
-        print("目标车道index: "+str(self.goalLaneIndex))
-        print("Gap前车信息"+str(self.gapFrontVehicle))
-        print("Gap后车信息"+str(self.gapRearVehicle))
+        # print("目标车道index: "+str(self.goalLaneIndex))
+        # print("Gap前车信息"+str(self.gapFrontVehicle))
+        # print("Gap后车信息"+str(self.gapRearVehicle))
         # print("前车信息: "+str(self.leadingVehicle))
         # if len(self.missionList) != 0:
         #     print("当前任务"+str(self.missionList[0]))
         # print("下一个edge的车道数："+str(self.nNextLane))
+
+    def print_current_lane_index(self):
+        print("当前车道: "+str(self.laneIndex))
+
+    def print_goal_lane_index(self):
+        print("目标车道: "+str(self.goalLaneIndex))
 
     def _set_xy(self):
         self.preX = self.x
@@ -241,23 +249,29 @@ class EgoVehicle:
                 self.outOfRoad = True
 
     def _set_n_lane(self):
-        if self.edgeID.find('Fenli') == -1:
+        if self.edgeID.find(':HuiheJ1') == -1 and self.edgeID.find(':HuiheJ2') == -1:
             self.nLane = self.laneNumberDict[self.edgeID]
         else:
             self.nLane = 4
 
     def _set_next_n_lane(self):
-        if self.edgeID.find('Fenli') == -1:
+        if self.edgeID.find(':HuiheJ1') != -1:
+            edge_index = 1
+        elif self.edgeID.find(':HuiheJ2') != -1:
+            edge_index = 7
+        else:
             edge_index = self.edgeList.index(self.edgeID)
-        else:
-            edge_index = 11
+
         next_edge_index = edge_index + 1
-        while next_edge_index < len(self.edgeList) and self.edgeList[next_edge_index] not in self.laneNumberDict.keys():
-            next_edge_index += 1
-        if next_edge_index < len(self.edgeList):
-            self.nNextLane = self.laneNumberDict[self.edgeList[next_edge_index]]
+        if next_edge_index == 1:
+            self.nNextLane = 4
+        elif next_edge_index == 7:
+            self.nNextLane = 4
+        elif next_edge_index > len(self.edgeList)-1:
+            self.nNextLane = 4
         else:
-            self.nNextLane = self.nLane
+            self.nNextLane = self.laneNumberDict[self.edgeList[next_edge_index]]
+        # print("当前车道: " + str(self.edgeList[edge_index]) + " 下一车道:" + str(self.edgeList[next_edge_index]))
 
     def _set_leading_vehicle(self):
         self.midFrontVehicleList.sort(key=lambda x: x['relative_position_x'])
@@ -319,7 +333,7 @@ class EgoVehicle:
                 self.vxCtl = SPEED_LIMIT_HIGH
             if self.vxCtl < SPEED_LIMIT_LOW:
                 self.vxCtl = SPEED_LIMIT_LOW
-            traci.vehicle.moveToXY(self.id, '', 2, self.x + self.timeStep * self.vxCtl,
+            traci.vehicle.moveToXY(self.id, 'gneE0', 2, self.x + self.timeStep * self.vxCtl,
                                    self.y, 90, 2)
         else:
             temp_check_type = self.missionList[0]["c_type"]
@@ -382,7 +396,7 @@ class EgoVehicle:
                 self.vxCtl = SPEED_LIMIT_HIGH
             if self.vxCtl < SPEED_LIMIT_LOW:
                 self.vxCtl = SPEED_LIMIT_LOW
-            traci.vehicle.moveToXY(self.id, ' ', 2, self.x + self.timeStep * self.vxCtl,
+            traci.vehicle.moveToXY(self.id, 'gneE0', 2, self.x + self.timeStep * self.vxCtl,
                                    self.y + self.timeStep * self.vyCtl, self.angleCtl, 2)
 
     def lane_change_plan(self, gap_front_vehicle, gap_rear_vehicle):
@@ -555,6 +569,10 @@ class EgoVehicle:
 
     def clear_mission(self):
         self.missionList = []
+
+    def clear_gap_vehicle(self):
+        self.gapFrontVehicle = None
+        self.gapRearVehicle = None
 
     def check_collision(self):
         flag = 0
