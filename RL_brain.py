@@ -174,7 +174,6 @@ class DQN:
         with tf.variable_scope('train'):
             self._train_op = tf.train.RMSPropOptimizer(self.lr).minimize(self.loss)
 
-
         # target net
         self.s_left_ = tf.placeholder(tf.float32, [None, 18], name='s_left_')
         self.s_mid_ = tf.placeholder(tf.float32, [None, 18], name='s_mid_')
