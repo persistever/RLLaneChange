@@ -41,7 +41,7 @@ class DQN:
         self.memory_size = memory_size
         self.batch_size = batch_size
         self.epsilon_increment = e_greedy_increment
-        self.epsilon = 0 if e_greedy_increment is not None else self.epsilon_max
+        self.epsilon = 0.5 if e_greedy_increment is not None else self.epsilon_max
         self.memory_counter = 0
         # total learning step
         self.learn_step_counter = 0

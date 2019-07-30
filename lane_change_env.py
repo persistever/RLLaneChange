@@ -34,7 +34,6 @@ class Env:
         # self.n_feature = [18, 18, 18, 3]
         self.ego_start_time = ego_start_time
         self.sumo_step = 0
-        self.sumo_last_decision_step = 0
         self.nogui = False
         self.data_process = DataProcess()
 
@@ -88,6 +87,7 @@ class Env:
         done = False
         n_collision = 0
         info = {}
+        keep_step = 0
         self.ego_vehicle.clear_mission()
         # self.ego_vehicle.print_data()
         self.data_process.set_surrounding_data(self.ego_vehicle.surroundings, self.ego_vehicle.get_speed())
@@ -152,12 +152,22 @@ class Env:
                     info['endState'] = 'Cannot change to the target lane, because it\'s out of map, lane keep instead'
                 if self.ego_vehicle.check_can_insert_into_gap() is False:
                     info['endState'] = 'Cannot change to the target lane, because the gap is too narrow'
+        while keep_step < 100:
+            self.ego_vehicle.fresh_data()
+            # self.ego_vehicle.print_data()
+            self.ego_vehicle.drive()
+            traci.simulationStep()
+            if self.ego_vehicle.check_collision():
+                n_collision += 1
+            self.sumo_step += 1
+            keep_step += 1
 
         if self.sumo_step > 1e5 or traci.simulation.getMinExpectedNumber() <= 0 \
                 or self.ego_vehicle.is_outof_map() or self.ego_vehicle.check_outof_road():
             done = True
             self.ego_vehicle.clear_mission()
             traci.close(wait=False)
+
         self.data_process.set_surrounding_data(self.ego_vehicle.surroundings, self.ego_vehicle.get_speed())
         self.data_process.vehicle_surrounding_data_process()
         observation.extend(self.data_process.get_left_vehicle_data())
@@ -172,6 +182,7 @@ class Env:
             reward -= 20
             info['emergencyLane'] = 'Vehicle change to the emergency lane'
         info['nCollision'] = n_collision
+        info['SUMO_Time: '] = self.sumo_step*0.01
         self.ego_vehicle.print_data()
         return observation, reward, done, info
 

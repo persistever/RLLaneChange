@@ -2,14 +2,18 @@
 
 from lane_change_env import Env
 from RL_brain import DQN
+from surrounding import Traffic
 import numpy as np
+import random
 
 
-def run_task(env, max_episode, net=None):
+def run_task(env, no_gui, max_episode, net=None):
     step = 0
     for episode in range(max_episode):
+        traffics_base = random.uniform(0.2, 0.8)
+        traffics = Traffic(trafficBase=traffics_base, trafficList=None)
         done = False
-        observation = env.reset(nogui=True)
+        observation = env.reset(nogui=no_gui)
         observation = np.array(observation)
         flag = 0
         while done is False:
@@ -33,15 +37,14 @@ def run_task(env, max_episode, net=None):
             if step > 50:
                 net.learn()
             observation = observation_
-            # print("info: "+str(info))
-            # print("reward: " + str(reward))
-            # print("observation: "+str(observation))
-            # print("-------------------------")
+            print("info: "+str(info))
+            print("reward: " + str(reward))
+            print("-------------------------")
 
 
 if __name__ == "__main__":
     LC_env = Env(ego_start_time=30)
-    dqn = DQN(n_features=3)
-    run_task(LC_env, 2, dqn)
+    dqn = DQN(n_features=3, e_greedy_increment=0.05)
+    run_task(env=LC_env, no_gui=False, max_episode=10, net=dqn)
 
 

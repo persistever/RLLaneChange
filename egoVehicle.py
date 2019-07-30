@@ -308,7 +308,7 @@ class EgoVehicle:
         return self.laneIndex
 
     def is_outof_map(self):
-        if self.x >= 2600.0:
+        if self.x >= 2700.0:
             return True
         else:
             return False
