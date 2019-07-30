@@ -79,7 +79,7 @@ class DataProcess:
     def _create_virtual_vehicle(self, name, place, lane):
         vehicle_dict = {'name': name,
                         'relative_position_x': place,
-                        'relative_position_y': (lane-1)*3.2,
+                        'relative_position_y': -(lane-1)*3.2,
                         'speed': self.speed,
                         'lane_index_relative': lane,
                         'relative_lane_position': place,

@@ -71,10 +71,6 @@ class Env:
             self.ego_vehicle.drive()
             traci.simulationStep()
             self.sumo_step += 1
-
-        # self.ego_vehicle.print_data()
-        # print('车速：'+str(self.ego_vehicle.get_speed()))
-        # print('ego speed'+str(self.ego_vehicle.vx))
         self.data_process.set_surrounding_data(self.ego_vehicle.surroundings, self.ego_vehicle.get_speed())
         self.data_process.vehicle_surrounding_data_process()
         observation = [self.data_process.get_left_vehicle_data(), self.data_process.get_mid_vehicle_data(),
@@ -87,6 +83,9 @@ class Env:
         current_step = 0
         done = False
         n_collision = 0
+        info = {}
+        self.ego_vehicle.clear_mission()
+        # self.ego_vehicle.print_data()
         self.data_process.set_surrounding_data(self.ego_vehicle.surroundings, self.ego_vehicle.get_speed())
         # print("step中的车速："+str(self.ego_vehicle.get_speed()))
         if action_high == 1:
@@ -99,6 +98,7 @@ class Env:
                 if self.ego_vehicle.check_collision():
                     n_collision += 1
                 self.sumo_step += 1
+                current_step += 1
             reward += 20
         else:
             self.data_process.set_rl_result_data(action_high, action_low)
@@ -107,8 +107,10 @@ class Env:
             # print("gap前车："+str(gap_front_vehicle))
             # print("gap后车："+str(gap_rear_vehicle))
             self.ego_vehicle.lane_change_plan(gap_front_vehicle, gap_rear_vehicle)
-            if self.ego_vehicle.check_can_change_lane(action_high) is True and self.ego_vehicle.check_can_insert_into_gap() is True:
-                while self.ego_vehicle.get_state() and current_step < 2000:
+            if self.ego_vehicle.check_can_change_lane(action_high) is True and \
+                    self.ego_vehicle.check_can_insert_into_gap() is True:
+                while self.ego_vehicle.get_state() and current_step < 2000 \
+                        and self.ego_vehicle.check_can_insert_into_gap() is True:
                     self.ego_vehicle.fresh_data()
                     # self.ego_vehicle.print_data()
                     self.ego_vehicle.drive()
@@ -116,10 +118,16 @@ class Env:
                     if self.ego_vehicle.check_collision():
                         n_collision += 1
                     self.sumo_step += 1
+                    current_step += 1
                 if self.ego_vehicle.check_change_lane_successful():
                     reward += 100
+                    info['endState'] = 'Change to the target gap successful'
                 else:
                     reward -= 100
+                    if current_step == 2000:
+                        info['endState'] = 'Change Lane Timeout, the plan has been tried'
+                    if self.ego_vehicle.check_can_insert_into_gap() is False:
+                        info['endState'] = 'Change to the target gap failed, the plan has been tried'
                 reward -= n_collision * 5
             else:
                 self.ego_vehicle.clear_mission()
@@ -132,10 +140,15 @@ class Env:
                     if self.ego_vehicle.check_collision():
                         n_collision += 1
                     self.sumo_step += 1
+                    current_step += 1
                 reward = -100
-        current_step += 1
+                if self.ego_vehicle.check_can_change_lane(action_high) is False:
+                    info['endState'] = 'Cannot change to the target lane, because it\'s out of map, lane keep instead'
+                if self.ego_vehicle.check_can_insert_into_gap() is False:
+                    info['endState'] = 'Cannot change to the target lane, because the gap is too narrow'
 
-        if current_step >= 2000 or self.sumo_step > 1e5 or traci.simulation.getMinExpectedNumber() <= 0 or self.ego_vehicle.is_outof_map():
+        if self.sumo_step > 1e5 or traci.simulation.getMinExpectedNumber() <= 0 \
+                or self.ego_vehicle.is_outof_map() or self.ego_vehicle.check_outof_road():
             done = True
             self.ego_vehicle.clear_mission()
             traci.close(wait=False)
@@ -143,6 +156,14 @@ class Env:
                        self.data_process.get_right_vehicle_data(),
                        [self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()]]
 
-        return observation, done, reward
+        if self.ego_vehicle.check_outof_road():
+            reward -= 1000
+            info['endState'] = 'Vehicle is out of map in lateral direction'
+        if self.ego_vehicle.get_lane_index() == 0:
+            reward -= 20
+            info['emergencyLane'] = 'Vehicle change to the emergency lane'
+        info['nCollision'] = n_collision
+        self.ego_vehicle.print_data()
+        return observation, done, reward, info
 
 
