@@ -79,6 +79,7 @@ class Env:
         return observation
 
     def step(self, action_high, action_low):
+        observation = []
         reward = 0
         current_step = 0
         done = False
@@ -152,9 +153,14 @@ class Env:
             done = True
             self.ego_vehicle.clear_mission()
             traci.close(wait=False)
-        observation = [self.data_process.get_left_vehicle_data(), self.data_process.get_mid_vehicle_data(),
-                       self.data_process.get_right_vehicle_data(),
-                       [self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()]]
+
+        observation.append(self.data_process.get_left_vehicle_data())
+        observation.append(self.data_process.get_mid_vehicle_data())
+        observation.append(self.data_process.get_right_vehicle_data())
+        observation.append([self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()])
+        # observation = [self.data_process.get_left_vehicle_data(), self.data_process.get_mid_vehicle_data(),
+        #                self.data_process.get_right_vehicle_data(),
+        #                [self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()]]
 
         if self.ego_vehicle.check_outof_road():
             reward -= 1000
