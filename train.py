@@ -10,6 +10,7 @@ def run_task(env, max_episode, net=None):
     for episode in range(max_episode):
         done = False
         observation = env.reset(nogui=False)
+        observation = np.array(observation)
         flag = 0
         while done is False:
             print('Make decision '+str(step))
@@ -26,6 +27,7 @@ def run_task(env, max_episode, net=None):
             #     observation_, done, reward, info = env.step(action_high=action_high, action_low=action_low)
             #     flag = 0
             # observation, done, reward = env.step(action_high=1, action_low=1)
+            observation_ = np.array(observation_)
             net.store_transition(observation, action_high, action_low, reward, observation_)
             step += 1
             if step > 50:
