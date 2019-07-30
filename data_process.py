@@ -48,7 +48,7 @@ class DataProcess:
                 vehicle_data[11 + 3 * i] = follower[i]['speed']-speed
         return vehicle_data
 
-    def set_surrounding_data(self, surrounding, speed):
+    def set_surrounding_data(self, surrounding,speed):
         self.leftLeaderNeighborList = self._chosen_vehicle(surrounding.get_left_leader_neighbor_list())
         self.leftFollowerNeighborList = self._chosen_vehicle(surrounding.get_left_follower_neighbor_list())
         self.midLeaderNeighborList = self._chosen_vehicle(surrounding.get_mid_leader_neighbor_list())
