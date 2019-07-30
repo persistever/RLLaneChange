@@ -19,12 +19,12 @@ def run_task(env, max_episode, net=None):
             # if flag == 0:
             #     # action_high = 2
             #     # action_low = 4
-            #     observation_, done, reward, info = env.step(action_high=action_high, action_low=action_low)
+            #     observation_, reward, done, info = env.step(action_high=action_high, action_low=action_low)
             #     flag = 1
             # else:
             #     # action_high = 0
             #     # action_low = 3
-            #     observation_, done, reward, info = env.step(action_high=action_high, action_low=action_low)
+            #     observation_, reward, done, info = env.step(action_high=action_high, action_low=action_low)
             #     flag = 0
             # observation, done, reward = env.step(action_high=1, action_low=1)
             observation_ = np.array(observation_)

@@ -174,6 +174,6 @@ class Env:
             info['emergencyLane'] = 'Vehicle change to the emergency lane'
         info['nCollision'] = n_collision
         self.ego_vehicle.print_data()
-        return observation, done, reward, info
+        return observation, reward, done, info
 
 
