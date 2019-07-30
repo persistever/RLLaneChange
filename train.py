@@ -24,6 +24,7 @@ def run_task(env, max_episode):
             step += 1
             print("info: "+str(info))
             print("reward: " + str(reward))
+            print("observation: "+str(observation))
             print("-------------------------")
 
 
