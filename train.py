@@ -13,21 +13,23 @@ def run_task(env, max_episode, net=None):
         flag = 0
         while done is False:
             print('Make decision '+str(step))
-            # action_high, action_low = DQN.choose_action(observation)
-            # ovservation_, reward, done = env.step(action=[action_high, action_low])
-            if flag == 0:
-                action_high = 2
-                action_low = 4
-                observation_, done, reward, info = env.step(action_high=action_high, action_low=action_low)
-                flag = 1
-            else:
-                action_high = 0
-                action_low = 3
-                observation_, done, reward, info = env.step(action_high=action_high, action_low=action_low)
-                flag = 0
+            action_high, action_low = net.choose_action(observation)
+            observation_, reward, done, info = env.step(action_high=action_high, acition_low=action_low)
+            # if flag == 0:
+            #     # action_high = 2
+            #     # action_low = 4
+            #     observation_, done, reward, info = env.step(action_high=action_high, action_low=action_low)
+            #     flag = 1
+            # else:
+            #     # action_high = 0
+            #     # action_low = 3
+            #     observation_, done, reward, info = env.step(action_high=action_high, action_low=action_low)
+            #     flag = 0
             # observation, done, reward = env.step(action_high=1, action_low=1)
             net.store_transition(observation, action_high, action_low, reward, observation_)
             step += 1
+            if step > 50:
+                net.learn()
             observation = observation_
             print("info: "+str(info))
             print("reward: " + str(reward))
