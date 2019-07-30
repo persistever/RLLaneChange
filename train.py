@@ -36,7 +36,7 @@ def run_task(env, max_episode, net):
 
 if __name__ == "__main__":
     LC_env = Env(ego_start_time=30)
-    dqn = DQN(n_features=2)
+    dqn = DQN(n_features=3)
     run_task(LC_env, 1, dqn)
 
 
