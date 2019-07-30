@@ -66,7 +66,7 @@ class DQN:
         self.cost_his = []
 
     def conv1d(self, x, weight, strides):
-        return tf.nn.conv1d(x, weight, strides, padding = 'SAME', data_format="NCHW")
+        return tf.nn.conv1d(x, weight, strides, padding = 'SAME')
 
     def _build_net(self):
         # eval net
