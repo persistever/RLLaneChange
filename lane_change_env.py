@@ -74,10 +74,10 @@ class Env:
             self.sumo_step += 1
         self.data_process.set_surrounding_data(self.ego_vehicle.surroundings, self.ego_vehicle.get_speed())
         self.data_process.vehicle_surrounding_data_process()
-        observation.append(self.data_process.get_left_vehicle_data())
-        observation.append(self.data_process.get_mid_vehicle_data())
-        observation.append(self.data_process.get_right_vehicle_data())
-        observation.append([self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()])
+        observation.extend(self.data_process.get_left_vehicle_data())
+        observation.extend(self.data_process.get_mid_vehicle_data())
+        observation.extend(self.data_process.get_right_vehicle_data())
+        observation.extend([self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()])
         # observation = [self.data_process.get_left_vehicle_data(), self.data_process.get_mid_vehicle_data(),
         #                self.data_process.get_right_vehicle_data(),
         #                [self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()]]
@@ -158,11 +158,10 @@ class Env:
             done = True
             self.ego_vehicle.clear_mission()
             traci.close(wait=False)
-
-        observation.append(self.data_process.get_left_vehicle_data())
-        observation.append(self.data_process.get_mid_vehicle_data())
-        observation.append(self.data_process.get_right_vehicle_data())
-        observation.append([self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()])
+        observation.extend(self.data_process.get_left_vehicle_data())
+        observation.extend(self.data_process.get_mid_vehicle_data())
+        observation.extend(self.data_process.get_right_vehicle_data())
+        observation.extend([self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()])
         # observation = [self.data_process.get_left_vehicle_data(), self.data_process.get_mid_vehicle_data(),
         #                self.data_process.get_right_vehicle_data(),
         #                [self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()]]
