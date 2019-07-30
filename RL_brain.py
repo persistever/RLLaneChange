@@ -71,9 +71,12 @@ class DQN:
     def _build_net(self):
         # eval net
         self.q_target = tf.placeholder(tf.float32, [None, self.n_actions])
-        self.s_left = tf.placeholder(tf.float32, [None, 18, 1], name='s_left')
-        self.s_mid = tf.placeholder(tf.float32, [None, 18, 1], name='s_mid')
-        self.s_right = tf.placeholder(tf.float32, [None, 18, 1], name='s_right')
+        self.s_left = tf.placeholder(tf.float32, [None, 18], name='s_left')
+        self.s_left = tf.reshape(self.s_left, [-1, 18, 1])
+        self.s_mid = tf.placeholder(tf.float32, [None, 18], name='s_mid')
+        self.s_mid = tf.reshape(self.s_mid, [-1, 18, 1])
+        self.s_right = tf.placeholder(tf.float32, [None, 18], name='s_right')
+        self.s_right = tf.reshape(self.s_right, [-1, 18, 1])
         self.s_feature = tf.placeholder(tf.float32, [None, self.n_features], name='s_state')
 
         # self.q_eval_high (dim = 3) self. q_eval_low (dim = 11)
@@ -176,9 +179,12 @@ class DQN:
             self._train_op = tf.train.RMSPropOptimizer(self.lr).minimize(self.loss)
 
         # target net
-        self.s_left_ = tf.placeholder(tf.float32, [None, 18, 1], name='s_left_')
-        self.s_mid_ = tf.placeholder(tf.float32, [None, 18, 1], name='s_mid_')
-        self.s_right_ = tf.placeholder(tf.float32, [None, 18, 1], name='s_right_')
+        self.s_left_ = tf.placeholder(tf.float32, [None, 18], name='s_left_')
+        self.s_left_ = tf.reshape(self.s_left_, [-1, 18, 1])
+        self.s_mid_ = tf.placeholder(tf.float32, [None, 18], name='s_mid_')
+        self.s_mid_ = tf.reshape(self.s_mid_, [-1, 18, 1])
+        self.s_right_ = tf.placeholder(tf.float32, [None, 18], name='s_right_')
+        self.s_right_ = tf.reshape(self.s_right_, [-1, 18, 1])
         self.s_feature_ = tf.placeholder(tf.float32, [None, self.n_features], name='s_state_')
 
         with tf.variable_scope('target_net'):
