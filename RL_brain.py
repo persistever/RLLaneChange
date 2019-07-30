@@ -71,12 +71,9 @@ class DQN:
     def _build_net(self):
         # eval net
         self.q_target = tf.placeholder(tf.float32, [None, self.n_actions])
-        self.s_left = tf.placeholder(tf.float32, [None, 18], name='s_left')
-        self.s_left = tf.reshape(self.s_left, [-1, 18, 1])
-        self.s_mid = tf.placeholder(tf.float32, [None, 18], name='s_mid')
-        self.s_mid = tf.reshape(self.s_mid, [-1, 18, 1])
-        self.s_right = tf.placeholder(tf.float32, [None, 18], name='s_right')
-        self.s_right = tf.reshape(self.s_right, [-1, 18, 1])
+        self.s_left = tf.placeholder(tf.float32, [None, 18, 1], name='s_left')
+        self.s_mid = tf.placeholder(tf.float32, [None, 18, 1], name='s_mid')
+        self.s_right = tf.placeholder(tf.float32, [None, 18, 1], name='s_right')
         self.s_feature = tf.placeholder(tf.float32, [None, self.n_features], name='s_state')
 
         # self.q_eval_high (dim = 3) self. q_eval_low (dim = 11)
@@ -179,12 +176,9 @@ class DQN:
             self._train_op = tf.train.RMSPropOptimizer(self.lr).minimize(self.loss)
 
         # target net
-        self.s_left_ = tf.placeholder(tf.float32, [None, 18], name='s_left_')
-        self.s_left_ = tf.reshape(self.s_left_, [-1, 18, 1])
-        self.s_mid_ = tf.placeholder(tf.float32, [None, 18], name='s_mid_')
-        self.s_mid_ = tf.reshape(self.s_mid_, [-1, 18, 1])
-        self.s_right_ = tf.placeholder(tf.float32, [None, 18], name='s_right_')
-        self.s_right_ = tf.reshape(self.s_right_, [-1, 18, 1])
+        self.s_left_ = tf.placeholder(tf.float32, [None, 18, 1], name='s_left_')
+        self.s_mid_ = tf.placeholder(tf.float32, [None, 18, 1], name='s_mid_')
+        self.s_right_ = tf.placeholder(tf.float32, [None, 18, 1], name='s_right_')
         self.s_feature_ = tf.placeholder(tf.float32, [None, self.n_features], name='s_state_')
 
         with tf.variable_scope('target_net'):
@@ -323,19 +317,16 @@ class DQN:
     def choose_action(self, observation):
         # to have batch dimension when feed into tf placeholder
         observation_s_left = observation[:self.n_left]
-        observation_s_left = observation_s_left[np.newaxis, :]
         observation_s_mid = observation[self.n_left:self.n_left+self.n_mid]
-        observation_s_mid = observation_s_mid[np.newaxis, :]
         observation_s_right = observation[self.n_left+self.n_mid:self.n_left+self.n_mid+self.n_right]
-        observation_s_right = observation_s_right[np.newaxis, :]
         observation_s_state = observation[self.n_left+self.n_mid+self.n_right:]
         observation_s_state = observation_s_state[np.newaxis, :]
         if np.random.uniform() < self.epsilon:
             # forward feed the observation and get q value for every actions
             actions_value_high, actions_value_low = self.sess.run([self.q_eval_high, self.q_eval_low],
-                                                                  feed_dict={self.s_left: observation_s_left,
-                                                                             self.s_mid: observation_s_mid,
-                                                                             self.s_right: observation_s_right,
+                                                                  feed_dict={self.s_left: observation_s_left.reshape(-1,18,1),
+                                                                             self.s_mid: observation_s_mid.reshape(-1,18,1),
+                                                                             self.s_right: observation_s_right.reshape(-1,18,1),
                                                                              self.s_feature: observation_s_state
                                                                              })
             action_high = np.argmax(actions_value_high)

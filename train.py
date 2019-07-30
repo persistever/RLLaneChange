@@ -15,7 +15,7 @@ def run_task(env, max_episode, net=None):
         while done is False:
             print('Make decision '+str(step))
             action_high, action_low = net.choose_action(observation)
-            observation_, reward, done, info = env.step(action_high=action_high, acition_low=action_low)
+            observation_, reward, done, info = env.step(action_high=action_high, action_low=action_low)
             # if flag == 0:
             #     # action_high = 2
             #     # action_low = 4
@@ -42,6 +42,6 @@ def run_task(env, max_episode, net=None):
 if __name__ == "__main__":
     LC_env = Env(ego_start_time=30)
     dqn = DQN(n_features=3)
-    run_task(LC_env, 1, dqn)
+    run_task(LC_env, 2, dqn)
 
 
