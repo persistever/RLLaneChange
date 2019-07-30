@@ -60,7 +60,7 @@ class Env:
         # traffics = Traffic(trafficBase=0.4, trafficList=None)
         # this is the normal way of using traci. sumo is started as a
         # subprocess and then the python script connects and runs
-        traci.start([sumo_binary, "-c", "data/motorway.sumocfg"])
+        traci.start([sumo_binary, "-c", "data/motorway.sumocfg", "--no-step-log", "--no-warnings"])
         ego_start_step = math.ceil(self.ego_start_time/TIME_STEP+1)
         while self.sumo_step < ego_start_step:
             traci.simulationStep()
@@ -137,7 +137,6 @@ class Env:
                     if self.ego_vehicle.check_can_insert_into_gap() is False:
                         info['endState'] = 'Change to the target gap failed, the plan has been tried'
                         reward += 500
-                reward -= n_collision * 5
             else:
                 self.ego_vehicle.clear_mission()
                 self.ego_vehicle.lane_keep_plan()
@@ -180,6 +179,7 @@ class Env:
             reward -= 20
             info['emergencyLane'] = 'Vehicle change to the emergency lane'
 
+        reward -= n_collision * 10
         if self.sumo_step > 1e5 or traci.simulation.getMinExpectedNumber() <= 0 \
                 or self.ego_vehicle.is_outof_map() or self.ego_vehicle.check_outof_road():
             done = True

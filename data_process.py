@@ -115,6 +115,8 @@ class DataProcess:
             targetFollowerNeighborList = self.rightFollowerNeighborList
             lane = 2
         else:
+            self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", 200, 1))
+            self.gapVehicleList.append(self._create_virtual_vehicle("virtual_f", -200, 1))
             return
         if self.targetGap == 0:
             if len(targetLeaderNeighborList) == 3:
@@ -144,7 +146,7 @@ class DataProcess:
             if len(targetFollowerNeighborList) >= 1:
                 self.gapVehicleList.append(self._create_real_vehicle(targetFollowerNeighborList[0], lane))
             else:
-                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", -200, lane))
+                self.gapVehicleList.append(self._create_virtual_vehicle("virtual_f", -200, lane))
         if self.targetGap == 3:
             if len(targetFollowerNeighborList) >= 2:
                 self.gapVehicleList.append(self._create_real_vehicle(targetFollowerNeighborList[0], lane))
