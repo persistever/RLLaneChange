@@ -17,7 +17,7 @@ class DQN:
             n_actions_r=5,
             learning_rate=0.01,
             reward_decay=0.9,
-            e_greedy=0.9,
+            e_greedy=0.95,
             replace_target_iter=100,
             memory_size=500,
             batch_size=32,
