@@ -34,6 +34,7 @@ class Env:
         # self.n_feature = [18, 18, 18, 3]
         self.ego_start_time = ego_start_time
         self.sumo_step = 0
+        self.sumo_last_decision_step = 0
         self.nogui = False
         self.data_process = DataProcess()
 
@@ -78,9 +79,6 @@ class Env:
         observation.extend(self.data_process.get_mid_vehicle_data())
         observation.extend(self.data_process.get_right_vehicle_data())
         observation.extend([self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()])
-        # observation = [self.data_process.get_left_vehicle_data(), self.data_process.get_mid_vehicle_data(),
-        #                self.data_process.get_right_vehicle_data(),
-        #                [self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()]]
         return observation
 
     def step(self, action_high, action_low):
@@ -93,6 +91,7 @@ class Env:
         self.ego_vehicle.clear_mission()
         # self.ego_vehicle.print_data()
         self.data_process.set_surrounding_data(self.ego_vehicle.surroundings, self.ego_vehicle.get_speed())
+        self.data_process.vehicle_surrounding_data_process()
         # print("step中的车速："+str(self.ego_vehicle.get_speed()))
         if action_high == 1:
             self.ego_vehicle.lane_keep_plan()
@@ -159,13 +158,12 @@ class Env:
             done = True
             self.ego_vehicle.clear_mission()
             traci.close(wait=False)
+        self.data_process.set_surrounding_data(self.ego_vehicle.surroundings, self.ego_vehicle.get_speed())
+        self.data_process.vehicle_surrounding_data_process()
         observation.extend(self.data_process.get_left_vehicle_data())
         observation.extend(self.data_process.get_mid_vehicle_data())
         observation.extend(self.data_process.get_right_vehicle_data())
         observation.extend([self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()])
-        # observation = [self.data_process.get_left_vehicle_data(), self.data_process.get_mid_vehicle_data(),
-        #                self.data_process.get_right_vehicle_data(),
-        #                [self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()]]
 
         if self.ego_vehicle.check_outof_road():
             reward -= 1000
