@@ -13,7 +13,7 @@ def run_task(env, no_gui, max_episode, net=None):
         traffics_base = random.uniform(0.6, 0.8)
         traffics = Traffic(trafficBase=traffics_base, trafficList=None)
         done = False
-        if (episode+1) % 10 == 0:
+        if (episode+1) % 50 == 0:
             observation = env.reset(nogui=False)
         else:
             observation = env.reset(nogui=no_gui)
@@ -50,6 +50,6 @@ def run_task(env, no_gui, max_episode, net=None):
 if __name__ == "__main__":
     LC_env = Env(ego_start_time=30)
     dqn = DQN(n_features=3, e_greedy_increment=0.001)
-    run_task(env=LC_env, no_gui=True, max_episode=300, net=dqn)
+    run_task(env=LC_env, no_gui=True, max_episode=50, net=dqn)
 
 

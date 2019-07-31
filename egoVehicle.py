@@ -62,7 +62,7 @@ class EgoVehicle:
         self.yBeforeLaneChange = 0
         self.state = 0
         self.outOfRoad = False
-        self.edgeList = ['gneE0', 'HuiheJ1', 'gneE1', 'HuiheJ2', 'gneE2']
+        self.edgeList = ['gneE0', 'HuiheJ1', 'gneE1', 'HuiheJ2', 'gneE2', 'Zadao1', 'Zadao2']
         self.laneNumberDict = {}
         self.specialCase = 0
 
@@ -264,7 +264,7 @@ class EgoVehicle:
             self.nNextLane = 4
         elif next_edge_index == 3:
             self.nNextLane = 4
-        elif next_edge_index > len(self.edgeList)-1:
+        elif next_edge_index > 4:
             self.nNextLane = 4
         else:
             self.nNextLane = self.laneNumberDict[self.edgeList[next_edge_index]]
