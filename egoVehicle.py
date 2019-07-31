@@ -7,8 +7,8 @@ from surrounding import Surrounding
 
 LANE_WIDTH = 3.2
 RADAR_LIMIT = 200
-SPEED_LIMIT_HIGH = 34
-SPEED_LIMIT_LOW = 5
+SPEED_LIMIT_HIGH = 35
+SPEED_LIMIT_LOW = 0
 
 
 class EgoVehicle:
@@ -63,6 +63,7 @@ class EgoVehicle:
         self.state = 0
         self.outOfRoad = False
         self.edgeList = ['gneE0', 'HuiheJ1', 'gneE1', 'HuiheJ2', 'gneE2', 'Zadao1', 'Zadao2']
+        self.laneSpeedLimitList = [33.3, 27.0, 22.0, 33.0]
         self.laneNumberDict = {}
         self.specialCase = 0
 
