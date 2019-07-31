@@ -332,14 +332,15 @@ class DQN:
                                                                              })
             action_high = np.argmax(actions_value_high)
             if action_high == 0:
-                actions_low = actions_value_low[:self.n_actions_l]
+                actions_low = actions_value_low[:, :self.n_actions_l]
                 action_low = np.argmax(actions_low, 1)
             elif action_high == 1:
                 action_low = 0
             else:
-                actions_low = actions_value_low[-self.n_actions_r:]
+                actions_low = actions_value_low[:, -self.n_actions_r:]
                 action_low = np.argmax(actions_low, 1)
         else:
+            print("random choose")
             action_high = np.random.randint(0, 3)
             if action_high == 0:
                 action_low = np.random.randint(0, 5)
