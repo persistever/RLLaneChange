@@ -13,7 +13,7 @@ def run_task(env, no_gui, max_episode, net=None):
         traffics_base = random.uniform(0.6, 0.8)
         traffics = Traffic(trafficBase=traffics_base, trafficList=None)
         done = False
-        if (episode+1) % 300 == 0:
+        if (episode+1) % 10 == 0:
             observation = env.reset(nogui=False)
         else:
             observation = env.reset(nogui=no_gui)
