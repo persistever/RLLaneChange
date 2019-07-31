@@ -81,6 +81,7 @@ class Env:
         return observation
 
     def step(self, action_high, action_low):
+        speed_before = self.ego_vehicle.get_speed()
         observation = []
         reward = 0
         current_step = 0
@@ -96,6 +97,7 @@ class Env:
         self.data_process.vehicle_surrounding_data_process()
         # print("step中的车速："+str(self.ego_vehicle.get_speed()))
         if action_high == 1:
+            self.ego_vehicle.clear_mission()
             self.ego_vehicle.lane_keep_plan()
             while self.ego_vehicle.get_state() and current_step < 2000:
                 self.ego_vehicle.fresh_data()
@@ -106,7 +108,7 @@ class Env:
                     n_collision += 1
                 self.sumo_step += 1
                 current_step += 1
-            reward -= 500
+            reward -= 100
             info['endState'] = 'Choose ego lane, action is to keep lane'
         else:
             self.data_process.set_rl_result_data(action_high, action_low)
@@ -114,6 +116,7 @@ class Env:
             gap_front_vehicle, gap_rear_vehicle = self.data_process.get_gap_vehicle_list()
             print("gap前车："+str(gap_front_vehicle))
             print("gap后车："+str(gap_rear_vehicle))
+            self.ego_vehicle.clear_mission()
             self.ego_vehicle.lane_change_plan(gap_front_vehicle, gap_rear_vehicle)
             if self.ego_vehicle.check_can_change_lane(action_high) is True and \
                     self.ego_vehicle.check_can_insert_into_gap() is True:
@@ -155,6 +158,9 @@ class Env:
                 if self.ego_vehicle.check_can_insert_into_gap() is False:
                     info['endState'] = 'Cannot change to the target lane, because the gap is too narrow'
                     reward = -100
+
+        self.ego_vehicle.clear_mission()
+        self.ego_vehicle.lane_keep_plan()
         while keep_step < 50:
             self.ego_vehicle.fresh_data()
             # self.ego_vehicle.print_data()
@@ -180,6 +186,12 @@ class Env:
             info['emergencyLane'] = 'Vehicle change to the emergency lane'
 
         reward -= n_collision * 10
+        speed_after = self.ego_vehicle.get_speed()
+        if speed_after > speed_before:
+            reward += 200
+        elif speed_after < speed_before-5:
+            reward -= 200
+
         if self.sumo_step > 1e5 or traci.simulation.getMinExpectedNumber() <= 0 \
                 or self.ego_vehicle.is_outof_map() or self.ego_vehicle.check_outof_road():
             done = True

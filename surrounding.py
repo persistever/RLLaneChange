@@ -228,7 +228,7 @@ class Traffic:
                     '     <flow id="%s" type="%s" from="%s" to="%s" begin="%d" end="%d" probability="%f" departLane="free" departSpeed ="random"/> '
                         %( traffic['id'], traffic['type'], traffic['from'], traffic['to'], traffic['begin'], traffic['end'], traffic['possbability']), file=routes)
             print(
-                '     	<trip id="ego" type="pkw_special" depart="30" from="gneE0" to="gneE2" departLane="free" departSpeed ="random"/> ',
+                '     	<trip id="ego" type="pkw_special" depart="100" from="gneE0" to="gneE2" departLane="free" departSpeed ="random"/> ',
                 file=routes)
             # print("""       <vehicle id="ego" type="pkw_special" route="route_ego" depart="30" color="blue"/>""",
             #       file=routes)
@@ -299,7 +299,7 @@ class Traffic:
                 '     	<flow id="bus23" type="bus" from="Zadao1" to="gneE2" begin="0" end="500" probability="%f" departLane="free" departSpeed ="random"/> ' % (
                         self.trafficBase * p_s2 * p_e3 * s_rate), file=routes)
             print(
-                '     	<trip id="ego" type="pkw_special" depart="30" from="gneE0" to="gneE2" departLane="2" departSpeed ="random"/> ',file=routes)
+                '     	<trip id="ego" type="pkw_special" depart="100" from="gneE0" to="gneE2" departLane="2" departSpeed ="random"/> ',file=routes)
             # print("""       <vehicle id="ego" type="pkw_special" route="route_ego" depart="30" color="blue"/>""", file=routes)
             print("</routes>", file=routes)
 
