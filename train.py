@@ -39,7 +39,7 @@ def run_task(env, no_gui, max_episode, net=None):
             observation_ = np.array(observation_)
             net.store_transition(observation, action_high, action_low, reward, observation_)
             step += 1
-            if step > 50 and step % 3 == 0:
+            if step > 50 and step % 1 == 0:
                 net.learn()
             observation = observation_
             print("reward: " + str(reward))
