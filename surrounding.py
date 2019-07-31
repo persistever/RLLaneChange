@@ -108,7 +108,10 @@ class Surrounding:
         self.edge = traci.vehicle.getRoadID(self.id)
 
     def _get_lane_number(self):
-        self.laneNumber = traci.edge.getLaneNumber(self.edge)
+        if self.edge != '':
+            self.laneNumber = traci.edge.getLaneNumber(self.edge)
+        else:
+            self.laneNumber = 4
 
     def _get_lane_index(self):
         self.laneIndex = self.laneNumber - math.ceil(-self.y / self.laneWidth)
@@ -137,6 +140,8 @@ class Surrounding:
         self.maxSpeedList = []
         # self.get_edge()  # for use alone
         # self.get_lane_index()  # for use alone
+        if self.edge == '':
+            self.edge = 'gneE1'
         for i in range(traci.edge.getLaneNumber(self.edge)):
             self.maxSpeedList.append(traci.lane.getMaxSpeed(self.edge + "_"+str(i)))
 
@@ -172,7 +177,7 @@ class Surrounding:
         self._get_edge_dict()
         self._get_edge_length_list()
         self._get_edge_length_dict()
-        self._get_max_speed_list()
+        # self._get_max_speed_list()
         self._get_neighbor_list()
         self._classify()
 
@@ -208,11 +213,11 @@ class Traffic:
     def traffic_init_custom(self):
         with open("data/motorway.rou.xml", "w") as routes:
             print("""<routes>
-                    <vType id="pkw_f" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="33" \
+                    <vType id="pkw_f" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="20" \
             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="green"/>
-                    <vType id="pkw_m" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="25" \
+                    <vType id="pkw_m" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="15" \
             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="yellow"/>
-                    <vType id="bus" accel="0.8" decel="4.5" sigma="0.5" length="7" minGap="2.5" maxSpeed="20" \
+                    <vType id="bus" accel="0.8" decel="4.5" sigma="0.5" length="7" minGap="2.5" maxSpeed="10" \
             guiShape="bus" laneChangeModel="SL2015" latAlignment="center" color="red"/>
                     <vType id="pkw_special" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="0.000001" \
             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="blue"/>""", file=routes)
@@ -240,11 +245,11 @@ class Traffic:
         p_e3 = 1 - p_e1 - p_e2
         with open("data/motorway.rou.xml", "w") as routes:
             print("""<routes>
-                <vType id="pkw_f" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="33" \
+                <vType id="pkw_f" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="20" \
         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="green"/>
-                <vType id="pkw_m" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="25" \
+                <vType id="pkw_m" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="15" \
         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="yellow"/>
-                <vType id="bus" accel="0.8" decel="4.5" sigma="0.5" length="7" minGap="2.5" maxSpeed="20" \
+                <vType id="bus" accel="0.8" decel="4.5" sigma="0.5" length="7" minGap="2.5" maxSpeed="10" \
         guiShape="bus" laneChangeModel="SL2015" latAlignment="center" color="red"/>
                 <vType id="pkw_special" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="0.000001" \
         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="blue"/>""", file=routes)

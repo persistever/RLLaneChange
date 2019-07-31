@@ -154,7 +154,7 @@ class Env:
                     reward = -500
                 if self.ego_vehicle.check_can_insert_into_gap() is False:
                     info['endState'] = 'Cannot change to the target lane, because the gap is too narrow'
-                    reward = -500
+                    reward = -100
         while keep_step < 50:
             self.ego_vehicle.fresh_data()
             # self.ego_vehicle.print_data()
