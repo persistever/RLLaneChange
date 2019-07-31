@@ -25,6 +25,8 @@ from surrounding import Traffic
 from  data_process import DataProcess
 
 TIME_STEP = 0.01
+TIME_OUT = 1500
+KEEP_LANE_TIME = 1000
 
 
 class Env:
@@ -66,6 +68,7 @@ class Env:
             traci.simulationStep()
             self.sumo_step += 1
         self.ego_vehicle = EgoVehicle('ego')
+        traci.vehicle.moveToXY('ego', 'gneE0', 2, 0.5, -4.8, 90, 2)
         self.ego_vehicle.subscribe_ego_vehicle()
         while self.sumo_step < ego_start_step + 5:
             self.ego_vehicle.fresh_data()
@@ -77,7 +80,10 @@ class Env:
         observation.extend(self.data_process.get_left_vehicle_data())
         observation.extend(self.data_process.get_mid_vehicle_data())
         observation.extend(self.data_process.get_right_vehicle_data())
-        observation.extend([self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()])
+        observation.extend([self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(),
+                            self.ego_vehicle.get_next_n_lane()])
+        observation.extend(self.ego_vehicle.get_lmr_speed_limit())
+        self.ego_vehicle.get_lmr_speed_limit()
         return observation
 
     def step(self, action_high, action_low):
@@ -99,7 +105,7 @@ class Env:
         if action_high == 1:
             self.ego_vehicle.clear_mission()
             self.ego_vehicle.lane_keep_plan()
-            while self.ego_vehicle.get_state() and current_step < 2000:
+            while self.ego_vehicle.get_state() and current_step < TIME_OUT:
                 self.ego_vehicle.fresh_data()
                 # self.ego_vehicle.print_data()
                 self.ego_vehicle.drive()
@@ -120,7 +126,7 @@ class Env:
             self.ego_vehicle.lane_change_plan(gap_front_vehicle, gap_rear_vehicle)
             if self.ego_vehicle.check_can_change_lane(action_high) is True and \
                     self.ego_vehicle.check_can_insert_into_gap() is True:
-                while self.ego_vehicle.get_state() and current_step < 2000 \
+                while self.ego_vehicle.get_state() and current_step < TIME_OUT \
                         and self.ego_vehicle.check_can_insert_into_gap() is True:
                     self.ego_vehicle.fresh_data()
                     # self.ego_vehicle.print_data()
@@ -134,16 +140,16 @@ class Env:
                     reward += 1000
                     info['endState'] = 'Change to the target gap successful'
                 else:
-                    if current_step >= 2000:
+                    if current_step >= TIME_OUT:
                         info['endState'] = 'Change Lane Timeout, the plan has been tried'
-                        reward += 500
+                        reward += 200
                     if self.ego_vehicle.check_can_insert_into_gap() is False:
                         info['endState'] = 'Change to the target gap failed, the plan has been tried'
-                        reward += 500
+                        reward += 200
             else:
                 self.ego_vehicle.clear_mission()
                 self.ego_vehicle.lane_keep_plan()
-                while self.ego_vehicle.get_state() and current_step < 2000:
+                while self.ego_vehicle.get_state() and current_step < KEEP_LANE_TIME:
                     self.ego_vehicle.fresh_data()
                     # self.ego_vehicle.print_data()
                     self.ego_vehicle.drive()
@@ -176,20 +182,22 @@ class Env:
         observation.extend(self.data_process.get_left_vehicle_data())
         observation.extend(self.data_process.get_mid_vehicle_data())
         observation.extend(self.data_process.get_right_vehicle_data())
-        observation.extend([self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(), self.ego_vehicle.get_next_n_lane()])
+        observation.extend([self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(),
+                            self.ego_vehicle.get_next_n_lane()])
+        observation.extend(self.ego_vehicle.get_lmr_speed_limit())
 
         if self.ego_vehicle.check_outof_road():
             reward -= 1000
             info['endState'] = 'Vehicle is out of map in lateral direction'
         if self.ego_vehicle.get_lane_index() == 0:
-            reward -= 20
+            reward -= 200
             info['emergencyLane'] = 'Vehicle change to the emergency lane'
 
-        reward -= n_collision * 10
+        reward -= n_collision * 100
         speed_after = self.ego_vehicle.get_speed()
         if speed_after > speed_before:
             reward += 200
-        elif speed_after < speed_before-5:
+        elif speed_after < speed_before - 5:
             reward -= 200
 
         if self.sumo_step > 1e5 or traci.simulation.getMinExpectedNumber() <= 0 \

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2019年07月31日 星期三 09时52分08秒 by Eclipse SUMO netedit Version 1.2.0
+<!-- generated on 2019年07月31日 星期三 16时00分00秒 by Eclipse SUMO netedit Version 1.2.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
@@ -63,16 +63,17 @@
         <lane id=":HuiheJ2_4_0" index="0" speed="19.50" length="34.85" shape="2020.81,-8.00 2032.05,-8.80 2040.61,-10.75 2047.74,-13.16 2054.69,-15.32"/>
     </edge>
     <edge id=":HuiheJ2_5" function="internal">
-        <lane id=":HuiheJ2_5_0" index="0" speed="22.00" length="34.39" shape="2020.81,-8.00 2055.20,-8.00"/>
-        <lane id=":HuiheJ2_5_1" index="1" speed="27.00" length="34.39" shape="2020.81,-4.80 2055.20,-4.80"/>
-        <lane id=":HuiheJ2_5_2" index="2" speed="33.33" length="34.39" shape="2020.81,-1.60 2055.20,-1.60"/>
+        <lane id=":HuiheJ2_5_0" index="0" speed="22.00" length="34.44" shape="2020.81,-8.00 2055.20,-8.00"/>
+        <lane id=":HuiheJ2_5_1" index="1" speed="24.50" length="34.44" shape="2020.81,-4.80 2031.04,-5.30 2038.01,-6.40 2044.97,-7.50 2055.20,-8.00"/>
+        <lane id=":HuiheJ2_5_2" index="2" speed="27.00" length="34.44" shape="2020.81,-4.80 2055.20,-4.80"/>
+        <lane id=":HuiheJ2_5_3" index="3" speed="33.33" length="34.44" shape="2020.81,-1.60 2055.20,-1.60"/>
     </edge>
 
     <edge id="Zadao1" from="ZadaoInJ" to="HuiheJ1" priority="1">
         <lane id="Zadao1_0" index="0" speed="17.00" length="111.95" shape="300.71,-34.75 411.42,-18.14"/>
         <lane id="Zadao1_1" index="1" speed="17.00" length="111.95" shape="300.24,-31.58 410.95,-14.98"/>
     </edge>
-    <edge id="Zadao2" from="HuiheJ2" to="ZadaoOutJ" priority="2">
+    <edge id="Zadao2" from="HuiheJ2" to="ZadaoOutJ" priority="1">
         <lane id="Zadao2_0" index="0" speed="17.00" length="149.38" shape="2053.92,-18.43 2198.84,-54.66"/>
         <lane id="Zadao2_1" index="1" speed="17.00" length="149.38" shape="2054.69,-15.32 2199.61,-51.55"/>
     </edge>
@@ -82,13 +83,13 @@
         <lane id="gneE0_2" index="2" speed="27.00" length="500.00" shape="0.00,-4.80 410.67,-4.80"/>
         <lane id="gneE0_3" index="3" speed="33.33" length="500.00" shape="0.00,-1.60 410.67,-1.60"/>
     </edge>
-    <edge id="gneE1" from="HuiheJ1" to="HuiheJ2" priority="-1">
+    <edge id="gneE1" from="HuiheJ1" to="HuiheJ2" priority="1">
         <lane id="gneE1_0" index="0" allow="emergency" speed="33.33" length="1559.00" shape="461.81,-11.20 2020.81,-11.20"/>
         <lane id="gneE1_1" index="1" speed="22.00" length="1559.00" shape="461.81,-8.00 2020.81,-8.00"/>
         <lane id="gneE1_2" index="2" speed="27.00" length="1559.00" shape="461.81,-4.80 2020.81,-4.80"/>
         <lane id="gneE1_3" index="3" speed="33.33" length="1559.00" shape="461.81,-1.60 2020.81,-1.60"/>
     </edge>
-    <edge id="gneE2" from="HuiheJ2" to="End2" priority="-1">
+    <edge id="gneE2" from="HuiheJ2" to="End2" priority="2">
         <lane id="gneE2_0" index="0" allow="emergency" speed="33.33" length="944.80" shape="2055.20,-11.20 3000.00,-11.20"/>
         <lane id="gneE2_1" index="1" speed="22.00" length="944.80" shape="2055.20,-8.00 3000.00,-8.00"/>
         <lane id="gneE2_2" index="2" speed="27.00" length="944.80" shape="2055.20,-4.80 3000.00,-4.80"/>
@@ -97,16 +98,7 @@
 
     <junction id="End2" type="dead_end" x="3000.00" y="0.00" incLanes="gneE2_0 gneE2_1 gneE2_2 gneE2_3" intLanes="" shape="3000.00,-12.80 3000.00,0.00"/>
     <junction id="HuiheJ1" type="district" x="500.00" y="0.00" incLanes="Zadao1_0 Zadao1_1 gneE0_0 gneE0_1 gneE0_2 gneE0_3" intLanes=":HuiheJ1_0_0 :HuiheJ1_0_1 :HuiheJ1_0_2 :HuiheJ1_0_3 :HuiheJ1_4_0 :HuiheJ1_4_1 :HuiheJ1_4_2 :HuiheJ1_4_3" shape="461.81,0.00 461.81,-12.80 451.13,-13.06 443.19,-13.77 436.63,-14.87 430.09,-16.28 422.22,-17.92 411.66,-19.72 410.71,-13.39 410.67,-12.80 410.67,0.00" rightOfWay="edgePriority" fringe="outer"/>
-    <junction id="HuiheJ2" type="priority" x="2000.00" y="0.00" incLanes="gneE1_0 gneE1_1 gneE1_2 gneE1_3" intLanes=":HuiheJ2_0_0 :HuiheJ2_1_0 :HuiheJ2_2_0 :HuiheJ2_3_0 :HuiheJ2_4_0 :HuiheJ2_5_0 :HuiheJ2_5_1 :HuiheJ2_5_2" shape="2055.20,0.00 2055.20,-12.80 2055.08,-13.77 2053.53,-19.98 2046.63,-18.04 2041.55,-16.31 2037.36,-14.87 2033.13,-13.76 2027.92,-13.05 2020.81,-12.80 2020.81,0.00" rightOfWay="edgePriority" fringe="inner">
-        <request index="0" response="00000000" foes="00001000" cont="0"/>
-        <request index="1" response="00000000" foes="00010000" cont="0"/>
-        <request index="2" response="00000000" foes="00011000" cont="0"/>
-        <request index="3" response="00000101" foes="00000101" cont="0"/>
-        <request index="4" response="00000110" foes="00000110" cont="0"/>
-        <request index="5" response="00000000" foes="00000000" cont="0"/>
-        <request index="6" response="00000000" foes="00000000" cont="0"/>
-        <request index="7" response="00000000" foes="00000000" cont="0"/>
-    </junction>
+    <junction id="HuiheJ2" type="district" x="2000.00" y="0.00" incLanes="gneE1_0 gneE1_1 gneE1_2 gneE1_3" intLanes=":HuiheJ2_0_0 :HuiheJ2_1_0 :HuiheJ2_2_0 :HuiheJ2_3_0 :HuiheJ2_4_0 :HuiheJ2_5_0 :HuiheJ2_5_1 :HuiheJ2_5_2 :HuiheJ2_5_3" shape="2055.20,0.00 2055.20,-12.80 2055.08,-13.77 2053.53,-19.98 2046.63,-18.04 2041.55,-16.31 2037.36,-14.87 2033.13,-13.76 2027.92,-13.05 2020.81,-12.80 2020.81,0.00" rightOfWay="edgePriority" fringe="inner"/>
     <junction id="StartJ" type="dead_end" x="0.00" y="0.00" incLanes="" intLanes="" shape="0.00,0.00 0.00,-12.80"/>
     <junction id="ZadaoInJ" type="dead_end" x="300.00" y="-30.00" incLanes="" intLanes="" shape="300.00,-30.00 300.95,-36.33"/>
     <junction id="ZadaoOutJ" type="dead_end" x="2200.00" y="-50.00" incLanes="Zadao2_0 Zadao2_1" intLanes="" shape="2198.45,-56.21 2200.00,-50.00"/>
@@ -122,11 +114,12 @@
     <connection from="gneE1" to="Zadao2" fromLane="0" toLane="0" via=":HuiheJ2_0_0" dir="R" state="M"/>
     <connection from="gneE1" to="Zadao2" fromLane="0" toLane="1" via=":HuiheJ2_1_0" dir="R" state="M"/>
     <connection from="gneE1" to="gneE2" fromLane="0" toLane="0" via=":HuiheJ2_2_0" dir="s" state="M"/>
-    <connection from="gneE1" to="Zadao2" fromLane="1" toLane="0" via=":HuiheJ2_3_0" dir="R" state="m"/>
-    <connection from="gneE1" to="Zadao2" fromLane="1" toLane="1" via=":HuiheJ2_4_0" dir="R" state="m"/>
+    <connection from="gneE1" to="Zadao2" fromLane="1" toLane="0" via=":HuiheJ2_3_0" dir="R" state="M"/>
+    <connection from="gneE1" to="Zadao2" fromLane="1" toLane="1" via=":HuiheJ2_4_0" dir="R" state="M"/>
     <connection from="gneE1" to="gneE2" fromLane="1" toLane="1" via=":HuiheJ2_5_0" dir="s" state="M"/>
-    <connection from="gneE1" to="gneE2" fromLane="2" toLane="2" via=":HuiheJ2_5_1" dir="s" state="M"/>
-    <connection from="gneE1" to="gneE2" fromLane="3" toLane="3" via=":HuiheJ2_5_2" dir="s" state="M"/>
+    <connection from="gneE1" to="gneE2" fromLane="2" toLane="1" via=":HuiheJ2_5_1" dir="s" state="M"/>
+    <connection from="gneE1" to="gneE2" fromLane="2" toLane="2" via=":HuiheJ2_5_2" dir="s" state="M"/>
+    <connection from="gneE1" to="gneE2" fromLane="3" toLane="3" via=":HuiheJ2_5_3" dir="s" state="M"/>
 
     <connection from=":HuiheJ1_0" to="gneE1" fromLane="0" toLane="0" dir="s" state="M"/>
     <connection from=":HuiheJ1_0" to="gneE1" fromLane="1" toLane="1" dir="s" state="M"/>
@@ -142,7 +135,8 @@
     <connection from=":HuiheJ2_3" to="Zadao2" fromLane="0" toLane="0" dir="R" state="M"/>
     <connection from=":HuiheJ2_4" to="Zadao2" fromLane="0" toLane="1" dir="R" state="M"/>
     <connection from=":HuiheJ2_5" to="gneE2" fromLane="0" toLane="1" dir="s" state="M"/>
-    <connection from=":HuiheJ2_5" to="gneE2" fromLane="1" toLane="2" dir="s" state="M"/>
-    <connection from=":HuiheJ2_5" to="gneE2" fromLane="2" toLane="3" dir="s" state="M"/>
+    <connection from=":HuiheJ2_5" to="gneE2" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from=":HuiheJ2_5" to="gneE2" fromLane="2" toLane="2" dir="s" state="M"/>
+    <connection from=":HuiheJ2_5" to="gneE2" fromLane="3" toLane="3" dir="s" state="M"/>
 
 </net>

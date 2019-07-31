@@ -63,7 +63,7 @@ class EgoVehicle:
         self.state = 0
         self.outOfRoad = False
         self.edgeList = ['gneE0', 'HuiheJ1', 'gneE1', 'HuiheJ2', 'gneE2', 'Zadao1', 'Zadao2']
-        self.laneSpeedLimitList = [33.3, 27.0, 22.0, 33.0]
+        self.laneSpeedLimitList = [0.0, 33.3, 22.0, 27.0, 33.0, 0.0]
         self.laneNumberDict = {}
         self.specialCase = 0
 
@@ -200,6 +200,14 @@ class EgoVehicle:
         # if len(self.missionList) != 0:
         #     print("当前任务"+str(self.missionList[0]))
         # print("下一个edge的车道数："+str(self.nNextLane))
+
+    def get_lmr_speed_limit(self):
+        temp_index = self.laneIndex + 1
+        if self.laneIndex < 0:
+            temp_index = 1
+        elif self.laneIndex > 3:
+            temp_index = 4
+        return self.laneSpeedLimitList[temp_index-1:temp_index+2]
 
     def print_current_lane_index(self):
         print("当前车道: "+str(self.laneIndex))
