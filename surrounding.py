@@ -208,7 +208,7 @@ class Traffic:
     def traffic_init_custom(self):
         with open("data/motorway.rou.xml", "w") as routes:
             print("""<routes>
-                    <vType id="pkw_f" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="35" \
+                    <vType id="pkw_f" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="33" \
             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="green"/>
                     <vType id="pkw_m" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="25" \
             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="yellow"/>
@@ -223,7 +223,7 @@ class Traffic:
                     '     <flow id="%s" type="%s" from="%s" to="%s" begin="%d" end="%d" probability="%f" departLane="free" departSpeed ="random"/> '
                         %( traffic['id'], traffic['type'], traffic['from'], traffic['to'], traffic['begin'], traffic['end'], traffic['possbability']), file=routes)
             print(
-                '     	<trip id="ego" type="pkw_special" depart="30" from="gneE0" to="gneE7" departLane="free" departSpeed ="random"/> ',
+                '     	<trip id="ego" type="pkw_special" depart="30" from="gneE0" to="gneE2" departLane="free" departSpeed ="random"/> ',
                 file=routes)
             # print("""       <vehicle id="ego" type="pkw_special" route="route_ego" depart="30" color="blue"/>""",
             #       file=routes)
@@ -240,7 +240,7 @@ class Traffic:
         p_e3 = 1 - p_e1 - p_e2
         with open("data/motorway.rou.xml", "w") as routes:
             print("""<routes>
-                <vType id="pkw_f" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="35" \
+                <vType id="pkw_f" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="33" \
         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="green"/>
                 <vType id="pkw_m" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="25" \
         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="yellow"/>
