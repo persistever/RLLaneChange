@@ -368,6 +368,8 @@ class EgoVehicle:
             if complete_flag == 0:
                 self.axCtl = self.missionList[0]['axCtl']
                 self.ayCtl = self.missionList[0]['ayCtl']
+                if self.missionList[0]['m_type'] == 3:
+                    self.post_change_to_lane()
                 if self.missionList[0]['m_type'] == 4:
                     self.lane_keep_step1()
                 elif self.missionList[0]['m_type'] == 5:
@@ -473,8 +475,12 @@ class EgoVehicle:
             return False
 
     def post_change_to_lane(self):
-        temp_distance = self.gapFrontVehicle['position_x']-self.x
-        temp_relative_speed = self.gapFrontVehicle['speed']-self.vx
+        if self.leadingVehicle['position_x'] < self.gapFrontVehicle['position_x']:
+            temp_distance = self.leadingVehicle['position_x'] - self.x
+            temp_relative_speed = self.leadingVehicle['speed'] - self.vx
+        else:
+            temp_distance = self.gapFrontVehicle['position_x']-self.x
+            temp_relative_speed = self.gapFrontVehicle['speed']-self.vx
         temp_ax = 0.0
         if temp_relative_speed > 0:
             if temp_distance > 100:
@@ -498,10 +504,16 @@ class EgoVehicle:
         self.missionList[0]['axCtl'] = temp_ax
 
     def has_post_change_to_lane(self):
-        if self.gapFrontVehicle['speed']-1.0 < self.vx < self.gapFrontVehicle['speed']+1.0:
-            return True
+        if self.leadingVehicle['position_x'] < self.gapFrontVehicle['position_x']:
+            if self.leadingVehicle['speed']-1.0 < self.vx < self.leadingVehicle['speed']+1.0:
+                return True
+            else:
+                return False
         else:
-            return False
+            if self.gapFrontVehicle['speed']-1.0 < self.vx < self.gapFrontVehicle['speed']+1.0:
+                return True
+            else:
+                return False
 
     def lane_keep_plan(self):
         self.missionList.append(self._form_mission(4, 4, 0, 0, None, None))
