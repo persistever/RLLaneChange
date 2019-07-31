@@ -62,8 +62,6 @@ class EgoVehicle:
         self.yBeforeLaneChange = 0
         self.state = 0
         self.outOfRoad = False
-        # self.edgeList = ['gneE0', ':HuiheJ1_3', 'gneE1', 'gneE2', ':gneJ0_0', 'gneE3',
-        #                  ':gneJ1_0', 'gneE4', 'gneE5', ':HuiheJ2_3', 'gneE6', 'Fenli', 'gneE7', 'gneE8']
         self.edgeList = ['gneE0', 'HuiheJ1', 'gneE1', 'gneE2', 'gneE3',
                          'gneE4', 'gneE5', 'HuiheJ2', 'gneE6', 'gneE7']
         self.laneNumberDict = {}
