@@ -217,9 +217,9 @@ class Traffic:
             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="green"/>
                     <vType id="pkw_f" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="20" \
             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="green"/>
-                    <vType id="pkw_m" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="15" \
+                    <vType id="pkw_m" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="12" \
             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="yellow"/>
-                    <vType id="bus" accel="0.8" decel="4.5" sigma="0.5" length="7" minGap="2.5" maxSpeed="10" \
+                    <vType id="bus" accel="0.8" decel="4.5" sigma="0.5" length="7" minGap="2.5" maxSpeed="5" \
             guiShape="bus" laneChangeModel="SL2015" latAlignment="center" color="red"/>
                     <vType id="pkw_special" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="0.000001" \
             guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="blue"/>""", file=routes)
@@ -248,12 +248,12 @@ class Traffic:
         with open("data/motorway.rou.xml", "w") as routes:
             print("""<routes>
                 <vType id="pkw_h" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="30" \
-        guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="green"/>
+        guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="orange"/>
                 <vType id="pkw_f" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="20" \
         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="green"/>
-                <vType id="pkw_m" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="15" \
+                <vType id="pkw_m" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="12" \
         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="yellow"/>
-                <vType id="bus" accel="0.8" decel="4.5" sigma="0.5" length="7" minGap="2.5" maxSpeed="10" \
+                <vType id="bus" accel="0.8" decel="4.5" sigma="0.5" length="7" minGap="2.5" maxSpeed="5" \
         guiShape="bus" laneChangeModel="SL2015" latAlignment="center" color="red"/>
                 <vType id="pkw_special" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="0.000001" \
         guiShape="passenger" laneChangeModel="SL2015" latAlignment="center" color="blue"/>""", file=routes)
