@@ -50,6 +50,6 @@ def run_task(env, no_gui, max_episode, net=None):
 if __name__ == "__main__":
     LC_env = Env(ego_start_time=30)
     dqn = DQN(n_features=3, e_greedy_increment=0.001)
-    run_task(env=LC_env, no_gui=False, max_episode=300, net=dqn)
+    run_task(env=LC_env, no_gui=True, max_episode=300, net=dqn)
 
 

@@ -324,6 +324,7 @@ class DQN:
         observation_s_state = observation_s_state[np.newaxis, :]
         if np.random.uniform() < self.epsilon:
             # forward feed the observation and get q value for every actions
+            print("greedy choose")
             actions_value_high, actions_value_low = self.sess.run([self.q_eval_high, self.q_eval_low],
                                                                   feed_dict={self.s_left: observation_s_left.reshape(-1,18,1),
                                                                              self.s_mid: observation_s_mid.reshape(-1,18,1),
@@ -333,12 +334,12 @@ class DQN:
             action_high = np.argmax(actions_value_high)
             if action_high == 0:
                 actions_low = actions_value_low[:, :self.n_actions_l]
-                action_low = np.argmax(actions_low, 1)
+                action_low = np.argmax(actions_low, axis=1)[0]
             elif action_high == 1:
                 action_low = 0
             else:
                 actions_low = actions_value_low[:, -self.n_actions_r:]
-                action_low = np.argmax(actions_low, 1)
+                action_low = np.argmax(actions_low, axis=1)[0]
         else:
             print("random choose")
             action_high = np.random.randint(0, 3)
