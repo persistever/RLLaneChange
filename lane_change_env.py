@@ -63,12 +63,12 @@ class Env:
         # this is the normal way of using traci. sumo is started as a
         # subprocess and then the python script connects and runs
         traci.start([sumo_binary, "-c", "data/motorway.sumocfg", "--no-step-log", "--no-warnings"])
-        ego_start_step = math.ceil(self.ego_start_time/TIME_STEP+1)
+        ego_start_step = math.ceil(self.ego_start_time/TIME_STEP+10)
         while self.sumo_step < ego_start_step:
             traci.simulationStep()
             self.sumo_step += 1
-        self.ego_vehicle = EgoVehicle('ego')
         traci.vehicle.moveToXY('ego', 'gneE0', 2, 0.5, -4.8, 90, 2)
+        self.ego_vehicle = EgoVehicle('ego')
         self.ego_vehicle.subscribe_ego_vehicle()
         while self.sumo_step < ego_start_step + 5:
             self.ego_vehicle.fresh_data()
