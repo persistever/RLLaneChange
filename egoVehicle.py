@@ -7,8 +7,8 @@ from surrounding import Surrounding
 
 LANE_WIDTH = 3.2
 RADAR_LIMIT = 200
-SPEED_LIMIT_HIGH = 34
-SPEED_LIMIT_LOW = 5
+SPEED_LIMIT_HIGH = 35
+SPEED_LIMIT_LOW = 0
 
 
 class EgoVehicle:
@@ -63,6 +63,7 @@ class EgoVehicle:
         self.state = 0
         self.outOfRoad = False
         self.edgeList = ['gneE0', 'HuiheJ1', 'gneE1', 'HuiheJ2', 'gneE2', 'Zadao1', 'Zadao2']
+        self.laneSpeedLimitList = [0.0, 33.3, 22.0, 27.0, 33.0, 0.0]
         self.laneNumberDict = {}
         self.specialCase = 0
 
@@ -199,6 +200,14 @@ class EgoVehicle:
         # if len(self.missionList) != 0:
         #     print("当前任务"+str(self.missionList[0]))
         # print("下一个edge的车道数："+str(self.nNextLane))
+
+    def get_lmr_speed_limit(self):
+        temp_index = self.laneIndex + 1
+        if self.laneIndex < 0:
+            temp_index = 1
+        elif self.laneIndex > 3:
+            temp_index = 4
+        return self.laneSpeedLimitList[temp_index-1:temp_index+2]
 
     def print_current_lane_index(self):
         print("当前车道: "+str(self.laneIndex))
@@ -367,6 +376,8 @@ class EgoVehicle:
             if complete_flag == 0:
                 self.axCtl = self.missionList[0]['axCtl']
                 self.ayCtl = self.missionList[0]['ayCtl']
+                if self.missionList[0]['m_type'] == 3:
+                    self.post_change_to_lane()
                 if self.missionList[0]['m_type'] == 4:
                     self.lane_keep_step1()
                 elif self.missionList[0]['m_type'] == 5:
@@ -472,8 +483,12 @@ class EgoVehicle:
             return False
 
     def post_change_to_lane(self):
-        temp_distance = self.gapFrontVehicle['position_x']-self.x
-        temp_relative_speed = self.gapFrontVehicle['speed']-self.vx
+        if self.leadingVehicle['position_x'] < self.gapFrontVehicle['position_x']:
+            temp_distance = self.leadingVehicle['position_x'] - self.x
+            temp_relative_speed = self.leadingVehicle['speed'] - self.vx
+        else:
+            temp_distance = self.gapFrontVehicle['position_x']-self.x
+            temp_relative_speed = self.gapFrontVehicle['speed']-self.vx
         temp_ax = 0.0
         if temp_relative_speed > 0:
             if temp_distance > 100:
@@ -497,10 +512,16 @@ class EgoVehicle:
         self.missionList[0]['axCtl'] = temp_ax
 
     def has_post_change_to_lane(self):
-        if self.gapFrontVehicle['speed']-1.0 < self.vx < self.gapFrontVehicle['speed']+1.0:
-            return True
+        if self.leadingVehicle['position_x'] < self.gapFrontVehicle['position_x']:
+            if self.leadingVehicle['speed']-1.0 < self.vx < self.leadingVehicle['speed']+1.0:
+                return True
+            else:
+                return False
         else:
-            return False
+            if self.gapFrontVehicle['speed']-1.0 < self.vx < self.gapFrontVehicle['speed']+1.0:
+                return True
+            else:
+                return False
 
     def lane_keep_plan(self):
         self.missionList.append(self._form_mission(4, 4, 0, 0, None, None))
