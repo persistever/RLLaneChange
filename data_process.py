@@ -128,7 +128,7 @@ class DataProcess:
             else:
                 self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", 200, lane))
                 self.gapVehicleList.append(self._create_virtual_vehicle("virtual_f", 200, lane))
-        if self.targetGap == 1:
+        elif self.targetGap == 1:
             if len(targetLeaderNeighborList) >= 2:
                 self.gapVehicleList.append(self._create_real_vehicle(targetLeaderNeighborList[1], lane))
                 self.gapVehicleList.append(self._create_real_vehicle(targetLeaderNeighborList[0], lane))
@@ -138,7 +138,7 @@ class DataProcess:
             elif len(targetLeaderNeighborList) == 0:
                 self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", 200, lane))
                 self.gapVehicleList.append(self._create_virtual_vehicle("virtual_f", 200, lane))
-        if self.targetGap == 2:
+        elif self.targetGap == 2:
             if len(targetLeaderNeighborList) >= 1:
                 self.gapVehicleList.append(self._create_real_vehicle(targetLeaderNeighborList[0], lane))
             else:
@@ -147,7 +147,7 @@ class DataProcess:
                 self.gapVehicleList.append(self._create_real_vehicle(targetFollowerNeighborList[0], lane))
             else:
                 self.gapVehicleList.append(self._create_virtual_vehicle("virtual_f", -200, lane))
-        if self.targetGap == 3:
+        elif self.targetGap == 3:
             if len(targetFollowerNeighborList) >= 2:
                 self.gapVehicleList.append(self._create_real_vehicle(targetFollowerNeighborList[0], lane))
                 self.gapVehicleList.append(self._create_real_vehicle(targetFollowerNeighborList[1], lane))
@@ -157,7 +157,7 @@ class DataProcess:
             elif len(targetFollowerNeighborList) == 0:
                 self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", -200, lane))
                 self.gapVehicleList.append(self._create_virtual_vehicle("virtual_f", -200, lane))
-        if self.targetGap == 4:
+        elif self.targetGap == 4:
             if len(targetFollowerNeighborList) == 3:
                 self.gapVehicleList.append(self._create_real_vehicle(targetFollowerNeighborList[1], lane))
                 self.gapVehicleList.append(self._create_real_vehicle(targetFollowerNeighborList[2], lane))
@@ -167,6 +167,10 @@ class DataProcess:
             else:
                 self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", -200, lane))
                 self.gapVehicleList.append(self._create_virtual_vehicle("virtual_f", -200, lane))
+        else:
+            print("action_low_error")
+            self.gapVehicleList.append(self._create_virtual_vehicle("virtual_l", 200, lane))
+            self.gapVehicleList.append(self._create_virtual_vehicle("virtual_f", -200, lane))
 
     def rl_result_process(self):
         self._gap_data_process()

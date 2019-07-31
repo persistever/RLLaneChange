@@ -42,7 +42,6 @@ def run_task(env, no_gui, max_episode, net=None):
             if step > 50 and step % 3 == 0:
                 net.learn()
             observation = observation_
-
             print("reward: " + str(reward))
             print("info: "+str(info))
             print("-------------------------")
