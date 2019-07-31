@@ -106,7 +106,7 @@ class Env:
                     n_collision += 1
                 self.sumo_step += 1
                 current_step += 1
-            reward -= 100
+            reward -= 500
             info['endState'] = 'Choose ego lane, action is to keep lane'
         else:
             self.data_process.set_rl_result_data(action_high, action_low)
