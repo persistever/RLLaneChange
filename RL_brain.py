@@ -17,7 +17,7 @@ class DQN:
             n_actions_r=5,
             learning_rate=0.01,
             reward_decay=0.9,
-            e_greedy=0.95,
+            e_greedy=0.99,
             replace_target_iter=100,
             memory_size=500,
             batch_size=32,
@@ -63,14 +63,16 @@ class DQN:
             tf.summary.FileWriter("logs/", self.sess.graph)
 
         self.sess.run(tf.global_variables_initializer())
-        self.cost_his = []
+        self.cost_his_l = []
+        self.cost_his_h = []
 
     def conv1d(self, x, weight, strides):
         return tf.nn.conv1d(x, weight, strides, padding='SAME', data_format="NWC")
 
     def _build_net(self):
         # eval net
-        self.q_target = tf.placeholder(tf.float32, [None, self.n_actions])
+        self.q_target_low = tf.placeholder(tf.float32, [None, self.n_actions])
+        self.q_target_high = tf.placeholder(tf.float32, [None, self.n_actions_high])
         self.s_left = tf.placeholder(tf.float32, [None, 18, 1], name='s_left')
         self.s_mid = tf.placeholder(tf.float32, [None, 18, 1], name='s_mid')
         self.s_right = tf.placeholder(tf.float32, [None, 18, 1], name='s_right')
@@ -171,10 +173,14 @@ class DQN:
                 self.q_eval_low_r = tf.matmul(low_r_l1, w_low_r_l2) + b_low_r_l2
             self.q_eval_low = tf.concat([self.q_eval_low_l, self.q_eval_low_m, self.q_eval_low_r], 1)
         # loss and train
-        with tf.variable_scope('loss'):
-            self.loss = tf.reduce_mean(tf.squared_difference(self.q_target, self.q_eval_low))
-        with tf.variable_scope('train'):
-            self._train_op = tf.train.RMSPropOptimizer(self.lr).minimize(self.loss)
+        with tf.variable_scope('loss_h'):
+            self.loss_h = tf.reduce_mean(tf.squared_difference(self.q_target_high, self.q_eval_high))
+        with tf.variable_scope('tran_h'):
+            self._train_op_h = tf.train.RMSPropOptimizer(self.lr).minimize(self.loss_h)
+        with tf.variable_scope('loss_l'):
+            self.loss_l = tf.reduce_mean(tf.squared_difference(self.q_target_low, self.q_eval_low))
+        with tf.variable_scope('train_l'):
+            self._train_op_l = tf.train.RMSPropOptimizer(self.lr).minimize(self.loss_l)
 
         # target net
         self.s_left_ = tf.placeholder(tf.float32, [None, 18, 1], name='s_left_')
@@ -354,55 +360,87 @@ class DQN:
         return [action_high, action_low]
 
     def learn(self):
+        # replace data and increase epsilon
         if self.learn_step_counter % self.replace_target_iter == 0:
             self.sess.run(self.replace_target_op)
             print('\ntarget_params_replaced\n')
-            # sample batch memory from all memory
+            self.epsilon = self.epsilon + self.epsilon_increment if self.epsilon < self.epsilon_max else self.epsilon_max
+        # sample batch memory from all memory
         if self.memory_counter > self.memory_size:
             sample_index = np.random.choice(self.memory_size, size=self.batch_size)
         else:
             sample_index = np.random.choice(self.memory_counter, size=self.batch_size)
         batch_memory = self.memory[sample_index, :]
-
-        q_next_high, q_next_low, q_eval_low = self.sess.run(
-            [self.q_next_high, self.q_next_low, self.q_eval_low],
-            feed_dict={
-                self.s_left_: batch_memory[:, -(self.n_features+self.n_right+self.n_mid+self.n_left):-(self.n_features+self.n_right+self.n_mid)].reshape(-1, 18, 1),
-                self.s_mid_: batch_memory[:, -(self.n_features+self.n_right+self.n_mid):-(self.n_features+self.n_right)].reshape(-1, 18, 1),
-                self.s_right_: batch_memory[:, -(self.n_features+self.n_right):-self.n_features].reshape(-1, 18, 1),
-                self.s_feature_: batch_memory[:, -self.n_features:],  # fixed params
-                self.s_left: batch_memory[:, :self.n_left].reshape(-1, 18, 1),  # newest params
-                self.s_mid: batch_memory[:, self.n_left:self.n_left+self.n_mid].reshape(-1, 18, 1),
-                self.s_right: batch_memory[:, self.n_left+self.n_mid:self.n_left+self.n_mid+self.n_right].reshape(-1, 18, 1),
-                self.s_feature: batch_memory[:, self.n_left+self.n_mid+self.n_right:self.n_left+self.n_mid+self.n_right+self.n_features]
-            })
-        q_target = q_eval_low.copy()
-        # batch_index = np.arange(self.batch_size, dtype=np.int32)
-        eval_act_index = batch_memory[:, self.n_state].astype(int)
-        reward = batch_memory[:, self.n_state + 1]
-        for batch_index in range(self.batch_size):
-            if np.argmax(q_next_high[batch_index, :]) == 0:
-                q_next = np.max(q_next_low[batch_index, :self.n_actions_l])
-            elif np.argmax(q_next_high[batch_index, :]) == 1:
-                q_next = q_next_low[batch_index, self.n_actions_l]
-            else:
-                q_next = np.max(q_next_low[batch_index, -self.n_actions_r:])
-            q_target[batch_index, eval_act_index] = reward + self.gamma * q_next
-        _, self.cost = self.sess.run([self._train_op, self.loss],
-                                     feed_dict={self.s_left: batch_memory[:, :self.n_left].reshape(-1, 18, 1),  # newest params
-                                                self.s_mid: batch_memory[:, self.n_left:self.n_left+self.n_mid].reshape(-1, 18, 1),
-                                                self.s_right: batch_memory[:, self.n_left+self.n_mid:self.n_left+self.n_mid+self.n_right].reshape(-1, 18, 1),
-                                                self.s_feature: batch_memory[:, self.n_left+self.n_mid+self.n_right:self.n_left+self.n_mid+self.n_right+self.n_features],
-                                                self.q_target: q_target})
-        self.cost_his.append(self.cost)
-
-        # increasing epsilon
-        self.epsilon = self.epsilon + self.epsilon_increment if self.epsilon < self.epsilon_max else self.epsilon_max
+        # train low net 10 times every 20 steps
+        if self.learn_step_counter % 20 < 10:
+            q_next_high, q_next_low, q_eval_low = self.sess.run(
+                [self.q_next_high, self.q_next_low, self.q_eval_low],
+                feed_dict={
+                    self.s_left_: batch_memory[:, -(self.n_features+self.n_right+self.n_mid+self.n_left):-(self.n_features+self.n_right+self.n_mid)].reshape(-1, 18, 1),
+                    self.s_mid_: batch_memory[:, -(self.n_features+self.n_right+self.n_mid):-(self.n_features+self.n_right)].reshape(-1, 18, 1),
+                    self.s_right_: batch_memory[:, -(self.n_features+self.n_right):-self.n_features].reshape(-1, 18, 1),
+                    self.s_feature_: batch_memory[:, -self.n_features:],  # fixed params
+                    self.s_left: batch_memory[:, :self.n_left].reshape(-1, 18, 1),  # newest params
+                    self.s_mid: batch_memory[:, self.n_left:self.n_left+self.n_mid].reshape(-1, 18, 1),
+                    self.s_right: batch_memory[:, self.n_left+self.n_mid:self.n_left+self.n_mid+self.n_right].reshape(-1, 18, 1),
+                    self.s_feature: batch_memory[:, self.n_left+self.n_mid+self.n_right:self.n_left+self.n_mid+self.n_right+self.n_features]
+                })
+            q_target_low = q_eval_low.copy()
+            eval_act_index = batch_memory[:, self.n_state].astype(int)
+            reward = batch_memory[:, self.n_state + 1]
+            for batch_index in range(self.batch_size):
+                if np.argmax(q_next_high[batch_index, :]) == 0:
+                    q_next = np.max(q_next_low[batch_index, :self.n_actions_l])
+                elif np.argmax(q_next_high[batch_index, :]) == 1:
+                    q_next = q_next_low[batch_index, self.n_actions_l]
+                else:
+                    q_next = np.max(q_next_low[batch_index, -self.n_actions_r:])
+                q_target_low[batch_index, eval_act_index[batch_index]] = reward[batch_index] + self.gamma * q_next
+            _, self.cost_l = self.sess.run([self._train_op_l, self.loss_l],
+                                           feed_dict={self.s_left: batch_memory[:, :self.n_left].reshape(-1, 18, 1),  # newest params
+                                           self.s_mid: batch_memory[:, self.n_left:self.n_left+self.n_mid].reshape(-1, 18, 1),
+                                           self.s_right: batch_memory[:, self.n_left+self.n_mid:self.n_left+self.n_mid+self.n_right].reshape(-1, 18, 1),
+                                           self.s_feature: batch_memory[:, self.n_left+self.n_mid+self.n_right:self.n_left+self.n_mid+self.n_right+self.n_features],
+                                           self.q_target_low: q_target_low})
+            self.cost_his_l.append(self.cost_l)
+        # train high net 10 step every 20 steps
+        if self.learn_step_counter % 20 >= 10:
+            q_next_high, q_eval_high = self.sess.run(
+                [self.q_next_high, self.q_eval_high],
+                feed_dict={
+                    self.s_left_: batch_memory[:, -(self.n_features + self.n_right + self.n_mid + self.n_left):-(self.n_features + self.n_right + self.n_mid)].reshape(-1, 18, 1),
+                    self.s_mid_: batch_memory[:, -(self.n_features + self.n_right + self.n_mid):-(self.n_features + self.n_right)].reshape(-1, 18, 1),
+                    self.s_right_: batch_memory[:, -(self.n_features + self.n_right):-self.n_features].reshape(-1, 18, 1),
+                    self.s_feature_: batch_memory[:, -self.n_features:],  # fixed params
+                    self.s_left: batch_memory[:, :self.n_left].reshape(-1, 18, 1),  # newest params
+                    self.s_mid: batch_memory[:, self.n_left:self.n_left + self.n_mid].reshape(-1, 18, 1),
+                    self.s_right: batch_memory[:, self.n_left + self.n_mid:self.n_left + self.n_mid + self.n_right].reshape(-1, 18, 1),
+                    self.s_feature: batch_memory[:, self.n_left + self.n_mid + self.n_right:self.n_left + self.n_mid + self.n_right + self.n_features]
+                })
+            q_target_high = q_eval_high.copy()
+            eval_act_index = batch_memory[:, self.n_state].astype(int)
+            reward = batch_memory[:, self.n_state + 1]
+            for batch_index in range(self.batch_size):
+                if eval_act_index[batch_index] < 5:
+                    q_target_high[batch_index, 0] = reward[batch_index] + self.gamma * np.max(q_next_high[batch_index, :])
+                elif eval_act_index[batch_index] == 5:
+                    q_target_high[batch_index, 1] = reward[batch_index] + self.gamma * np.max(q_next_high[batch_index, :])
+                else:
+                    q_target_high[batch_index, 2] = reward[batch_index] + self.gamma * np.max(q_next_high[batch_index, :])
+            _, self.cost_h = self.sess.run([self._train_op_h, self.loss_h],
+                                           feed_dict={self.s_left: batch_memory[:, :self.n_left].reshape(-1, 18, 1),  # newest params
+                                           self.s_mid: batch_memory[:, self.n_left:self.n_left+self.n_mid].reshape(-1, 18, 1),
+                                           self.s_right: batch_memory[:, self.n_left+self.n_mid:self.n_left+self.n_mid+self.n_right].reshape(-1, 18, 1),
+                                           self.s_feature: batch_memory[:, self.n_left+self.n_mid+self.n_right:self.n_left+self.n_mid+self.n_right+self.n_features],
+                                           self.q_target_high: q_target_high})
+            self.cost_his_h.append(self.cost_h)
+        # increasing learn step counter
         self.learn_step_counter += 1
 
     def plot_cost(self):
         import matplotlib.pyplot as plt
-        plt.plot(np.arange(len(self.cost_his)), self.cost_his)
+        plt.plot(np.arange(len(self.cost_his_l)), self.cost_his_l)
+        plt.plot(np.arange(len(self.cost_his_h)), self.cost_his_h)
         plt.ylabel('Cost')
         plt.xlabel('training steps')
         plt.show()
