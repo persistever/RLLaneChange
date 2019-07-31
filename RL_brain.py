@@ -134,7 +134,7 @@ class DQN:
             low_left = tf.concat([self.s_feature, l_conv_output, m_conv_output, tf.transpose([tf.cast(tf.argmax(self.q_eval_high, 1),dtype=tf.float32)])], 1)
 
             # merge low mid data
-            low_mid = tf.concat([fully_connected_input, tf.transpose([tf.cast(tf.argmax(self.q_eval_high, 1),dtype=tf.float32)])], 1)
+            low_mid = tf.concat([fully_connected_input, tf.transpose([tf.cast(tf.argmax(self.q_eval_high, 1), dtype=tf.float32)])], 1)
 
             # merge low right data
             low_right = tf.concat([self.s_feature, r_conv_output, m_conv_output, tf.transpose([tf.cast(tf.argmax(self.q_eval_high, 1),dtype=tf.float32)])], 1)
@@ -332,6 +332,8 @@ class DQN:
                                                                              self.s_feature: observation_s_state
                                                                              })
             action_high = np.argmax(actions_value_high)
+            print(actions_value_high)
+            print(actions_value_low)
             if action_high == 0:
                 actions_low = actions_value_low[:, :self.n_actions_l]
                 action_low = np.argmax(actions_low, axis=1)[0]
@@ -380,11 +382,11 @@ class DQN:
         reward = batch_memory[:, self.n_state + 1]
         for batch_index in range(self.batch_size):
             if np.argmax(q_next_high[batch_index, :]) == 0:
-                q_next = np.max(q_next_low[batch_index,:self.n_actions_l])
+                q_next = np.max(q_next_low[batch_index, :self.n_actions_l])
             elif np.argmax(q_next_high[batch_index, :]) == 1:
-                q_next = q_next_low[batch_index,self.n_actions_l]
+                q_next = q_next_low[batch_index, self.n_actions_l]
             else:
-                q_next = np.max(q_next_low[batch_index,-self.n_actions_r:])
+                q_next = np.max(q_next_low[batch_index, -self.n_actions_r:])
             q_target[batch_index, eval_act_index] = reward + self.gamma * q_next
         _, self.cost = self.sess.run([self._train_op, self.loss],
                                      feed_dict={self.s_left: batch_memory[:, :self.n_left].reshape(-1, 18, 1),  # newest params
