@@ -169,7 +169,7 @@ class DQN:
                 w_low_r_l2 = tf.get_variable('w_low_r_l2', [n_low_l1, self.n_actions_r], initializer=w_initializer, collections=c_names)
                 b_low_r_l2 = tf.get_variable('b_low_r_l2', [1, self.n_actions_r], initializer=b_initializer, collections=c_names)
                 self.q_eval_low_r = tf.matmul(low_r_l1, w_low_r_l2) + b_low_r_l2
-            self.q_eval_low = tf.concat( [self.q_eval_low_l, self.q_eval_low_m, self.q_eval_low_r], 1)
+            self.q_eval_low = tf.concat([self.q_eval_low_l, self.q_eval_low_m, self.q_eval_low_r], 1)
         # loss and train
         with tf.variable_scope('loss'):
             self.loss = tf.reduce_mean(tf.squared_difference(self.q_target, self.q_eval_low))
@@ -332,11 +332,13 @@ class DQN:
                                                                              })
             action_high = np.argmax(actions_value_high)
             if action_high == 0:
-                action_low = np.argmax(actions_value_low[:self.n_actions_l])
+                actions_low = actions_value_low[:self.n_actions_l]
+                action_low = np.argmax(actions_low, 1)
             elif action_high == 1:
                 action_low = 0
             else:
-                action_low = np.argmax(actions_value_low[-self.n_actions_r:])
+                actions_low = actions_value_low[-self.n_actions_r:]
+                action_low = np.argmax(actions_low, 1)
         else:
             action_high = np.random.randint(0, 3)
             if action_high == 0:
