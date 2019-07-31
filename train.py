@@ -48,6 +48,7 @@ def run_task(env, no_gui, max_episode, net=None):
 
 
 if __name__ == "__main__":
+    traffics = Traffic(trafficBase=0.4, trafficList=None)
     LC_env = Env(ego_start_time=30)
     dqn = DQN(n_features=3, e_greedy_increment=0.001)
     run_task(env=LC_env, no_gui=True, max_episode=50, net=dqn)
