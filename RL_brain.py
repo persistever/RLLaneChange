@@ -21,6 +21,7 @@ class DQN:
             replace_target_iter=100,
             memory_size=500,
             batch_size=32,
+            e_greedy_start=0.5,
             e_greedy_increment=None,
             output_graph=False,
             is_restore=False,
@@ -48,7 +49,7 @@ class DQN:
         self.lr = learning_rate
         self.epsilon_max = e_greedy
         self.epsilon_increment = e_greedy_increment
-        self.epsilon = 0.5 if e_greedy_increment is not None else self.epsilon_max
+        self.epsilon = e_greedy_start if e_greedy_increment is not None else self.epsilon_max
         self.memory_counter = 0
 
         # saver and restorer parameter
@@ -474,5 +475,6 @@ class DQN:
             ckpt = tf.train.get_checkpoint_state(self.save_path)
             if ckpt and ckpt.model_checkpoint_path:
                 self.saver.restore(self.sess, ckpt.model_checkpoint_path)
+                print("restore successfully")
             else:
                 pass
