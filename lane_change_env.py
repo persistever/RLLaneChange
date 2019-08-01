@@ -187,7 +187,7 @@ class Env:
             reward -= 50
             info['endState'] = 'Vehicle is out of map in lateral direction'
         if self.ego_vehicle.get_lane_index() == 0:
-            reward -= 10
+            reward -= 20
             info['emergencyLane'] = 'Vehicle change to the emergency lane'
 
         if n_collision < 10:
