@@ -63,12 +63,12 @@ class Env:
         # this is the normal way of using traci. sumo is started as a
         # subprocess and then the python script connects and runs
         traci.start([sumo_binary, "-c", "data/motorway.sumocfg", "--no-step-log", "--no-warnings"])
-        ego_start_step = math.ceil(self.ego_start_time/TIME_STEP+1)
+        ego_start_step = math.ceil(self.ego_start_time/TIME_STEP+10)
         while self.sumo_step < ego_start_step:
             traci.simulationStep()
             self.sumo_step += 1
-        self.ego_vehicle = EgoVehicle('ego')
         traci.vehicle.moveToXY('ego', 'gneE0', 2, 0.5, -4.8, 90, 2)
+        self.ego_vehicle = EgoVehicle('ego')
         self.ego_vehicle.subscribe_ego_vehicle()
         while self.sumo_step < ego_start_step + 5:
             self.ego_vehicle.fresh_data()
@@ -105,7 +105,8 @@ class Env:
         if action_high == 1:
             self.ego_vehicle.clear_mission()
             self.ego_vehicle.lane_keep_plan()
-            while self.ego_vehicle.get_state() and current_step < TIME_OUT:
+            while self.ego_vehicle.is_outof_map() is False and self.ego_vehicle.check_outof_road() is False and \
+                    self.ego_vehicle.get_state() and current_step < TIME_OUT:
                 self.ego_vehicle.fresh_data()
                 # self.ego_vehicle.print_data()
                 self.ego_vehicle.drive()
@@ -127,7 +128,8 @@ class Env:
             if self.ego_vehicle.check_can_change_lane(action_high) is True and \
                     self.ego_vehicle.check_can_insert_into_gap() is True:
                 while self.ego_vehicle.get_state() and current_step < TIME_OUT \
-                        and self.ego_vehicle.check_can_insert_into_gap() is True:
+                        and self.ego_vehicle.check_can_insert_into_gap() is True and \
+                        self.ego_vehicle.is_outof_map() is False and self.ego_vehicle.check_outof_road() is False:
                     self.ego_vehicle.fresh_data()
                     # self.ego_vehicle.print_data()
                     self.ego_vehicle.drive()
@@ -149,7 +151,8 @@ class Env:
             else:
                 self.ego_vehicle.clear_mission()
                 self.ego_vehicle.lane_keep_plan()
-                while self.ego_vehicle.get_state() and current_step < KEEP_LANE_TIME:
+                while self.ego_vehicle.is_outof_map() is False and self.ego_vehicle.check_outof_road() is False and \
+                        self.ego_vehicle.get_state() and current_step < KEEP_LANE_TIME:
                     self.ego_vehicle.fresh_data()
                     # self.ego_vehicle.print_data()
                     self.ego_vehicle.drive()
@@ -167,7 +170,7 @@ class Env:
 
         self.ego_vehicle.clear_mission()
         self.ego_vehicle.lane_keep_plan()
-        while keep_step < 50:
+        while self.ego_vehicle.is_outof_map() is False and self.ego_vehicle.check_outof_road() is False and keep_step < 50:
             self.ego_vehicle.fresh_data()
             # self.ego_vehicle.print_data()
             self.ego_vehicle.drive()
@@ -176,15 +179,6 @@ class Env:
                 n_collision += 1
             self.sumo_step += 1
             keep_step += 1
-
-        self.data_process.set_surrounding_data(self.ego_vehicle.surroundings, self.ego_vehicle.get_speed())
-        self.data_process.vehicle_surrounding_data_process()
-        observation.extend(self.data_process.get_left_vehicle_data())
-        observation.extend(self.data_process.get_mid_vehicle_data())
-        observation.extend(self.data_process.get_right_vehicle_data())
-        observation.extend([self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(),
-                            self.ego_vehicle.get_next_n_lane()])
-        observation.extend(self.ego_vehicle.get_lmr_speed_limit())
 
         if self.ego_vehicle.check_outof_road():
             reward -= 1000
@@ -204,7 +198,16 @@ class Env:
                 or self.ego_vehicle.is_outof_map() or self.ego_vehicle.check_outof_road():
             done = True
             self.ego_vehicle.clear_mission()
-            traci.close(wait=False)
+            traci.close()
+        else:
+            self.data_process.set_surrounding_data(self.ego_vehicle.surroundings, self.ego_vehicle.get_speed())
+            self.data_process.vehicle_surrounding_data_process()
+            observation.extend(self.data_process.get_left_vehicle_data())
+            observation.extend(self.data_process.get_mid_vehicle_data())
+            observation.extend(self.data_process.get_right_vehicle_data())
+            observation.extend([self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(),
+                                self.ego_vehicle.get_next_n_lane()])
+            observation.extend(self.ego_vehicle.get_lmr_speed_limit())
 
         info['nCollision'] = n_collision
         info['SUMO_Time: '] = self.sumo_step*0.01
