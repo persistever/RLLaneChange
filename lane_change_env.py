@@ -170,18 +170,21 @@ class Env:
                     info['endState'] = 'Cannot change to the target lane, because the gap is too narrow'
                     reward = -10
 
-        self.ego_vehicle.clear_mission()
-        self.ego_vehicle.lane_keep_plan()
-        while (self.ego_vehicle.get_state() or keep_step < 20) and self.ego_vehicle.is_outof_map() is False and \
-                self.ego_vehicle.check_outof_road() is False and keep_step < 50:
-            self.ego_vehicle.fresh_data()
-            # self.ego_vehicle.print_data()
-            self.ego_vehicle.drive()
-            traci.simulationStep()
-            if self.ego_vehicle.check_collision():
-                n_collision += 1
-            self.sumo_step += 1
-            keep_step += 1
+        while keep_step < 20:
+            self.ego_vehicle.clear_mission()
+            self.ego_vehicle.lane_keep_plan()
+            while self.ego_vehicle.get_state() and self.ego_vehicle.is_outof_map() is False and \
+                    self.ego_vehicle.check_outof_road() is False and keep_step < 50:
+                self.ego_vehicle.fresh_data()
+                # self.ego_vehicle.print_data()
+                self.ego_vehicle.drive()
+                traci.simulationStep()
+                if self.ego_vehicle.check_collision():
+                    n_collision += 1
+                self.sumo_step += 1
+                keep_step += 1
+            if self.ego_vehicle.is_outof_map() or self.ego_vehicle.check_outof_road():
+                break
 
         if self.ego_vehicle.check_outof_road():
             reward -= 50
@@ -324,18 +327,21 @@ class Env:
                     n_collision += 1
                 self.sumo_step += 1
 
-        self.ego_vehicle.clear_mission()
-        self.ego_vehicle.lane_keep_plan()
-        while (self.ego_vehicle.get_state() or keep_step < 20) and self.ego_vehicle.is_outof_map() is False and \
-                self.ego_vehicle.check_outof_road() is False and keep_step < 50:
-            self.ego_vehicle.fresh_data()
-            # self.ego_vehicle.print_data()
-            self.ego_vehicle.drive()
-            traci.simulationStep()
-            if self.ego_vehicle.check_collision():
-                n_collision += 1
-            self.sumo_step += 1
-            keep_step += 1
+        while keep_step < 20:
+            self.ego_vehicle.clear_mission()
+            self.ego_vehicle.lane_keep_plan()
+            while self.ego_vehicle.get_state() and self.ego_vehicle.is_outof_map() is False and \
+                    self.ego_vehicle.check_outof_road() is False and keep_step < 50:
+                self.ego_vehicle.fresh_data()
+                # self.ego_vehicle.print_data()
+                self.ego_vehicle.drive()
+                traci.simulationStep()
+                if self.ego_vehicle.check_collision():
+                    n_collision += 1
+                self.sumo_step += 1
+                keep_step += 1
+            if self.ego_vehicle.is_outof_map() or self.ego_vehicle.check_outof_road():
+                break
 
         if self.ego_vehicle.check_outof_road():
             reward -= 50
