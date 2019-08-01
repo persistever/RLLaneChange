@@ -117,7 +117,7 @@ class Env:
                     n_collision += 1
                 self.sumo_step += 1
                 current_step += 1
-            reward -= 100
+            reward += 1
             info['endState'] = 'Choose ego lane, action is to keep lane'
         else:
             self.data_process.set_rl_result_data(action_high, action_low)
@@ -141,15 +141,15 @@ class Env:
                     self.sumo_step += 1
                     current_step += 1
                 if self.ego_vehicle.check_change_lane_successful():
-                    reward += 1000
+                    reward += 20
                     info['endState'] = 'Change to the target gap successful'
                 else:
                     if current_step >= TIME_OUT:
                         info['endState'] = 'Change Lane Timeout, the plan has been tried'
-                        reward += 200
+                        reward -= 5
                     if self.ego_vehicle.check_can_insert_into_gap() is False:
                         info['endState'] = 'Change to the target gap failed, the plan has been tried'
-                        reward += 200
+                        reward -= 5
             else:
                 self.ego_vehicle.clear_mission()
                 self.ego_vehicle.lane_keep_plan()
@@ -165,10 +165,10 @@ class Env:
                     current_step += 1
                 if self.ego_vehicle.check_can_change_lane(action_high) is False:
                     info['endState'] = 'Cannot change to the target lane, because it\'s out of map, lane keep instead'
-                    reward = -500
+                    reward = -20
                 if self.ego_vehicle.check_can_insert_into_gap() is False:
                     info['endState'] = 'Cannot change to the target lane, because the gap is too narrow'
-                    reward = -100
+                    reward = -10
 
         self.ego_vehicle.clear_mission()
         self.ego_vehicle.lane_keep_plan()
@@ -183,18 +183,18 @@ class Env:
             keep_step += 1
 
         if self.ego_vehicle.check_outof_road():
-            reward -= 1000
+            reward -= 50
             info['endState'] = 'Vehicle is out of map in lateral direction'
         if self.ego_vehicle.get_lane_index() == 0:
-            reward -= 200
+            reward -= 10
             info['emergencyLane'] = 'Vehicle change to the emergency lane'
 
         reward -= n_collision * 100
         speed_after = self.ego_vehicle.get_speed()
         if speed_after > speed_before:
-            reward += 200
+            reward += 5
         elif speed_after < speed_before - 5:
-            reward -= 200
+            reward -= 5
 
         if self.sumo_step > 1e5 or traci.simulation.getMinExpectedNumber() <= 0 \
                 or self.ego_vehicle.is_outof_map() or self.ego_vehicle.check_outof_road():
