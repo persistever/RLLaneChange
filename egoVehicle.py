@@ -533,7 +533,7 @@ class EgoVehicle:
         temp_distance = self.leadingVehicle['position_x'] - self.x
         temp_relative_speed = self.leadingVehicle['speed'] - self.vx
         temp_ax = 0.0
-        safe_distance = self.leadingVehicle['speed']*2.0
+        safe_distance = max(10, self.leadingVehicle['speed']*2.0)
         if temp_relative_speed > 0:
             if temp_distance >= safe_distance + 100:
                 temp_ax = 8.0
@@ -542,13 +542,13 @@ class EgoVehicle:
             elif safe_distance <= temp_distance < 50 + safe_distance:
                 temp_ax = 2.0
             else:
-                temp_ax = 0.0
+                temp_ax = -8.0
         elif temp_relative_speed < 0:
             if temp_distance >= safe_distance + 100:
                 temp_ax = 3.0
             elif 50 + safe_distance <= temp_distance < safe_distance + 100:
                 temp_ax = 1.0
-            elif safe_distance <= temp_distance < 50 + safe_distance*3.6:
+            elif safe_distance <= temp_distance < 50 + safe_distance:
                 temp_ax = -3.0
             else:
                 temp_ax = -8.0
@@ -557,7 +557,7 @@ class EgoVehicle:
 
     def has_lane_keep_step1(self):
         temp_distance = self.leadingVehicle['position_x'] - self.x
-        safe_distance = self.leadingVehicle['speed'] * 2.0
+        safe_distance = max(10, self.leadingVehicle['speed']*2.0)
         if self.leadingVehicle['virtual'] is False:
             if safe_distance - 10.0 < temp_distance < safe_distance + 10.0:
                 return True
