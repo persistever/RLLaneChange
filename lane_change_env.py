@@ -141,7 +141,7 @@ class Env:
                     self.sumo_step += 1
                     current_step += 1
                 if self.ego_vehicle.check_change_lane_successful():
-                    reward += 10
+                    reward += 20
                     info['endState'] = 'Change to the target gap successful'
                 else:
                     if current_step >= TIME_OUT:
