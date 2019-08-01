@@ -172,7 +172,8 @@ class Env:
 
         self.ego_vehicle.clear_mission()
         self.ego_vehicle.lane_keep_plan()
-        while self.ego_vehicle.is_outof_map() is False and self.ego_vehicle.check_outof_road() is False and keep_step < 50:
+        while self.ego_vehicle.get_state() and self.ego_vehicle.is_outof_map() is False and \
+                self.ego_vehicle.check_outof_road() is False and keep_step < 50:
             self.ego_vehicle.fresh_data()
             # self.ego_vehicle.print_data()
             self.ego_vehicle.drive()
