@@ -25,8 +25,10 @@ class DQN:
             output_graph=False,
             is_restore=False,
             is_save=False,
-            save_path="data/model"
+            save_path="data/model/",
+            restore_path=None
     ):
+        # global model parameter
         self.n_actions_high = 3
         self.n_actions_l = n_actions_l
         self.n_actions_m = 1
@@ -37,23 +39,33 @@ class DQN:
         self.n_mid = 18
         self.n_right = 18
         self.n_state = self.n_features + self.n_right + self.n_mid + self.n_left
-        self.lr = learning_rate
         self.gamma = reward_decay
-        self.epsilon_max = e_greedy
+
+        # trainer parameter
         self.replace_target_iter = replace_target_iter
         self.memory_size = memory_size
         self.batch_size = batch_size
+        self.lr = learning_rate
+        self.epsilon_max = e_greedy
         self.epsilon_increment = e_greedy_increment
         self.epsilon = 0.5 if e_greedy_increment is not None else self.epsilon_max
         self.memory_counter = 0
+
+        # saver and restorer parameter
         self.is_restore = is_restore
         self.is_save = is_save
         self.save_path = save_path
+        if restore_path is not None:
+            self.restore_path = restore_path
+        else:
+            self.restore_path = self.save_path
+
         # total learning step
         self.learn_step_counter = 0
 
         # initialize zero memory [s, a, r, s_]
         self.memory = np.zeros((self.memory_size, (n_features+54)*2+2))
+
         # initialize cost list
         self.cost_his_l = []
         self.cost_his_h = []
