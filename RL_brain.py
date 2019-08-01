@@ -76,7 +76,8 @@ class DQN:
         t_params = tf.get_collection('target_net_params')
         e_params = tf.get_collection('eval_net_params')
         self.replace_target_op = [tf.assign(t, e) for t, e in zip(t_params, e_params)]
-
+        # gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.5)
+        # self.sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
         self.sess = tf.Session()
         self.saver = tf.train.Saver()
         if output_graph:
