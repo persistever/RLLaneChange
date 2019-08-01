@@ -404,7 +404,7 @@ class DQN:
                                            self.q_target_low: q_target_low})
             self.cost_his_l.append(self.cost_l)
         # train high net 10 step every 20 steps
-        if self.learn_step_counter % 20 >= 10 and self.learn_step_counter < 100:
+        if self.learn_step_counter % 20 >= 10:
             q_next_high, q_eval_high = self.sess.run(
                 [self.q_next_high, self.q_eval_high],
                 feed_dict={
