@@ -480,6 +480,7 @@ class DQN:
             cost_l = np.array(self.cost_his_l)
             np.save(self.save_path+"cost_h.npy", cost_h)
             np.save(self.save_path+"cost_l.npy", cost_l)
+            # np.save(self.save_path+"memory.npy", self.memory)
 
     def restore(self):
         if self.is_restore is True:
@@ -489,5 +490,7 @@ class DQN:
                 print("restore successfully")
             self.cost_his_h = np.load(self.restore_path+"cost_h.npy").tolist()
             self.cost_his_l = np.load(self.restore_path+"cost_l.npy").tolist()
+            self.memory = np.load(self.restore_path+"memory.npy")
+            # self.memory_counter = len(self.memory[:, 0])
         else:
             pass
