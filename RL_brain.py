@@ -23,6 +23,9 @@ class DQN:
             batch_size=32,
             e_greedy_increment=None,
             output_graph=False,
+            is_restore=False,
+            is_save=False,
+            save_path="data/model"
     ):
         self.n_actions_high = 3
         self.n_actions_l = n_actions_l
@@ -43,11 +46,17 @@ class DQN:
         self.epsilon_increment = e_greedy_increment
         self.epsilon = 0.5 if e_greedy_increment is not None else self.epsilon_max
         self.memory_counter = 0
+        self.is_restore = is_restore
+        self.is_save = is_save
+        self.save_path = save_path
         # total learning step
         self.learn_step_counter = 0
 
         # initialize zero memory [s, a, r, s_]
         self.memory = np.zeros((self.memory_size, (n_features+54)*2+2))
+        # initialize cost list
+        self.cost_his_l = []
+        self.cost_his_h = []
 
         # consist of [target_net, evaluate_net]
         self._build_net()
@@ -56,15 +65,13 @@ class DQN:
         self.replace_target_op = [tf.assign(t, e) for t, e in zip(t_params, e_params)]
 
         self.sess = tf.Session()
-
+        self.saver = tf.train.Saver()
         if output_graph:
             # $ tensorboard --logdir=logs
             # tf.train.SummaryWriter soon be deprecated, use following
             tf.summary.FileWriter("logs/", self.sess.graph)
-
         self.sess.run(tf.global_variables_initializer())
-        self.cost_his_l = []
-        self.cost_his_h = []
+        self.restore()
 
     def conv1d(self, x, weight, strides):
         return tf.nn.conv1d(x, weight, strides, padding='SAME', data_format="NWC")
@@ -444,3 +451,16 @@ class DQN:
         plt.ylabel('Cost')
         plt.xlabel('training steps')
         plt.show()
+
+    def save(self):
+        if self.is_save is True:
+            self.saver.save(self.sess, self.save_path + 'model.ckpt')
+            print("save successfully")
+
+    def restore(self):
+        if self.is_restore is True:
+            ckpt = tf.train.get_checkpoint_state(self.save_path)
+            if ckpt and ckpt.model_checkpoint_path:
+                self.saver.restore(self.sess, ckpt.model_checkpoint_path)
+            else:
+                pass

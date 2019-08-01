@@ -3,3 +3,4 @@ __pycache__/
 /tripinfo.xml
 /data/motorway.rou.xml
 train.py
+/data/model/
