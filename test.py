@@ -15,7 +15,9 @@ def run_task(env, no_gui, max_episode, net=None):
     for episode in range(max_episode):
         traffics = Traffic(trafficBase=traffics_base, trafficList=None)
         done = False
-        flag = 0
+        observation = env.reset(nogui=no_gui)
+        observation = np.array(observation)
+        # flag = 0
         while done is False:
             print('Episode '+str((episode+1)))
             print('Make decision '+str(step))
@@ -45,7 +47,8 @@ def run_task(env, no_gui, max_episode, net=None):
 
 if __name__ == "__main__":
     LC_env = Env(ego_start_time=100)
-    dqn = DQN(n_features=6, e_greedy_increment=0.01, is_save=False, is_restore=True)
-    run_task(env=LC_env, no_gui=False, max_episode=2, net=dqn)
+    # Just show
+    dqn = DQN(n_features=6, e_greedy_start=1, e_greedy_increment=0.01, is_save=True, is_restore=True)
+    run_task(env=LC_env, no_gui=False, max_episode=1, net=dqn)
 
 

@@ -1,6 +1,7 @@
 # coding:utf-8
 
 import math
+import numpy as np
 import traci
 import traci.constants as tc
 from surrounding import Surrounding
@@ -328,7 +329,7 @@ class EgoVehicle:
         return self.laneIndex
 
     def is_outof_map(self):
-        if self.x >= 2700.0:
+        if self.x >= 2800.0:
             return True
         else:
             return False
@@ -458,7 +459,12 @@ class EgoVehicle:
         self.missionList[0]['axCtl'] = temp_ax
 
     def has_pre_change_to_lane_complete(self):
-        if self.gapRearVehicle['position_x']+10 < self.x < self.gapFrontVehicle['position_x']-10:
+        gap_rear_vehicle_speed = self.gapRearVehicle['speed']
+        gap_front_vehicle_speed = self.gapFrontVehicle['speed']
+        rear_position_threshold = np.clip(2.0+8.0/33.0*gap_rear_vehicle_speed, 2.0, 10.0)
+        front_position_threshold = np.clip(2.0+8.0/33.0*gap_front_vehicle_speed, 2.0, 10.0)
+        if self.gapRearVehicle['position_x']+rear_position_threshold < self.x < \
+                self.gapFrontVehicle['position_x']-front_position_threshold:
             return True
         else:
             return False
@@ -533,7 +539,7 @@ class EgoVehicle:
         temp_distance = self.leadingVehicle['position_x'] - self.x
         temp_relative_speed = self.leadingVehicle['speed'] - self.vx
         temp_ax = 0.0
-        safe_distance = max(10, self.leadingVehicle['speed']*2.0)
+        safe_distance = max(2, self.leadingVehicle['speed']*2.0)
         if temp_relative_speed > 0:
             if temp_distance >= safe_distance + 100:
                 temp_ax = 8.0
@@ -557,7 +563,7 @@ class EgoVehicle:
 
     def has_lane_keep_step1(self):
         temp_distance = self.leadingVehicle['position_x'] - self.x
-        safe_distance = max(10, self.leadingVehicle['speed']*2.0)
+        safe_distance = max(2, self.leadingVehicle['speed']*2.0)
         if self.leadingVehicle['virtual'] is False:
             if safe_distance - 10.0 < temp_distance < safe_distance + 10.0:
                 return True
@@ -638,4 +644,15 @@ class EgoVehicle:
             return False
         else:
             return True
+
+    def is_safe(self):
+        flag = False
+        if len(self.neighbourVehicleList) > 0:
+            # print(self.neighbourVehicleList)
+            for item in self.neighbourVehicleList:
+                if item['name'] != "ego":
+                    temp_distance = 0.5 * math.pow(item['relative_position_x'], 2) + math.pow(item['relative_position_y'], 2)
+                    if temp_distance > 5.0:
+                        flag = True
+        return flag
 
