@@ -197,9 +197,9 @@ class Env:
 
         speed_after = self.ego_vehicle.get_speed()
         if speed_after > speed_before:
-            reward += 5
-        elif speed_after < speed_before - 5:
-            reward -= 5
+            reward += (speed_after - speed_before) * 3
+        elif speed_after < speed_before:
+            reward += (speed_after - speed_before) * 1
 
         if self.sumo_step > 1e5 or traci.simulation.getMinExpectedNumber() <= 0 \
                 or self.ego_vehicle.is_outof_map() or self.ego_vehicle.check_outof_road():

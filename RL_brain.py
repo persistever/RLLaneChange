@@ -458,10 +458,16 @@ class DQN:
         # increasing learn step counter
         self.learn_step_counter += 1
 
-    def plot_cost(self):
+    def plot_cost(self, length=None):
         import matplotlib.pyplot as plt
-        plt.plot(np.arange(len(self.cost_his_l)), self.cost_his_l)
-        plt.plot(np.arange(len(self.cost_his_h)), self.cost_his_h)
+        if length is None:
+            plt.plot(np.arange(len(self.cost_his_l)), self.cost_his_l)
+            plt.plot(np.arange(len(self.cost_his_h)), self.cost_his_h)
+        else:
+            length_h = min(len(self.cost_his_h), length)
+            length_l = min(len(self.cost_his_l), length)
+            plt.plot(np.arange(length_h), self.cost_his_h[-length_h:])
+            plt.plot(np.arange(length_l), self.cost_his_l[-length_l:])
         plt.ylabel('Cost')
         plt.xlabel('training steps')
         plt.show()
@@ -470,6 +476,10 @@ class DQN:
         if self.is_save is True:
             self.saver.save(self.sess, self.save_path + 'model.ckpt')
             print("save successfully")
+            cost_h = np.array(self.cost_his_h)
+            cost_l = np.array(self.cost_his_l)
+            np.save(self.save_path+"cost_h.npy", cost_h)
+            np.save(self.save_path+"cost_l.npy", cost_l)
 
     def restore(self):
         if self.is_restore is True:
@@ -477,5 +487,7 @@ class DQN:
             if ckpt and ckpt.model_checkpoint_path:
                 self.saver.restore(self.sess, ckpt.model_checkpoint_path)
                 print("restore successfully")
-            else:
-                pass
+            self.cost_his_h = np.load(self.restore_path+"cost_h.npy").tolist()
+            self.cost_his_l = np.load(self.restore_path+"cost_l.npy").tolist()
+        else:
+            pass
