@@ -6,3 +6,4 @@ train.py
 /data/model/
 back_data/
 back_code/
+train*
