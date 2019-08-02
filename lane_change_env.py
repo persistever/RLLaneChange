@@ -23,8 +23,8 @@ from egoVehicle import EgoVehicle
 from  data_process import DataProcess
 
 TIME_STEP = 0.01
-TIME_OUT = 1500
-KEEP_LANE_TIME = 1000
+TIME_OUT = 600
+KEEP_LANE_TIME = 100
 
 
 class Env:
@@ -103,6 +103,8 @@ class Env:
                     n_collision += 1
                 self.sumo_step += 1
                 current_step += 1
+            if current_step >= TIME_OUT:
+                self.ego_vehicle.clear_mission()
             reward += 1
             info['endState'] = 'Choose ego lane, action is to keep lane'
         else:
@@ -125,6 +127,8 @@ class Env:
                         n_collision += 1
                     self.sumo_step += 1
                     current_step += 1
+                if current_step >= KEEP_LANE_TIME:
+                    self.ego_vehicle.clear_mission()
                 if self.ego_vehicle.check_change_lane_successful():
                     reward += 2
                     info['endState'] = 'Change to the target gap successful'

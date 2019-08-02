@@ -508,7 +508,7 @@ class EgoVehicle:
             else:
                 return False
         else:
-            if safe_distance + 50 > temp_distance > safe_distance:
+            if self.vx > 25:
                 return True
             else:
                 return False
