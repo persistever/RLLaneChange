@@ -4,3 +4,4 @@ __pycache__/
 /data/motorway.rou.xml
 train.py
 /data/model/
+train*
