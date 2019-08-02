@@ -377,6 +377,8 @@ class EgoVehicle:
             if complete_flag == 0:
                 self.axCtl = self.missionList[0]['axCtl']
                 self.ayCtl = self.missionList[0]['ayCtl']
+                if self.missionList[0]['m_type'] == 1:
+                    self.pre_change_to_lane()
                 if self.missionList[0]['m_type'] == 3:
                     self.post_change_to_lane()
                 if self.missionList[0]['m_type'] == 4:
@@ -646,13 +648,19 @@ class EgoVehicle:
             return True
 
     def is_safe(self):
-        flag = False
+        flag = True
         if len(self.neighbourVehicleList) > 0:
             # print(self.neighbourVehicleList)
             for item in self.neighbourVehicleList:
+                print('自车道: '+str(self.laneIndex))
                 if item['name'] != "ego":
-                    temp_distance = 0.5 * math.pow(item['relative_position_x'], 2) + math.pow(item['relative_position_y'], 2)
-                    if temp_distance > 5.0:
-                        flag = True
+                    print(item)
+                    if item['lane_index'] == self.laneIndex and item['relative_position_x'] < 5.0:
+                        flag = False
+                        break
+                    elif item['lane_index'] != self.laneIndex and self.vyCtl != 0 and \
+                            math.pow(item['relative_position_x'], 2)+math.pow(item['relative_position_y'], 2) < 9.0:
+                        flag = False
+                        break
         return flag
 
