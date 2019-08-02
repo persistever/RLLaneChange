@@ -141,7 +141,7 @@ class Env:
                     self.sumo_step += 1
                     current_step += 1
                 if self.ego_vehicle.check_change_lane_successful():
-                    reward += 5
+                    reward += 10
                     info['endState'] = 'Change to the target gap successful'
                 else:
                     if current_step >= TIME_OUT:
@@ -193,7 +193,7 @@ class Env:
             reward -= 20
             info['emergencyLane'] = 'Vehicle change to the emergency lane'
 
-        reward -= min(n_collision * 5, 50)
+        reward -= min(n_collision * 5, 30)
 
         speed_after = self.ego_vehicle.get_speed()
         if speed_after > speed_before:
