@@ -193,7 +193,7 @@ class Env:
             reward -= 20
             info['emergencyLane'] = 'Vehicle change to the emergency lane'
 
-            reward -= min(n_collision * 5, 50)
+            reward -= min(n_collision * 5, 80)
 
         speed_after = self.ego_vehicle.get_speed()
         if speed_after > speed_before:
