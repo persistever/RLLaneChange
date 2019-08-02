@@ -311,7 +311,7 @@ class Env:
                     info['endState'] = 'Cannot change to the target lane, because the gap is too narrow'
                     reward = -10
 
-        if self.ego_vehicle.is_safe() is False:
+        if self.ego_vehicle.is_safe() is False or n_collision != 0:
             self.ego_vehicle.clear_mission()
             self.ego_vehicle.lane_keep_plan()
             while self.ego_vehicle.get_state() and self.ego_vehicle.is_outof_map() is False and \
