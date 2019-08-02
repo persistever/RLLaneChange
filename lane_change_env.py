@@ -193,16 +193,13 @@ class Env:
             reward -= 20
             info['emergencyLane'] = 'Vehicle change to the emergency lane'
 
-        if n_collision < 10:
-            reward -= n_collision * 5
-        elif n_collision >= 10:
-            reward -= 50
+            reward -= min(n_collision * 5, 50)
 
         speed_after = self.ego_vehicle.get_speed()
         if speed_after > speed_before:
-            reward += (speed_after - speed_before) * 3
+            reward += min((speed_after - speed_before) * 3, 20)
         elif speed_after < speed_before:
-            reward += (speed_after - speed_before) * 2
+            reward += max((speed_after - speed_before) * 2, -10)
 
         if self.sumo_step > 1e5 or traci.simulation.getMinExpectedNumber() <= 0 \
                 or self.ego_vehicle.is_outof_map() or self.ego_vehicle.check_outof_road():
