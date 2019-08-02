@@ -8,7 +8,7 @@ from surrounding import Surrounding
 
 LANE_WIDTH = 3.2
 RADAR_LIMIT = 200
-SPEED_LIMIT_HIGH = 30
+SPEED_LIMIT_HIGH = 35
 SPEED_LIMIT_LOW = 0
 
 
