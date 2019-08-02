@@ -141,7 +141,7 @@ class Env:
                     self.sumo_step += 1
                     current_step += 1
                 if self.ego_vehicle.check_change_lane_successful():
-                    reward += 10
+                    reward += 2
                     info['endState'] = 'Change to the target gap successful'
                 else:
                     if current_step >= TIME_OUT:
@@ -190,16 +190,16 @@ class Env:
             reward -= 50
             info['endState'] = 'Vehicle is out of map in lateral direction'
         if self.ego_vehicle.get_lane_index() == 0:
-            reward -= 20
+            reward -= 30
             info['emergencyLane'] = 'Vehicle change to the emergency lane'
 
         reward -= min(n_collision * 5, 30)
 
         speed_after = self.ego_vehicle.get_speed()
         if speed_after > speed_before:
-            reward += min((speed_after - speed_before) * 3, 20)
+            reward += min((speed_after - speed_before) * 5, 20)
         elif speed_after < speed_before:
-            reward += max((speed_after - speed_before) * 2, -10)
+            reward += max((speed_after - speed_before) * 3, -10)
 
         if self.sumo_step > 1e5 or traci.simulation.getMinExpectedNumber() <= 0 \
                 or self.ego_vehicle.is_outof_map() or self.ego_vehicle.check_outof_road():
