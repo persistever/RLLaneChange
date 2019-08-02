@@ -16,7 +16,7 @@ import traci.constants as tc
 
 
 class Surrounding:
-    def __init__(self, id,downstreamDist=200.0, upstreamDist=200.0):
+    def __init__(self, id, downstreamDist=200.0, upstreamDist=200.0):
         self.id = id
         self.downstreamDist = downstreamDist
         self.upstreamDist = upstreamDist
@@ -35,10 +35,6 @@ class Surrounding:
         self.rightFollowerNeighborList = []
         self.midLeaderNeighborList = []
         self.midFollowerNeighborList = []
-        self.edgeList = []  # for route
-        self.edgeDict = None  # for route
-        self.edgeLengthList = []  # for route
-        self.edgeLengthDict = None  # for route
         self.laneNumberDict = None  # for all edge
         self.edgeIdList = []  # for for all edge
 
@@ -63,15 +59,6 @@ class Surrounding:
     def get_mid_follower_neighbor_list(self):
         return self.midFollowerNeighborList
 
-    def get_max_speed_list(self):
-        return self.maxSpeedList
-
-    def get_edge_list(self):
-        return self.edgeList
-
-    def get_edge_dict(self):
-        return self.edgeDict
-
     def get_all_edge_lane_number_dict(self):
         return self.laneNumberDict
 
@@ -80,70 +67,32 @@ class Surrounding:
 
     def _get_neighbor_list(self):
         self.neighborDict = traci.vehicle.getContextSubscriptionResults(self.id)
-        self.x = traci.vehicle.getPosition("ego")[0]
-        self.y = traci.vehicle.getPosition("ego")[1]
-        if self.neighborDict != None:
+        if self.neighborDict is not None:
             self.neighborList = []
             for name, value in self.neighborDict.items():
-                self.neighborList.append({'name': name,
-                                          'position_x': value[tc.VAR_POSITION][0],
-                                          'position_y': value[tc.VAR_POSITION][1],
-                                          'relative_position_x': value[tc.VAR_POSITION][0] - self.x,
-                                          'relative_position_y': value[tc.VAR_POSITION][1] - self.y,
-                                          'speed': value[tc.VAR_SPEED],
-                                          'edge': value[tc.VAR_ROAD_ID],
-                                          'edges': value[tc.VAR_EDGES],
-                                          'lane_index': value[tc.VAR_LANE_INDEX],
-                                          'lane_number': self.laneNumberDict[value[tc.VAR_ROAD_ID]],
-                                          'lane_position': value[tc.VAR_LANEPOSITION],
-                                          'lane_position_lat': value[tc.VAR_LANEPOSITION_LAT],
-                                          'relative_lane_position': value[tc.VAR_POSITION][0] - self.x,
-                                          'relative_lane_position_abs': math.fabs(value[tc.VAR_POSITION][0] - self.x),
-                                          # 'relative_speed': value[tc.VAR_SPEED] - self.neighborDict[self.id][tc.VAR_SPEED]
-                                          })
+                if name != 'ego':
+                    self.neighborList.append({'name': name,
+                                              'position_x': value[tc.VAR_POSITION][0],
+                                              'position_y': value[tc.VAR_POSITION][1],
+                                              'relative_position_x': value[tc.VAR_POSITION][0] - self.x,
+                                              'relative_position_y': value[tc.VAR_POSITION][1] - self.y,
+                                              'speed': value[tc.VAR_SPEED],
+                                              'edge': value[tc.VAR_ROAD_ID],
+                                              'lane_index': self.compute_lane_index(value[tc.VAR_POSITION][1]),
+                                              'lane_number': 4,
+                                              'lane_position': value[tc.VAR_LANEPOSITION],
+                                              'lane_position_lat': value[tc.VAR_LANEPOSITION_LAT],
+                                              'relative_lane_position': value[tc.VAR_POSITION][0] - self.x,
+                                              'relative_lane_position_abs': math.fabs(value[tc.VAR_POSITION][0] - self.x)
+                                              })
         else:
             self.neighborList = []
-
-    def _get_edge(self):
-        self.edge = traci.vehicle.getRoadID(self.id)
-
-    def _get_lane_number(self):
-        if self.edge != '':
-            self.laneNumber = traci.edge.getLaneNumber(self.edge)
-        else:
-            self.laneNumber = 4
 
     def _get_lane_index(self):
         self.laneIndex = self.laneNumber - math.ceil(-self.y / self.laneWidth)
 
-    def _get_edge_list(self):
-        self.edgeList = list(traci.vehicle.getRoute(self.id))
-
-    def _get_edge_dict(self):
-        self.edgeDict = None
-        # self.get_edge_list() # for use alone
-        self.edgeDict = dict(zip(self.edgeList, range(len(self.edgeList))))
-
-    def _get_edge_length_list(self):
-        self.edgeLengthList = []
-        # self.get_edge_list() # for use alone
-        for i in range(len(self.edgeList)):
-            self.edgeLengthList.append(traci.lane.getLength(self.edgeList[i]+"_"+str(0)))
-
-    def _get_edge_length_dict(self):
-        self.edgeLengthDict = {}
-        # self.get_edge_list() # for use alone
-        for edge in self.edgeList:
-            self.edgeLengthDict[edge] = traci.lane.getLength(edge+"_"+str(0))
-
-    def _get_max_speed_list(self):
-        self.maxSpeedList = []
-        # self.get_edge()  # for use alone
-        # self.get_lane_index()  # for use alone
-        if self.edge == '':
-            self.edge = 'gneE1'
-        for i in range(traci.edge.getLaneNumber(self.edge)):
-            self.maxSpeedList.append(traci.lane.getMaxSpeed(self.edge + "_"+str(i)))
+    def compute_lane_index(self, position_y):
+        return self.laneNumber - math.ceil(-position_y / self.laneWidth)
 
     def _classify(self):  # can not use alone
         self.leftLeaderNeighborList = []
@@ -169,26 +118,18 @@ class Surrounding:
                 if vehicle['relative_lane_position'] < 0:
                     self.leftFollowerNeighborList.append(vehicle)
 
-    def get_surroundings(self):
-        self._get_edge()
-        self._get_lane_number()
+    def get_surroundings(self, edge_id, position_x, position_y):
+        self.x = position_x
+        self.y = position_y
+        self.edge = edge_id
         self._get_lane_index()
-        self._get_edge_list()
-        self._get_edge_dict()
-        self._get_edge_length_list()
-        self._get_edge_length_dict()
-        # self._get_max_speed_list()
         self._get_neighbor_list()
         self._classify()
 
     def _subscribe_ego_vehicle_surrounding(self):
         traci.vehicle.subscribeContext(self.id, tc.CMD_GET_VEHICLE_VARIABLE, 200.0,
-                                       [tc.VAR_LANE_INDEX, tc.VAR_POSITION,
-                                        tc.VAR_SPEED, tc.VAR_ROAD_ID, tc.VAR_LANEPOSITION,
-                                        tc.VAR_LANEPOSITION_LAT, tc.VAR_EDGES])
-        # traci.vehicle.addSubscriptionFilterLanes([-2, -1, 0, 1, 2], noOpposite=True,
-        #                                          downstreamDist=self.downstreamDist,
-        #                                          upstreamDist=self.upstreamDist)
+                                       [tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_ROAD_ID,
+                                        tc.VAR_LANEPOSITION, tc.VAR_LANEPOSITION_LAT])
 
     def _get_lane_number_dict(self):
         self.edgeIdList = traci.edge.getIDList()
