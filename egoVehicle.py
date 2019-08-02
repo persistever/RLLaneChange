@@ -258,7 +258,7 @@ class EgoVehicle:
             self.leadingVehicle['name'] = 'virtual_l'
             self.leadingVehicle['position_x'] = self.x + RADAR_LIMIT
             self.leadingVehicle['position_y'] = self.y
-            self.leadingVehicle['speed'] = 120/3.6
+            self.leadingVehicle['speed'] = 30
         self.leadingVehicle['relative_position_x'] = self.leadingVehicle['position_x'] - self.x
         self.leadingVehicle['relative_position_y'] = self.leadingVehicle['position_y'] - self.y
 
@@ -273,7 +273,7 @@ class EgoVehicle:
             self.followingVehicle['name'] = 'virtual_f'
             self.followingVehicle['position_x'] = self.x - RADAR_LIMIT
             self.followingVehicle['position_y'] = self.y
-            self.followingVehicle['speed'] = 120/3.6
+            self.followingVehicle['speed'] = 30
         self.followingVehicle['relative_position_x'] = self.followingVehicle['position_x'] - self.x
         self.followingVehicle['relative_position_y'] = self.followingVehicle['position_y'] - self.y
 
@@ -489,12 +489,12 @@ class EgoVehicle:
         safe_distance = np.max([2, self.leadingVehicle['speed']*2.0])
         if temp_relative_speed > 0:
             if temp_distance >= safe_distance:
-                temp_ax = np.clip((temp_distance-safe_distance)*safe_distance*temp_relative_speed/73000, 0, 4)
+                temp_ax = np.clip((temp_distance-safe_distance)*safe_distance*temp_relative_speed/50000, 0, 4)
             else:
                 temp_ax = np.clip((temp_distance-safe_distance)*safe_distance*temp_relative_speed/16.5, -8, 0)
         elif temp_relative_speed <= 0:
             if temp_distance >= safe_distance:
-                temp_ax = np.clip((temp_distance - safe_distance) * safe_distance * (-temp_relative_speed) / 73000, 0, 2)
+                temp_ax = np.clip((temp_distance - safe_distance) * safe_distance * (-temp_relative_speed) / 50000, 0, 2)
             else:
                 temp_ax = np.clip((temp_distance-safe_distance)*safe_distance*(-temp_relative_speed), -10, 0)
         self.missionList[0]['axCtl'] = temp_ax
@@ -508,7 +508,7 @@ class EgoVehicle:
             else:
                 return False
         else:
-            if temp_distance > safe_distance:
+            if safe_distance + 50 > temp_distance > safe_distance:
                 return True
             else:
                 return False
