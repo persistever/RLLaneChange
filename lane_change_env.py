@@ -381,4 +381,3 @@ class Env:
         self.ego_vehicle.print_current_lane_index()
         return observation, reward, done, info
 
-
