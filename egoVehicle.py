@@ -338,11 +338,11 @@ class EgoVehicle:
             if complete_flag == 0:
                 if self.missionList[0]['m_type'] == 1:
                     self.pre_change_to_lane()
-                if self.missionList[0]['m_type'] == 3:
+                elif self.missionList[0]['m_type'] == 3:
                     self.post_change_to_lane()
-                if self.missionList[0]['m_type'] == 4:
+                elif self.missionList[0]['m_type'] == 4:
                     self.lane_keep_step1()
-                if self.missionList[0]['m_type'] == 5:
+                elif self.missionList[0]['m_type'] == 5:
                     self.lane_keep_step2()
                 self.axCtl = self.missionList[0]['axCtl']
                 self.ayCtl = self.missionList[0]['ayCtl']
@@ -442,11 +442,11 @@ class EgoVehicle:
         temp_ax = 0.0
         if temp_relative_speed > 0:
             if temp_distance > 100:
-                temp_ax = 8.0
-            elif 50 <= temp_distance < 100:
                 temp_ax = 4.0
-            elif temp_distance >= 0:
+            elif 50 <= temp_distance < 100:
                 temp_ax = 2.0
+            elif temp_distance >= 0:
+                temp_ax = 1.0
             else:
                 temp_ax = -8.0
         elif temp_relative_speed < 0:
@@ -457,7 +457,7 @@ class EgoVehicle:
             elif temp_distance >= 0:
                 temp_ax = -8.0
             else:
-                temp_ax = -6.0
+                temp_ax = -8.0
         self.missionList[0]['axCtl'] = temp_ax
 
     def has_post_change_to_lane(self):
@@ -486,14 +486,14 @@ class EgoVehicle:
         temp_distance = self.leadingVehicle['position_x'] - self.x
         temp_relative_speed = self.leadingVehicle['speed'] - self.vx
         temp_ax = 0.0
-        safe_distance = np.max([2, self.leadingVehicle['speed']*2.0])
+        safe_distance = np.max([2, self.leadingVehicle['speed']*3.0])
         if temp_relative_speed > 0:
-            if temp_distance >= safe_distance:
+            if temp_distance >= safe_distance * 1.2:
                 temp_ax = np.clip((temp_distance-safe_distance)*safe_distance*temp_relative_speed/50000, 0, 4)
             else:
                 temp_ax = np.clip((temp_distance-safe_distance)*safe_distance*temp_relative_speed/16.5, -8, 0)
         elif temp_relative_speed <= 0:
-            if temp_distance >= safe_distance:
+            if temp_distance >= safe_distance * 1.2:
                 temp_ax = np.clip((temp_distance - safe_distance) * safe_distance * (-temp_relative_speed) / 50000, 0, 2)
             else:
                 temp_ax = np.clip((temp_distance-safe_distance)*safe_distance*(-temp_relative_speed), -10, 0)
@@ -501,7 +501,7 @@ class EgoVehicle:
 
     def has_lane_keep_step1(self):
         temp_distance = self.leadingVehicle['position_x'] - self.x
-        safe_distance = np.max([2, self.leadingVehicle['speed']*2.0])
+        safe_distance = np.max([2, self.leadingVehicle['speed']*3.0])
         if self.leadingVehicle['virtual'] is False:
             if np.max([0, safe_distance-10.0]) < temp_distance < safe_distance:
                 return True
