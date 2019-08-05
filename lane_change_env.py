@@ -57,7 +57,17 @@ class Env:
         while self.sumo_step < ego_start_step:
             traci.simulationStep()
             self.sumo_step += 1
-        traci.vehicle.moveToXY('ego', 'gneE0', 2, 0.5, -4.8, 90, 2)
+        temp_random = random.randint(0, 3)
+        y_lateral = -4.8
+        if temp_random == 0:
+            y_lateral = -11.2
+        elif temp_random == 1:
+            y_lateral = -8.0
+        elif temp_random == 2:
+            y_lateral = -4.8
+        elif temp_random == 3:
+            y_lateral = -1.6
+        traci.vehicle.moveToXY('ego', 'gneE0', 2, 0.5, y_lateral, 90, 2)
         traci.simulationStep()
         self.sumo_step += 1
         self.ego_vehicle = EgoVehicle('ego')
