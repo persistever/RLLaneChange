@@ -16,7 +16,7 @@ class DQN:
             n_actions_l=5,
             n_actions_r=5,
             learning_rate=0.01,
-            reward_decay=0.8,
+            reward_decay=0.7,
             e_greedy=0.99,
             replace_target_iter=100,
             memory_size=500,
@@ -148,53 +148,20 @@ class DQN:
                 w_high_l1 = tf.get_variable('w_high_l1', [self.n_features+6*8*3, n_high_l1], initializer=w_initializer, collections=c_names)
                 b_high_l1 = tf.get_variable('b_high_l1', [1, n_high_l1], initializer=b_initializer, collections=c_names)
                 high_l1 = tf.nn.relu(tf.matmul(fully_connected_input, w_high_l1) + b_high_l1)
-            with tf.variable_scope('fully_l2'):
+            with tf.variable_scope('high_l2'):
                 w_high_l2 = tf.get_variable('w_high_l2', [n_high_l1, self.n_actions_high], initializer=w_initializer, collections=c_names)
                 b_high_l2 = tf.get_variable('b_high_l2', [1, self.n_actions_high], initializer=b_initializer, collections=c_names)
                 self.q_eval_high = tf.matmul(high_l1, w_high_l2) + b_high_l2
 
-            # build low left cnn
-            with tf.variable_scope('l_l_conv_l1'):
-                w_l_l_conv_l1 = tf.get_variable('w_l_l_conv_l1', [3, 1, n_conv_l1], initializer=w_initializer, collections=c_names)
-                b_l_l_conv_l1 = tf.get_variable('b_l_l_conv_l1', [1, n_conv_l1], initializer=b_initializer, collections=c_names)
-                l_l_conv_l1 = tf.nn.relu(self.conv1d(self.s_left, w_l_l_conv_l1, 3)+b_l_l_conv_l1)
-            with tf.variable_scope('l_l_conv_l2'):
-                w_l_l_conv_l2 = tf.get_variable('w_l_l_conv_l2', [1, n_conv_l1, n_conv_l2], initializer=w_initializer, collections=c_names)
-                b_l_l_conv_l2 = tf.get_variable('b_l_l_conv_l2', [1, n_conv_l2], initializer=b_initializer, collections=c_names)
-                l_l_conv_l2 = tf.nn.relu(self.conv1d(l_l_conv_l1, w_l_l_conv_l2, 1)+b_l_l_conv_l2)
-            l_l_conv_output = tf.reshape(l_l_conv_l2, [-1, 6*8])
-
-            # build low mid cnn
-            with tf.variable_scope('l_m_conv_l1'):
-                w_l_m_conv_l1 = tf.get_variable('w_l_m_conv_l1', [3, 1, n_conv_l1], initializer=w_initializer, collections=c_names)
-                b_l_m_conv_l1 = tf.get_variable('b_l_m_conv_l1', [1, n_conv_l1], initializer=b_initializer, collections=c_names)
-                l_m_conv_l1 = tf.nn.relu(self.conv1d(self.s_mid, w_l_m_conv_l1, 3)+b_l_m_conv_l1)
-            with tf.variable_scope('l_m_conv_l2'):
-                w_l_m_conv_l2 = tf.get_variable('w_l_m_conv_l2', [1, n_conv_l1, n_conv_l2], initializer=w_initializer, collections=c_names)
-                b_l_m_conv_l2 = tf.get_variable('b_l_m_conv_l2', [1, n_conv_l2], initializer=b_initializer, collections=c_names)
-                l_m_conv_l2 = tf.nn.relu(self.conv1d(l_m_conv_l1, w_l_m_conv_l2, 1)+b_l_m_conv_l2)
-            l_m_conv_output = tf.reshape(l_m_conv_l2, [-1, 6 * 8])
-
-            # build low right cnn
-            with tf.variable_scope('l_r_conv_l1'):
-                w_l_r_conv_l1 = tf.get_variable('w_r_conv_l1', [3, 1, n_conv_l1], initializer=w_initializer, collections=c_names)
-                b_l_r_conv_l1 = tf.get_variable('b_r_conv_l1', [1, n_conv_l1], initializer=b_initializer, collections=c_names)
-                l_r_conv_l1 = tf.nn.relu(self.conv1d(self.s_right, w_l_r_conv_l1, 3)+b_l_r_conv_l1)
-            with tf.variable_scope('l_r_conv_l2'):
-                w_l_r_conv_l2 = tf.get_variable('w_r_conv_l2', [1, n_conv_l1, n_conv_l2], initializer=w_initializer, collections=c_names)
-                b_l_r_conv_l2 = tf.get_variable('b_r_conv_l2', [1, n_conv_l2], initializer=b_initializer, collections=c_names)
-                l_r_conv_l2 = tf.nn.relu(self.conv1d(l_r_conv_l1, w_l_r_conv_l2, 1)+b_l_r_conv_l2)
-            l_r_conv_output = tf.reshape(l_r_conv_l2, [-1, 6 * 8])
-
             # merge low left data
 
-            low_left = tf.concat([self.s_feature, l_l_conv_output, l_m_conv_output, tf.transpose([tf.cast(tf.argmax(self.q_eval_high, 1),dtype=tf.float32)])], 1)
+            low_left = tf.concat([self.s_feature, h_l_conv_output, h_m_conv_output, tf.transpose([tf.cast(tf.argmax(self.q_eval_high, 1), dtype=tf.float32)])], 1)
 
             # merge low mid data
-            low_mid = tf.concat([self.s_feature, l_l_conv_output, l_m_conv_output, l_r_conv_output, tf.transpose([tf.cast(tf.argmax(self.q_eval_high, 1), dtype=tf.float32)])], 1)
+            low_mid = tf.concat([self.s_feature, h_l_conv_output, h_m_conv_output, h_r_conv_output, tf.transpose([tf.cast(tf.argmax(self.q_eval_high, 1), dtype=tf.float32)])], 1)
 
             # merge low right data
-            low_right = tf.concat([self.s_feature, l_r_conv_output, l_m_conv_output, tf.transpose([tf.cast(tf.argmax(self.q_eval_high, 1),dtype=tf.float32)])], 1)
+            low_right = tf.concat([self.s_feature, h_r_conv_output, h_m_conv_output, tf.transpose([tf.cast(tf.argmax(self.q_eval_high, 1), dtype=tf.float32)])], 1)
 
             # build low left fully connected layer
             n_low_l1 = 50
@@ -231,11 +198,15 @@ class DQN:
         with tf.variable_scope('loss_h'):
             self.loss_h = tf.reduce_mean(tf.squared_difference(self.q_target_high, self.q_eval_high))
         with tf.variable_scope('tran_h'):
-            self._train_op_h = tf.train.RMSPropOptimizer(self.lr).minimize(self.loss_h)
+            high_train_loss_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,
+                                                     scope='eval_net/h_l_conv_l1|eval_net/h_l_conv_l2|eval_net/h_m_conv_l1|eval_net/h_m_conv_l2|eval_net/h_r_conv_l1|eval_net/h_r_conv_l2|eval_net/high_l1|eval_net/high_l2')
+            self._train_op_h = tf.train.RMSPropOptimizer(self.lr).minimize(self.loss_h, var_list=high_train_loss_vars)
         with tf.variable_scope('loss_l'):
             self.loss_l = tf.reduce_mean(tf.squared_difference(self.q_target_low, self.q_eval_low))
         with tf.variable_scope('train_l'):
-            self._train_op_l = tf.train.RMSPropOptimizer(self.lr).minimize(self.loss_l)
+            low_train_loss_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,
+                                                     scope='eval_net/low_l_l1|eval_net/low_l_l2|eval_net/low_m_l1|eval_net/low_l_l2|eval_net/low_r_l1|eval_net/low_r_l2')
+            self._train_op_l = tf.train.RMSPropOptimizer(self.lr).minimize(self.loss_l, var_list=low_train_loss_vars)
 
         # target net
         self.s_left_ = tf.placeholder(tf.float32, [None, 18, 1], name='s_left_')
@@ -304,54 +275,21 @@ class DQN:
                                             initializer=w_initializer, collections=c_names)
                 b_high_l1 = tf.get_variable('b_high_l1', [1, n_high_l1], initializer=b_initializer, collections=c_names)
                 high_l1 = tf.nn.relu(tf.matmul(fully_connected_input_, w_high_l1) + b_high_l1)
-            with tf.variable_scope('fully_l2'):
+            with tf.variable_scope('high_l2'):
                 w_high_l2 = tf.get_variable('w_high_l2', [n_high_l1, self.n_actions_high], initializer=w_initializer,
                                             collections=c_names)
                 b_high_l2 = tf.get_variable('b_high_l2', [1, self.n_actions_high], initializer=b_initializer,
                                             collections=c_names)
                 self.q_next_high = tf.matmul(high_l1, w_high_l2) + b_high_l2
 
-            # build low left cnn
-            with tf.variable_scope('l_l_conv_l1'):
-                w_l_l_conv_l1 = tf.get_variable('w_l_l_conv_l1', [3, 1, n_conv_l1], initializer=w_initializer, collections=c_names)
-                b_l_l_conv_l1 = tf.get_variable('b_l_l_conv_l1', [1, n_conv_l1], initializer=b_initializer, collections=c_names)
-                l_l_conv_l1 = tf.nn.relu(self.conv1d(self.s_left_, w_l_l_conv_l1, 3)+b_l_l_conv_l1)
-            with tf.variable_scope('l_l_conv_l2'):
-                w_l_l_conv_l2 = tf.get_variable('w_l_l_conv_l2', [1, n_conv_l1, n_conv_l2], initializer=w_initializer, collections=c_names)
-                b_l_l_conv_l2 = tf.get_variable('b_l_l_conv_l2', [1, n_conv_l2], initializer=b_initializer, collections=c_names)
-                l_l_conv_l2 = tf.nn.relu(self.conv1d(l_l_conv_l1, w_l_l_conv_l2, 1)+b_l_l_conv_l2)
-            l_l_conv_output_ = tf.reshape(l_l_conv_l2, [-1, 6*8])
-
-            # build low mid cnn
-            with tf.variable_scope('l_m_conv_l1'):
-                w_l_m_conv_l1 = tf.get_variable('w_l_m_conv_l1', [3, 1, n_conv_l1], initializer=w_initializer, collections=c_names)
-                b_l_m_conv_l1 = tf.get_variable('b_l_m_conv_l1', [1, n_conv_l1], initializer=b_initializer, collections=c_names)
-                l_m_conv_l1 = tf.nn.relu(self.conv1d(self.s_mid_, w_l_m_conv_l1, 3)+b_l_m_conv_l1)
-            with tf.variable_scope('l_m_conv_l2'):
-                w_l_m_conv_l2 = tf.get_variable('w_l_m_conv_l2', [1, n_conv_l1, n_conv_l2], initializer=w_initializer, collections=c_names)
-                b_l_m_conv_l2 = tf.get_variable('b_l_m_conv_l2', [1, n_conv_l2], initializer=b_initializer, collections=c_names)
-                l_m_conv_l2 = tf.nn.relu(self.conv1d(l_m_conv_l1, w_l_m_conv_l2, 1)+b_l_m_conv_l2)
-            l_m_conv_output_ = tf.reshape(l_m_conv_l2, [-1, 6 * 8])
-
-            # build low right cnn
-            with tf.variable_scope('l_r_conv_l1'):
-                w_l_r_conv_l1 = tf.get_variable('w_r_conv_l1', [3, 1, n_conv_l1], initializer=w_initializer, collections=c_names)
-                b_l_r_conv_l1 = tf.get_variable('b_r_conv_l1', [1, n_conv_l1], initializer=b_initializer, collections=c_names)
-                l_r_conv_l1 = tf.nn.relu(self.conv1d(self.s_right_, w_l_r_conv_l1, 3)+b_l_r_conv_l1)
-            with tf.variable_scope('l_r_conv_l2'):
-                w_l_r_conv_l2 = tf.get_variable('w_r_conv_l2', [1, n_conv_l1, n_conv_l2], initializer=w_initializer, collections=c_names)
-                b_l_r_conv_l2 = tf.get_variable('b_r_conv_l2', [1, n_conv_l2], initializer=b_initializer, collections=c_names)
-                l_r_conv_l2 = tf.nn.relu(self.conv1d(l_r_conv_l1, w_l_r_conv_l2, 1)+b_l_r_conv_l2)
-            l_r_conv_output_ = tf.reshape(l_r_conv_l2, [-1, 6 * 8])
-
             # merge low left data
-            low_left_ = tf.concat([self.s_feature_, l_l_conv_output_, l_m_conv_output_, tf.transpose([tf.cast(tf.argmax(self.q_next_high, 1),dtype=tf.float32)])], 1)
+            low_left_ = tf.concat([self.s_feature_, h_l_conv_output_, h_m_conv_output_, tf.transpose([tf.cast(tf.argmax(self.q_next_high, 1),dtype=tf.float32)])], 1)
 
             # merge low mid data
-            low_mid_ = tf.concat([self.s_feature_, l_l_conv_output_, l_m_conv_output_,l_r_conv_output_, tf.transpose([tf.cast(tf.argmax(self.q_next_high, 1),dtype=tf.float32)])], 1)
+            low_mid_ = tf.concat([self.s_feature_, h_l_conv_output_, h_m_conv_output_,h_r_conv_output_, tf.transpose([tf.cast(tf.argmax(self.q_next_high, 1),dtype=tf.float32)])], 1)
 
             # merge low right data
-            low_right_ = tf.concat([self.s_feature_, l_r_conv_output_, l_m_conv_output_, tf.transpose([tf.cast(tf.argmax(self.q_next_high, 1),dtype=tf.float32)])], 1)
+            low_right_ = tf.concat([self.s_feature_, h_r_conv_output_, h_m_conv_output_, tf.transpose([tf.cast(tf.argmax(self.q_next_high, 1),dtype=tf.float32)])], 1)
 
             # build low left fully connected layer
             n_low_l1 = 50
@@ -463,7 +401,7 @@ class DQN:
             sample_index = np.random.choice(self.memory_counter, size=self.batch_size)
         batch_memory = self.memory[sample_index, :]
         # train low net 10 times every 20 steps
-        if self.learn_step_counter % 20 < 10:
+        if self.learn_step_counter % 50 < 25:
             q_next_high, q_next_low, q_eval_low = self.sess.run(
                 [self.q_next_high, self.q_next_low, self.q_eval_low],
                 feed_dict={
@@ -495,7 +433,7 @@ class DQN:
                                            self.q_target_low: q_target_low})
             self.cost_his_l.append(self.cost_l)
         # train high net 10 step every 20 steps
-        if self.learn_step_counter % 20 >= 10:
+        if self.learn_step_counter % 50 >= 25:
             q_next_high, q_eval_high = self.sess.run(
                 [self.q_next_high, self.q_eval_high],
                 feed_dict={
