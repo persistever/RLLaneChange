@@ -558,16 +558,10 @@ class EgoVehicle:
             return True
 
     def check_can_change_lane(self, action_high):
-        if action_high == 0:
-            if self.goalLaneIndex > self.nLane - 1:
-                return False
-            else:
-                return True
-        elif action_high == 2:
-            if self.goalLaneIndex < 0:
-                return False
-            else:
-                return True
+        if self.goalLaneIndex > (self.nLane - 1) or self.goalLaneIndex < 0:
+            return False
+        else:
+            return True
 
     def check_can_insert_into_gap(self):
         if self.gapFrontVehicle['relative_position_x'] - self.gapRearVehicle['relative_position_x'] < 10:
