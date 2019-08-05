@@ -19,21 +19,17 @@ else:
 
 from sumolib import checkBinary  # noqa
 import traci
-import traci.constants as tc
 from egoVehicle import EgoVehicle
-from surrounding import Traffic
 from  data_process import DataProcess
 
 TIME_STEP = 0.01
-TIME_OUT = 1500
-KEEP_LANE_TIME = 1000
+TIME_OUT = 600
+KEEP_LANE_TIME = 100
 
 
 class Env:
     def __init__(self, ego_start_time=0):
         self.ego_vehicle = None
-        # self.n_action = [3, 5]
-        # self.n_feature = [18, 18, 18, 3]
         self.ego_start_time = ego_start_time
         self.sumo_step = 0
         self.nogui = False
@@ -52,22 +48,26 @@ class Env:
         self.sumo_step = 0
         self.ego_vehicle = None
         options = self._get_options()
-        # this script has been called from the command line. It will start sumo as a
-        # server, then connect and run
         if options.nogui:
             sumo_binary = checkBinary('sumo')
         else:
             sumo_binary = checkBinary('sumo-gui')
-        # first, generate the route file for this simulation
-        # traffics = Traffic(trafficBase=0.4, trafficList=None)
-        # this is the normal way of using traci. sumo is started as a
-        # subprocess and then the python script connects and runs
         traci.start([sumo_binary, "-c", "data/motorway.sumocfg", "--no-step-log", "--no-warnings"])
         ego_start_step = math.ceil(self.ego_start_time/TIME_STEP+5)
         while self.sumo_step < ego_start_step:
             traci.simulationStep()
             self.sumo_step += 1
-        traci.vehicle.moveToXY('ego', 'gneE0', 2, 0.5, -4.8, 90, 2)
+        temp_random = random.randint(0, 3)
+        y_lateral = -4.8
+        if temp_random == 0:
+            y_lateral = -11.2
+        elif temp_random == 1:
+            y_lateral = -8.0
+        elif temp_random == 2:
+            y_lateral = -4.8
+        elif temp_random == 3:
+            y_lateral = -1.6
+        traci.vehicle.moveToXY('ego', 'gneE0', 2, 0.5, y_lateral, 90, 2)
         traci.simulationStep()
         self.sumo_step += 1
         self.ego_vehicle = EgoVehicle('ego')
@@ -85,7 +85,6 @@ class Env:
         observation.extend([self.ego_vehicle.get_speed(), self.ego_vehicle.get_lane_index(), self.ego_vehicle.get_n_lane(),
                             self.ego_vehicle.get_next_n_lane()])
         observation.extend(self.ego_vehicle.get_lmr_speed_limit())
-        self.ego_vehicle.get_lmr_speed_limit()
         return observation
 
     def step(self, action_high, action_low):
@@ -100,23 +99,22 @@ class Env:
         self.ego_vehicle.clear_mission()
         self.ego_vehicle.print_current_lane_index()
         self.ego_vehicle.clear_gap_vehicle()
-        # self.ego_vehicle.print_data()
         self.data_process.set_surrounding_data(self.ego_vehicle.surroundings, self.ego_vehicle.get_speed())
         self.data_process.vehicle_surrounding_data_process()
-        # print("step中的车速："+str(self.ego_vehicle.get_speed()))
         if action_high == 1:
             self.ego_vehicle.clear_mission()
             self.ego_vehicle.lane_keep_plan()
             while self.ego_vehicle.is_outof_map() is False and self.ego_vehicle.check_outof_road() is False and \
                     self.ego_vehicle.get_state() and current_step < TIME_OUT:
                 self.ego_vehicle.fresh_data()
-                # self.ego_vehicle.print_data()
                 self.ego_vehicle.drive()
                 traci.simulationStep()
                 if self.ego_vehicle.check_collision():
                     n_collision += 1
                 self.sumo_step += 1
                 current_step += 1
+            if current_step >= TIME_OUT:
+                self.ego_vehicle.clear_mission()
             reward += 1
             info['endState'] = 'Choose ego lane, action is to keep lane'
         else:
@@ -133,13 +131,14 @@ class Env:
                         and self.ego_vehicle.check_can_insert_into_gap() is True and \
                         self.ego_vehicle.is_outof_map() is False and self.ego_vehicle.check_outof_road() is False:
                     self.ego_vehicle.fresh_data()
-                    # self.ego_vehicle.print_data()
                     self.ego_vehicle.drive()
                     traci.simulationStep()
                     if self.ego_vehicle.check_collision():
                         n_collision += 1
                     self.sumo_step += 1
                     current_step += 1
+                if current_step >= KEEP_LANE_TIME:
+                    self.ego_vehicle.clear_mission()
                 if self.ego_vehicle.check_change_lane_successful():
                     reward += 5
                     info['endState'] = 'Change to the target gap successful'
@@ -156,7 +155,6 @@ class Env:
                 while self.ego_vehicle.is_outof_map() is False and self.ego_vehicle.check_outof_road() is False and \
                         self.ego_vehicle.get_state() and current_step < KEEP_LANE_TIME:
                     self.ego_vehicle.fresh_data()
-                    # self.ego_vehicle.print_data()
                     self.ego_vehicle.drive()
                     traci.simulationStep()
                     if self.ego_vehicle.check_collision():
@@ -176,7 +174,6 @@ class Env:
             while self.ego_vehicle.get_state() and self.ego_vehicle.is_outof_map() is False and \
                     self.ego_vehicle.check_outof_road() is False and keep_step < 51:
                 self.ego_vehicle.fresh_data()
-                # self.ego_vehicle.print_data()
                 self.ego_vehicle.drive()
                 traci.simulationStep()
                 if self.ego_vehicle.check_collision():

@@ -17,6 +17,7 @@ def run_task(env, no_gui, max_episode, net=None):
         done = False
         observation = env.reset(nogui=no_gui)
         observation = np.array(observation)
+        net.plot_cost(length=100)
         # flag = 0
         while done is False:
             print('Episode '+str((episode+1)))
