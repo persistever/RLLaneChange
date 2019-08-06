@@ -463,15 +463,15 @@ class EgoVehicle:
     def has_post_change_to_lane(self):
         if self.leadingVehicle['position_x'] < self.gapFrontVehicle['position_x']:
             if self.leadingVehicle['speed']-1.0 < self.vx < self.leadingVehicle['speed']+1.0:
-                if self.gapFrontVehicle['virtual'] is False:
-                    traci.vehicle.unsubscribe(self.gapFrontVehicle['name'])
+                # if self.gapFrontVehicle['virtual'] is False:
+                #     traci.vehicle.unsubscribe(self.gapFrontVehicle['name'])
                 return True
             else:
                 return False
         else:
             if self.gapFrontVehicle['speed']-1.0 < self.vx < self.gapFrontVehicle['speed']+1.0:
-                if self.gapFrontVehicle['virtual'] is False:
-                    traci.vehicle.unsubscribe(self.gapFrontVehicle['name'])
+                # if self.gapFrontVehicle['virtual'] is False:
+                #     traci.vehicle.unsubscribe(self.gapFrontVehicle['name'])
                 return True
             else:
                 return False
