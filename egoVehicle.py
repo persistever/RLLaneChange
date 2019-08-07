@@ -462,14 +462,14 @@ class EgoVehicle:
 
     def has_post_change_to_lane(self):
         if self.leadingVehicle['position_x'] < self.gapFrontVehicle['position_x']:
-            if self.leadingVehicle['speed']-1.0 < self.vx < self.leadingVehicle['speed']+1.0:
+            if self.leadingVehicle['speed']-1.0 < self.vx <= self.leadingVehicle['speed']:
                 # if self.gapFrontVehicle['virtual'] is False:
                 #     traci.vehicle.unsubscribe(self.gapFrontVehicle['name'])
                 return True
             else:
                 return False
         else:
-            if self.gapFrontVehicle['speed']-1.0 < self.vx < self.gapFrontVehicle['speed']+1.0:
+            if self.gapFrontVehicle['speed']-1.0 < self.vx <= self.gapFrontVehicle['speed']:
                 # if self.gapFrontVehicle['virtual'] is False:
                 #     traci.vehicle.unsubscribe(self.gapFrontVehicle['name'])
                 return True
@@ -496,7 +496,7 @@ class EgoVehicle:
             if temp_distance >= safe_distance * 1.5:
                 temp_ax = np.clip((temp_distance - safe_distance) * safe_distance * (-temp_relative_speed) / 50000, 0, 2)
             else:
-                temp_ax = np.clip((temp_distance-safe_distance)*safe_distance*(-temp_relative_speed), -8, 0)
+                temp_ax = np.clip((temp_distance-safe_distance)*safe_distance*(-temp_relative_speed)/5.0, -8, 0)
         self.missionList[0]['axCtl'] = temp_ax
 
     def has_lane_keep_step1(self):
